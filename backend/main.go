@@ -63,7 +63,8 @@ func main() {
 	apiv1 := app.Group("/system", middleware.JWTProtected())
 	handler.NewUserHandler(apiv1.Group("/user"), context.Background(), client)
 
-	waApi := app.Group("/api", middleware.AdminAPIProtected())
+	//waApi := app.Group("/api", middleware.AdminAPIProtected())
+	waApi := app.Group("/api")
 	workadventure.NewRoomHandler(waApi.Group("/room"), context.Background(), client)
 	workadventure.NewTextureHandler(waApi.Group("/woka"), context.Background(), client)
 	workadventure.NewTextureHandler(waApi.Group("/companion"), context.Background(), client)
@@ -71,10 +72,6 @@ func main() {
 	workadventure.NewCapabilitiesHandler(waApi.Group("/"), context.Background(), client)
 	workadventure.NewBanHandler(waApi.Group("/"), context.Background(), client)
 	workadventure.NewReportHandler(waApi.Group("/"), context.Background(), client)
-	workadventure.NewLoginHandler(waApi.Group("/"), context.Background(), client)
-
-	waOauth := app.Group("/oauth", middleware.AdminAPIProtected())
-	workadventure.NewLoginHandler(waOauth.Group("/"), context.Background(), client)
 
 	app.Use(func(c *fiber.Ctx) error {
 		return c.Status(404).SendString("404 Not Found")
