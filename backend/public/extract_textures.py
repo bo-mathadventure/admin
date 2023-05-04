@@ -9,4 +9,4 @@ with open("output.sql", "w") as sqlOut:
             for layer in data.keys():
                 for layerCollection in data[layer]["collections"]:
                     for layerTexture in layerCollection["textures"]:
-                        sqlOut.write(f"INSERT INTO textures (texture, layer, url, tags, createdAt) VALUES('{layerTexture['id']}', '{layer}', '%FRONTEND_URL%/public/{layerTexture['url']}', '[]', NOW());\n")
+                        sqlOut.write(f"INSERT INTO textures (texture, layer, url, tags, created_at) VALUES('{layerTexture['id']}', '{layer}', '%FRONTEND_URL%/public/{layerTexture['url']}', '[]', NOW());\n")
