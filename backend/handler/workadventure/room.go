@@ -10,6 +10,7 @@ import (
 	"github.com/bo-mathadventure/admin/ent/user"
 	"github.com/bo-mathadventure/admin/handler"
 	"github.com/bo-mathadventure/admin/utils"
+	email "github.com/cameronnewman/go-emailvalidation/v3"
 	"github.com/gofiber/fiber/v2"
 	"strings"
 	"time"
@@ -67,7 +68,7 @@ func getAccess(ctx context.Context, db *ent.Client) fiber.Handler {
 			return handler.HandleInsufficentData(c)
 		}
 
-		foundUser, err := db.User.Query().Where(user.UUIDEQ(qData.UserIdentifier)).First(ctx)
+		foundUsers, err := db.User.Query().Where(user.Or(user.UUIDEQ(qData.UserIdentifier), user.EmailEQ(email.Normalize(qData.UserIdentifier)))).All(ctx)
 		if err != nil {
 			return handler.HandleInvalidLogin(c)
 		}
@@ -85,7 +86,7 @@ func getAccess(ctx context.Context, db *ent.Client) fiber.Handler {
 			return handler.HandleInvalidLogin(c)
 		}
 
-		var anouncementsList []map[string]string
+		anouncementsList := []map[string]string{}
 		for _, anouncement := range allAnouncements {
 			anouncementsList = append(anouncementsList, map[string]string{
 				"type":    anouncement.Type,
@@ -93,18 +94,26 @@ func getAccess(ctx context.Context, db *ent.Client) fiber.Handler {
 			})
 		}
 
+		var foundUser *ent.User
+		if len(foundUsers) > 0 {
+			foundUser = foundUsers[0]
+		}
+
 		allTextures, err := db.Textures.Query().All(ctx)
 		if err != nil {
 			return handler.HandleInvalidLogin(c)
 		}
-		var availableTexturesList []map[string]string
+		availableTexturesList := []map[string]string{}
 		// make sure to preserve the texture order (given on characterLayers)
 		for _, layer := range qData.CharacterLayers {
 			for _, texture := range allTextures {
 				if layer != texture.Texture {
 					continue
 				}
-				if len(texture.Tags) > 0 && len(utils.ArrayIntersect(texture.Tags, foundUser.Tags)) == 0 {
+				if len(texture.Tags) > 0 && foundUser == nil {
+					continue
+				}
+				if foundUser != nil && len(texture.Tags) > 0 && len(utils.ArrayIntersect(texture.Tags, foundUser.Tags)) == 0 {
 					break
 				}
 				availableTexturesList = append(availableTexturesList, map[string]string{
@@ -117,13 +126,13 @@ func getAccess(ctx context.Context, db *ent.Client) fiber.Handler {
 		}
 
 		resultData := map[string]interface{}{
-			"userUuid":            foundUser.UUID,
-			"email":               foundUser.Email,
-			"tags":                foundUser.Tags,
-			"username":            foundUser.Username,
+			"userUuid":            qData.UserIdentifier,
+			"email":               nil,
+			"tags":                []string{},
 			"textures":            availableTexturesList,
 			"messages":            anouncementsList,
 			"anonymous":           foundMap.PolicyNumber == 1,
+			"visitCardUrl":        nil,
 			"canEdit":             utils.CheckPermission(foundUser, utils.PERMISSION_MAP_EDITOR),
 			"activatedInviteUser": false,
 			"mucRooms": []interface{}{
@@ -135,10 +144,15 @@ func getAccess(ctx context.Context, db *ent.Client) fiber.Handler {
 			},
 		}
 
-		if foundUser.VCardURL != "" {
-			resultData["visitCardUrl"] = foundUser.VCardURL
-		} else {
-			resultData["visitCardUrl"] = nil
+		if foundUser != nil {
+			resultData["userUuid"] = foundUser.UUID
+			resultData["email"] = foundUser.Email
+			resultData["tags"] = foundUser.Tags
+			resultData["username"] = foundUser.Username
+
+			if foundUser.VCardURL != "" {
+				resultData["visitCardUrl"] = foundUser.VCardURL
+			}
 		}
 
 		return c.JSON(resultData)
