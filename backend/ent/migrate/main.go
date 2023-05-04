@@ -5,11 +5,11 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/bo-mathadventure/admin/config"
 	"log"
 	"os"
-	"server/config"
 
-	"server/ent/migrate"
+	"github.com/bo-mathadventure/admin/ent/migrate"
 
 	atlas "ariga.io/atlas/sql/migrate"
 	"entgo.io/ent/dialect"
