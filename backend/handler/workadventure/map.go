@@ -11,6 +11,7 @@ import (
 	"github.com/bo-mathadventure/admin/utils"
 	email "github.com/cameronnewman/go-emailvalidation/v3"
 	"github.com/gofiber/fiber/v2"
+	"regexp"
 	"strings"
 	"time"
 )
@@ -51,8 +52,8 @@ func getMap(ctx context.Context, db *ent.Client) fiber.Handler {
 		}
 
 		result := map[string]interface{}{
-			"mapUrl":                  nil,
-			"wamUrl":                  nil,
+			//"mapUrl":                  nil,
+			//"wamUrl":                  nil,
 			"authenticationMandatory": foundMap.PolicyNumber != 1,
 			"group":                   nil,
 			"mucRooms": []interface{}{
@@ -65,8 +66,8 @@ func getMap(ctx context.Context, db *ent.Client) fiber.Handler {
 			//"contactPage":                nil,
 			//"iframeAuthentication":       nil,
 			//"opidLogoutRedirectUrl":      nil,
-			//"opidWokaNamePolicy":         nil,
-			"expireOn":  nil,
+			"opidWokaNamePolicy": "force_opid",
+			//"expireOn":  nil,
 			"canReport": foundMap.CanReport,
 			"editable":  true,
 			//"loadingCowebsiteLogo":       nil,
@@ -90,15 +91,19 @@ func getMap(ctx context.Context, db *ent.Client) fiber.Handler {
 			//"entityCollectionsUrls":      nil,
 		}
 
-		if strings.HasPrefix(foundMap.MapUrl, "/_/") {
-			result["mapUrl"] = fmt.Sprintf("%s://%s", config.GetConfig().WorkadventureURLProtocol, foundMap.MapUrl)
-		} else if strings.HasPrefix(foundMap.MapUrl, "/~/") {
+		mapURLRegex := regexp.MustCompile(`\/_\/[^/]+\/(.+)`)
+		wamURLRegex := regexp.MustCompile(`\/~\/(.+)`)
+		if mapURLRegex.MatchString(foundMap.MapUrl) {
+			matches := mapURLRegex.FindStringSubmatch(foundMap.MapUrl)
+			result["mapUrl"] = fmt.Sprintf("%s://%s", config.GetConfig().WorkadventureURLProtocol, matches[1])
+		} else if wamURLRegex.MatchString(foundMap.MapUrl) {
+			matches := wamURLRegex.FindStringSubmatch(foundMap.MapUrl)
 			// mapurl without .tmj extension!
-			result["wamUrl"] = fmt.Sprintf("%s%s", config.GetConfig().MapStorageURL, foundMap.MapUrl)
+			result["wamUrl"] = fmt.Sprintf("%s%s", config.GetConfig().MapStorageURL, matches[1])
 			result["entityCollectionsUrls"] = []string{fmt.Sprintf("%s/entityCollections", config.GetConfig().MapStorageURL)}
 		}
 
-		if foundMap.ExpireOn.IsZero() {
+		if !foundMap.ExpireOn.IsZero() {
 			result["expireOn"] = foundMap.ExpireOn.Format(time.RFC3339)
 		}
 
