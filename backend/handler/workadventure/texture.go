@@ -37,7 +37,7 @@ func getWokaList(ctx context.Context, db *ent.Client) fiber.Handler {
 		if err != nil {
 			return handler.HandleInvalidLogin(c)
 		}
-		var availableTexturesList map[string]TextureResponse
+		availableTexturesList := map[string]TextureResponse{}
 		for _, texture := range allTextures {
 			if _, ok := availableTexturesList[texture.Layer]; !ok {
 				availableTexturesList[texture.Layer] = TextureResponse{
