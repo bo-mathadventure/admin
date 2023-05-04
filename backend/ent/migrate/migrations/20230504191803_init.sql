@@ -1,0 +1,12 @@
+-- Create "announcements" table
+CREATE TABLE `announcements` (`id` bigint NOT NULL AUTO_INCREMENT, `type` varchar(255) NOT NULL DEFAULT 'ban', `message` longtext NOT NULL, `created_at` timestamp NULL, `valid_until` timestamp NULL, PRIMARY KEY (`id`)) CHARSET utf8mb4 COLLATE utf8mb4_bin;
+-- Create "bans" table
+CREATE TABLE `bans` (`id` bigint NOT NULL AUTO_INCREMENT, `check` varchar(255) NOT NULL, `message` varchar(255) NOT NULL, `valid_until` timestamp NULL, `created_at` timestamp NULL, PRIMARY KEY (`id`)) CHARSET utf8mb4 COLLATE utf8mb4_bin;
+-- Create "maps" table
+CREATE TABLE `maps` (`id` bigint NOT NULL AUTO_INCREMENT, `room_name` varchar(255) NOT NULL, `map_url` varchar(255) NOT NULL, `policy_number` bigint NOT NULL, `contact_page` varchar(255) NOT NULL, `tags` json NOT NULL, `enable_chat` bool NOT NULL, `enable_chat_upload` bool NOT NULL, `enable_chat_online_list` bool NOT NULL, `enable_chat_disconnected_list` bool NOT NULL, `can_report` bool NOT NULL, `expire_on` timestamp NULL, `created_at` timestamp NULL, PRIMARY KEY (`id`)) CHARSET utf8mb4 COLLATE utf8mb4_bin;
+-- Create "textures" table
+CREATE TABLE `textures` (`id` bigint NOT NULL AUTO_INCREMENT, `texture` varchar(255) NOT NULL, `layer` varchar(255) NOT NULL, `url` varchar(255) NOT NULL, `tags` json NOT NULL, `created_at` timestamp NULL, PRIMARY KEY (`id`), UNIQUE INDEX `texture` (`texture`)) CHARSET utf8mb4 COLLATE utf8mb4_bin;
+-- Create "users" table
+CREATE TABLE `users` (`id` bigint NOT NULL AUTO_INCREMENT, `uuid` varchar(255) NOT NULL, `email` varchar(255) NOT NULL, `username` varchar(255) NOT NULL, `password` varchar(255) NOT NULL, `token` varchar(255) NOT NULL, `v_card_url` varchar(255) NULL, `permissions` json NOT NULL, `tags` json NOT NULL, `created_at` timestamp NULL, PRIMARY KEY (`id`), UNIQUE INDEX `uuid` (`uuid`), UNIQUE INDEX `email` (`email`)) CHARSET utf8mb4 COLLATE utf8mb4_bin;
+-- Create "reports" table
+CREATE TABLE `reports` (`id` bigint NOT NULL AUTO_INCREMENT, `reported_user_comment` longtext NOT NULL, `room_url` varchar(255) NOT NULL, `hide` bool NOT NULL DEFAULT false, `created_at` timestamp NULL, `user_reported` bigint NULL, `user_reporter` bigint NULL, PRIMARY KEY (`id`), CONSTRAINT `reports_users_reported` FOREIGN KEY (`user_reported`) REFERENCES `users` (`id`) ON DELETE SET NULL, CONSTRAINT `reports_users_reporter` FOREIGN KEY (`user_reporter`) REFERENCES `users` (`id`) ON DELETE SET NULL) CHARSET utf8mb4 COLLATE utf8mb4_bin;
