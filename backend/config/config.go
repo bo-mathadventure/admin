@@ -28,6 +28,7 @@ type Config struct {
 	WorkadventureURLProtocol    string `env:"WORKADVENTURE_URL_PROTOCOL" envDefault:"https"`
 	WorkadventureAdminAPISecret string `env:"WORKADVENTURE_ADMIN_API_SECRET"`
 	WorkadventureStartRoomURL   string `env:"WORKADVENTURE_START_ROOM_URL"`
+	WorkadventureSecretKey      string `env:"WORKADVENTURE_SECRET_KEY"`
 
 	MapStorageURL      string `env:"MAP_STORAGE_URL"`
 	MapStorageUser     string `env:"MAP_STORAGE_USER"`
