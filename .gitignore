@@ -53,3 +53,4 @@ backend/public/*.sql
 !wadev/.env
 wadev/redis/
 wadev/map-storage/
+wadev/db/
