@@ -1,5 +1,18 @@
 version: "3.6"
 services:
+
+  db:
+    image: mariadb:10
+    environment:
+      - MYSQL_ROOT_PASSWORD=$MYSQL_PASSWORD
+      - MYSQL_DATABASE
+      - MYSQL_USER
+      - MYSQL_PASSWORD
+    volumes:
+      - ./db/data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
   reverse-proxy:
     image: traefik:v2.8
     expose:
@@ -75,6 +88,7 @@ services:
       - REPORT_ISSUES_URL=${REPORT_ISSUES_URL}
       - ENABLE_OPENAPI_ENDPOINT=true
       - ADMIN_API_TOKEN
+      - ADMIN_API_URL
       - ROOM_API_PORT=50051
       - ROOM_API_SECRET_KEY=${ROOM_API_SECRET_KEY}
       #- GRPC_VERBOSITY=DEBUG
@@ -102,7 +116,7 @@ services:
       - EMBEDLY_KEY=${EMBEDLY_KEY}
       - ENABLE_CHAT_UPLOAD=${ENABLE_CHAT_UPLOAD}
       - EJABBERD_DOMAIN=${EJABBERD_DOMAIN}
-      - EJABBERD_WS_URI=wss://${EJABBERD_DOMAIN}/xmpp/ws
+      - EJABBERD_WS_URI=ws://${EJABBERD_DOMAIN}/xmpp/ws
     labels:
       traefik.enable: "true"
       traefik.docker.network: "traefik"
@@ -119,8 +133,8 @@ services:
       - SECRET_JITSI_KEY
       - ENABLE_FEATURE_MAP_EDITOR
       - SECRET_KEY
-      #- ADMIN_API_TOKEN
-      #- ADMIN_API_URL
+      - ADMIN_API_TOKEN
+      - ADMIN_API_URL
       - TURN_SERVER
       - TURN_USER
       - TURN_PASSWORD
@@ -163,7 +177,7 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       #CHAT
-      - ADMIN_API_URL=${ADMIN_API_URL}
+      - ADMIN_API_URL
       - ENABLE_CHAT_UPLOAD=${ENABLE_CHAT_UPLOAD}
       - UPLOAD_MAX_FILESIZE=${UPLOAD_MAX_FILESIZE}
     labels:
