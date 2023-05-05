@@ -33,6 +33,13 @@ type Config struct {
 	MapStorageURL      string `env:"MAP_STORAGE_URL" json:"mapStorageURL"`
 	MapStorageUser     string `env:"MAP_STORAGE_USER" json:"-"`
 	MapStoragePassword string `env:"MAP_STORAGE_PASSWORD" json:"-"`
+
+	SAMLv2RootCert          string `env:"SAMLV2_ROOT_CERT" json:"-"`
+	SAMLv2SSOURL            string `env:"SAMLV2_SSO_URL" json:"-"`
+	SAMLv2EntityID          string `env:"SAMLV2_ENTITYID" json:"-"`
+	SAMLv2Issuer            string `env:"SAMLV2_ISSUER_URL" json:"-"`
+	SAMLv2AudienceURL       string `env:"SAMLV2_AUDIENCE_URL" json:"-"`
+	SAMLv2SignAuthnRequests bool   `env:"SAMLV2_SIGN_AUTH_REQUESTS" envDefault:"true" json:"-"`
 }
 
 func Init() error {

@@ -20,9 +20,11 @@ func (User) Fields() []ent.Field {
 		field.String("email").Unique(),
 		field.String("username"),
 		field.String("password"),
+		field.String("ssoIdentifier").Optional(),
 		field.String("vCardURL").Optional(),
 		field.JSON("permissions", []string{}).Default([]string{}),
 		field.JSON("tags", []string{}).Default([]string{}),
+		field.Time("lastLogin").Optional(),
 		field.Time("createdAt").Default(time.Now),
 	}
 }

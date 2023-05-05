@@ -26,14 +26,16 @@ type User struct {
 	Username string `json:"username,omitempty"`
 	// Password holds the value of the "password" field.
 	Password string `json:"password,omitempty"`
-	// Token holds the value of the "token" field.
-	Token string `json:"token,omitempty"`
+	// SsoIdentifier holds the value of the "ssoIdentifier" field.
+	SsoIdentifier string `json:"ssoIdentifier,omitempty"`
 	// VCardURL holds the value of the "vCardURL" field.
 	VCardURL string `json:"vCardURL,omitempty"`
 	// Permissions holds the value of the "permissions" field.
 	Permissions []string `json:"permissions,omitempty"`
 	// Tags holds the value of the "tags" field.
 	Tags []string `json:"tags,omitempty"`
+	// LastLogin holds the value of the "lastLogin" field.
+	LastLogin time.Time `json:"lastLogin,omitempty"`
 	// CreatedAt holds the value of the "createdAt" field.
 	CreatedAt time.Time `json:"createdAt,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -80,9 +82,9 @@ func (*User) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case user.FieldID:
 			values[i] = new(sql.NullInt64)
-		case user.FieldUUID, user.FieldEmail, user.FieldUsername, user.FieldPassword, user.FieldToken, user.FieldVCardURL:
+		case user.FieldUUID, user.FieldEmail, user.FieldUsername, user.FieldPassword, user.FieldSsoIdentifier, user.FieldVCardURL:
 			values[i] = new(sql.NullString)
-		case user.FieldCreatedAt:
+		case user.FieldLastLogin, user.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -129,11 +131,11 @@ func (u *User) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				u.Password = value.String
 			}
-		case user.FieldToken:
+		case user.FieldSsoIdentifier:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field token", values[i])
+				return fmt.Errorf("unexpected type %T for field ssoIdentifier", values[i])
 			} else if value.Valid {
-				u.Token = value.String
+				u.SsoIdentifier = value.String
 			}
 		case user.FieldVCardURL:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -156,6 +158,12 @@ func (u *User) assignValues(columns []string, values []any) error {
 				if err := json.Unmarshal(*value, &u.Tags); err != nil {
 					return fmt.Errorf("unmarshal field tags: %w", err)
 				}
+			}
+		case user.FieldLastLogin:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field lastLogin", values[i])
+			} else if value.Valid {
+				u.LastLogin = value.Time
 			}
 		case user.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -221,8 +229,8 @@ func (u *User) String() string {
 	builder.WriteString("password=")
 	builder.WriteString(u.Password)
 	builder.WriteString(", ")
-	builder.WriteString("token=")
-	builder.WriteString(u.Token)
+	builder.WriteString("ssoIdentifier=")
+	builder.WriteString(u.SsoIdentifier)
 	builder.WriteString(", ")
 	builder.WriteString("vCardURL=")
 	builder.WriteString(u.VCardURL)
@@ -232,6 +240,9 @@ func (u *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("tags=")
 	builder.WriteString(fmt.Sprintf("%v", u.Tags))
+	builder.WriteString(", ")
+	builder.WriteString("lastLogin=")
+	builder.WriteString(u.LastLogin.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("createdAt=")
 	builder.WriteString(u.CreatedAt.Format(time.ANSIC))

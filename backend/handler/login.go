@@ -30,18 +30,21 @@ func Login(ctx context.Context, db *ent.Client) fiber.Handler {
 			return HandleInvalidLogin(c)
 		}
 
-		// Create the Claims
-		claims := jwt.MapClaims{
-			"id":    foundUser.ID,
-			"email": foundUser.Email,
-			"exp":   time.Now().Add(time.Hour * 72).Unix(),
-		}
-
 		// Create token
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+			"id":            foundUser.ID,
+			"email":         foundUser.Email,
+			"ssoIdentifier": nil,
+			"exp":           time.Now().Add(time.Hour * 72).Unix(),
+		})
 
 		// Generate encoded token and send it as response.
 		t, err := token.SignedString([]byte(config.GetConfig().WorkadventureSecretKey))
+		if err != nil {
+			return HandleInternalError(c, err)
+		}
+
+		_, err = foundUser.Update().SetLastLogin(time.Now()).Save(ctx)
 		if err != nil {
 			return HandleInternalError(c, err)
 		}

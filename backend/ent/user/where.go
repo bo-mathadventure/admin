@@ -75,14 +75,19 @@ func Password(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldPassword, v))
 }
 
-// Token applies equality check predicate on the "token" field. It's identical to TokenEQ.
-func Token(v string) predicate.User {
-	return predicate.User(sql.FieldEQ(FieldToken, v))
+// SsoIdentifier applies equality check predicate on the "ssoIdentifier" field. It's identical to SsoIdentifierEQ.
+func SsoIdentifier(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldSsoIdentifier, v))
 }
 
 // VCardURL applies equality check predicate on the "vCardURL" field. It's identical to VCardURLEQ.
 func VCardURL(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldVCardURL, v))
+}
+
+// LastLogin applies equality check predicate on the "lastLogin" field. It's identical to LastLoginEQ.
+func LastLogin(v time.Time) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldLastLogin, v))
 }
 
 // CreatedAt applies equality check predicate on the "createdAt" field. It's identical to CreatedAtEQ.
@@ -350,69 +355,79 @@ func PasswordContainsFold(v string) predicate.User {
 	return predicate.User(sql.FieldContainsFold(FieldPassword, v))
 }
 
-// TokenEQ applies the EQ predicate on the "token" field.
-func TokenEQ(v string) predicate.User {
-	return predicate.User(sql.FieldEQ(FieldToken, v))
+// SsoIdentifierEQ applies the EQ predicate on the "ssoIdentifier" field.
+func SsoIdentifierEQ(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldSsoIdentifier, v))
 }
 
-// TokenNEQ applies the NEQ predicate on the "token" field.
-func TokenNEQ(v string) predicate.User {
-	return predicate.User(sql.FieldNEQ(FieldToken, v))
+// SsoIdentifierNEQ applies the NEQ predicate on the "ssoIdentifier" field.
+func SsoIdentifierNEQ(v string) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldSsoIdentifier, v))
 }
 
-// TokenIn applies the In predicate on the "token" field.
-func TokenIn(vs ...string) predicate.User {
-	return predicate.User(sql.FieldIn(FieldToken, vs...))
+// SsoIdentifierIn applies the In predicate on the "ssoIdentifier" field.
+func SsoIdentifierIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldIn(FieldSsoIdentifier, vs...))
 }
 
-// TokenNotIn applies the NotIn predicate on the "token" field.
-func TokenNotIn(vs ...string) predicate.User {
-	return predicate.User(sql.FieldNotIn(FieldToken, vs...))
+// SsoIdentifierNotIn applies the NotIn predicate on the "ssoIdentifier" field.
+func SsoIdentifierNotIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldSsoIdentifier, vs...))
 }
 
-// TokenGT applies the GT predicate on the "token" field.
-func TokenGT(v string) predicate.User {
-	return predicate.User(sql.FieldGT(FieldToken, v))
+// SsoIdentifierGT applies the GT predicate on the "ssoIdentifier" field.
+func SsoIdentifierGT(v string) predicate.User {
+	return predicate.User(sql.FieldGT(FieldSsoIdentifier, v))
 }
 
-// TokenGTE applies the GTE predicate on the "token" field.
-func TokenGTE(v string) predicate.User {
-	return predicate.User(sql.FieldGTE(FieldToken, v))
+// SsoIdentifierGTE applies the GTE predicate on the "ssoIdentifier" field.
+func SsoIdentifierGTE(v string) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldSsoIdentifier, v))
 }
 
-// TokenLT applies the LT predicate on the "token" field.
-func TokenLT(v string) predicate.User {
-	return predicate.User(sql.FieldLT(FieldToken, v))
+// SsoIdentifierLT applies the LT predicate on the "ssoIdentifier" field.
+func SsoIdentifierLT(v string) predicate.User {
+	return predicate.User(sql.FieldLT(FieldSsoIdentifier, v))
 }
 
-// TokenLTE applies the LTE predicate on the "token" field.
-func TokenLTE(v string) predicate.User {
-	return predicate.User(sql.FieldLTE(FieldToken, v))
+// SsoIdentifierLTE applies the LTE predicate on the "ssoIdentifier" field.
+func SsoIdentifierLTE(v string) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldSsoIdentifier, v))
 }
 
-// TokenContains applies the Contains predicate on the "token" field.
-func TokenContains(v string) predicate.User {
-	return predicate.User(sql.FieldContains(FieldToken, v))
+// SsoIdentifierContains applies the Contains predicate on the "ssoIdentifier" field.
+func SsoIdentifierContains(v string) predicate.User {
+	return predicate.User(sql.FieldContains(FieldSsoIdentifier, v))
 }
 
-// TokenHasPrefix applies the HasPrefix predicate on the "token" field.
-func TokenHasPrefix(v string) predicate.User {
-	return predicate.User(sql.FieldHasPrefix(FieldToken, v))
+// SsoIdentifierHasPrefix applies the HasPrefix predicate on the "ssoIdentifier" field.
+func SsoIdentifierHasPrefix(v string) predicate.User {
+	return predicate.User(sql.FieldHasPrefix(FieldSsoIdentifier, v))
 }
 
-// TokenHasSuffix applies the HasSuffix predicate on the "token" field.
-func TokenHasSuffix(v string) predicate.User {
-	return predicate.User(sql.FieldHasSuffix(FieldToken, v))
+// SsoIdentifierHasSuffix applies the HasSuffix predicate on the "ssoIdentifier" field.
+func SsoIdentifierHasSuffix(v string) predicate.User {
+	return predicate.User(sql.FieldHasSuffix(FieldSsoIdentifier, v))
 }
 
-// TokenEqualFold applies the EqualFold predicate on the "token" field.
-func TokenEqualFold(v string) predicate.User {
-	return predicate.User(sql.FieldEqualFold(FieldToken, v))
+// SsoIdentifierIsNil applies the IsNil predicate on the "ssoIdentifier" field.
+func SsoIdentifierIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldSsoIdentifier))
 }
 
-// TokenContainsFold applies the ContainsFold predicate on the "token" field.
-func TokenContainsFold(v string) predicate.User {
-	return predicate.User(sql.FieldContainsFold(FieldToken, v))
+// SsoIdentifierNotNil applies the NotNil predicate on the "ssoIdentifier" field.
+func SsoIdentifierNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldSsoIdentifier))
+}
+
+// SsoIdentifierEqualFold applies the EqualFold predicate on the "ssoIdentifier" field.
+func SsoIdentifierEqualFold(v string) predicate.User {
+	return predicate.User(sql.FieldEqualFold(FieldSsoIdentifier, v))
+}
+
+// SsoIdentifierContainsFold applies the ContainsFold predicate on the "ssoIdentifier" field.
+func SsoIdentifierContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsFold(FieldSsoIdentifier, v))
 }
 
 // VCardURLEQ applies the EQ predicate on the "vCardURL" field.
@@ -488,6 +503,56 @@ func VCardURLEqualFold(v string) predicate.User {
 // VCardURLContainsFold applies the ContainsFold predicate on the "vCardURL" field.
 func VCardURLContainsFold(v string) predicate.User {
 	return predicate.User(sql.FieldContainsFold(FieldVCardURL, v))
+}
+
+// LastLoginEQ applies the EQ predicate on the "lastLogin" field.
+func LastLoginEQ(v time.Time) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldLastLogin, v))
+}
+
+// LastLoginNEQ applies the NEQ predicate on the "lastLogin" field.
+func LastLoginNEQ(v time.Time) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldLastLogin, v))
+}
+
+// LastLoginIn applies the In predicate on the "lastLogin" field.
+func LastLoginIn(vs ...time.Time) predicate.User {
+	return predicate.User(sql.FieldIn(FieldLastLogin, vs...))
+}
+
+// LastLoginNotIn applies the NotIn predicate on the "lastLogin" field.
+func LastLoginNotIn(vs ...time.Time) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldLastLogin, vs...))
+}
+
+// LastLoginGT applies the GT predicate on the "lastLogin" field.
+func LastLoginGT(v time.Time) predicate.User {
+	return predicate.User(sql.FieldGT(FieldLastLogin, v))
+}
+
+// LastLoginGTE applies the GTE predicate on the "lastLogin" field.
+func LastLoginGTE(v time.Time) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldLastLogin, v))
+}
+
+// LastLoginLT applies the LT predicate on the "lastLogin" field.
+func LastLoginLT(v time.Time) predicate.User {
+	return predicate.User(sql.FieldLT(FieldLastLogin, v))
+}
+
+// LastLoginLTE applies the LTE predicate on the "lastLogin" field.
+func LastLoginLTE(v time.Time) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldLastLogin, v))
+}
+
+// LastLoginIsNil applies the IsNil predicate on the "lastLogin" field.
+func LastLoginIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldLastLogin))
+}
+
+// LastLoginNotNil applies the NotNil predicate on the "lastLogin" field.
+func LastLoginNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldLastLogin))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "createdAt" field.

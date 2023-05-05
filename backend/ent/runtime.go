@@ -66,6 +66,10 @@ func init() {
 	textures.DefaultCreatedAt = texturesDescCreatedAt.Default.(func() time.Time)
 	userFields := schema.User{}.Fields()
 	_ = userFields
+	// userDescUUID is the schema descriptor for uuid field.
+	userDescUUID := userFields[0].Descriptor()
+	// user.DefaultUUID holds the default value on creation for the uuid field.
+	user.DefaultUUID = userDescUUID.Default.(func() string)
 	// userDescPermissions is the schema descriptor for permissions field.
 	userDescPermissions := userFields[6].Descriptor()
 	// user.DefaultPermissions holds the default value on creation for the permissions field.
@@ -75,7 +79,7 @@ func init() {
 	// user.DefaultTags holds the default value on creation for the tags field.
 	user.DefaultTags = userDescTags.Default.([]string)
 	// userDescCreatedAt is the schema descriptor for createdAt field.
-	userDescCreatedAt := userFields[8].Descriptor()
+	userDescCreatedAt := userFields[9].Descriptor()
 	// user.DefaultCreatedAt holds the default value on creation for the createdAt field.
 	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
 }

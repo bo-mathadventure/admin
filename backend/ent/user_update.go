@@ -36,6 +36,14 @@ func (uu *UserUpdate) SetUUID(s string) *UserUpdate {
 	return uu
 }
 
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableUUID(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetUUID(*s)
+	}
+	return uu
+}
+
 // SetEmail sets the "email" field.
 func (uu *UserUpdate) SetEmail(s string) *UserUpdate {
 	uu.mutation.SetEmail(s)
@@ -54,9 +62,23 @@ func (uu *UserUpdate) SetPassword(s string) *UserUpdate {
 	return uu
 }
 
-// SetToken sets the "token" field.
-func (uu *UserUpdate) SetToken(s string) *UserUpdate {
-	uu.mutation.SetToken(s)
+// SetSsoIdentifier sets the "ssoIdentifier" field.
+func (uu *UserUpdate) SetSsoIdentifier(s string) *UserUpdate {
+	uu.mutation.SetSsoIdentifier(s)
+	return uu
+}
+
+// SetNillableSsoIdentifier sets the "ssoIdentifier" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableSsoIdentifier(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetSsoIdentifier(*s)
+	}
+	return uu
+}
+
+// ClearSsoIdentifier clears the value of the "ssoIdentifier" field.
+func (uu *UserUpdate) ClearSsoIdentifier() *UserUpdate {
+	uu.mutation.ClearSsoIdentifier()
 	return uu
 }
 
@@ -101,6 +123,26 @@ func (uu *UserUpdate) SetTags(s []string) *UserUpdate {
 // AppendTags appends s to the "tags" field.
 func (uu *UserUpdate) AppendTags(s []string) *UserUpdate {
 	uu.mutation.AppendTags(s)
+	return uu
+}
+
+// SetLastLogin sets the "lastLogin" field.
+func (uu *UserUpdate) SetLastLogin(t time.Time) *UserUpdate {
+	uu.mutation.SetLastLogin(t)
+	return uu
+}
+
+// SetNillableLastLogin sets the "lastLogin" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableLastLogin(t *time.Time) *UserUpdate {
+	if t != nil {
+		uu.SetLastLogin(*t)
+	}
+	return uu
+}
+
+// ClearLastLogin clears the value of the "lastLogin" field.
+func (uu *UserUpdate) ClearLastLogin() *UserUpdate {
+	uu.mutation.ClearLastLogin()
 	return uu
 }
 
@@ -243,8 +285,11 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := uu.mutation.Password(); ok {
 		_spec.SetField(user.FieldPassword, field.TypeString, value)
 	}
-	if value, ok := uu.mutation.Token(); ok {
-		_spec.SetField(user.FieldToken, field.TypeString, value)
+	if value, ok := uu.mutation.SsoIdentifier(); ok {
+		_spec.SetField(user.FieldSsoIdentifier, field.TypeString, value)
+	}
+	if uu.mutation.SsoIdentifierCleared() {
+		_spec.ClearField(user.FieldSsoIdentifier, field.TypeString)
 	}
 	if value, ok := uu.mutation.VCardURL(); ok {
 		_spec.SetField(user.FieldVCardURL, field.TypeString, value)
@@ -267,6 +312,12 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.AddModifier(func(u *sql.UpdateBuilder) {
 			sqljson.Append(u, user.FieldTags, value)
 		})
+	}
+	if value, ok := uu.mutation.LastLogin(); ok {
+		_spec.SetField(user.FieldLastLogin, field.TypeTime, value)
+	}
+	if uu.mutation.LastLoginCleared() {
+		_spec.ClearField(user.FieldLastLogin, field.TypeTime)
 	}
 	if value, ok := uu.mutation.CreatedAt(); ok {
 		_spec.SetField(user.FieldCreatedAt, field.TypeTime, value)
@@ -387,6 +438,14 @@ func (uuo *UserUpdateOne) SetUUID(s string) *UserUpdateOne {
 	return uuo
 }
 
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableUUID(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetUUID(*s)
+	}
+	return uuo
+}
+
 // SetEmail sets the "email" field.
 func (uuo *UserUpdateOne) SetEmail(s string) *UserUpdateOne {
 	uuo.mutation.SetEmail(s)
@@ -405,9 +464,23 @@ func (uuo *UserUpdateOne) SetPassword(s string) *UserUpdateOne {
 	return uuo
 }
 
-// SetToken sets the "token" field.
-func (uuo *UserUpdateOne) SetToken(s string) *UserUpdateOne {
-	uuo.mutation.SetToken(s)
+// SetSsoIdentifier sets the "ssoIdentifier" field.
+func (uuo *UserUpdateOne) SetSsoIdentifier(s string) *UserUpdateOne {
+	uuo.mutation.SetSsoIdentifier(s)
+	return uuo
+}
+
+// SetNillableSsoIdentifier sets the "ssoIdentifier" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableSsoIdentifier(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetSsoIdentifier(*s)
+	}
+	return uuo
+}
+
+// ClearSsoIdentifier clears the value of the "ssoIdentifier" field.
+func (uuo *UserUpdateOne) ClearSsoIdentifier() *UserUpdateOne {
+	uuo.mutation.ClearSsoIdentifier()
 	return uuo
 }
 
@@ -452,6 +525,26 @@ func (uuo *UserUpdateOne) SetTags(s []string) *UserUpdateOne {
 // AppendTags appends s to the "tags" field.
 func (uuo *UserUpdateOne) AppendTags(s []string) *UserUpdateOne {
 	uuo.mutation.AppendTags(s)
+	return uuo
+}
+
+// SetLastLogin sets the "lastLogin" field.
+func (uuo *UserUpdateOne) SetLastLogin(t time.Time) *UserUpdateOne {
+	uuo.mutation.SetLastLogin(t)
+	return uuo
+}
+
+// SetNillableLastLogin sets the "lastLogin" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableLastLogin(t *time.Time) *UserUpdateOne {
+	if t != nil {
+		uuo.SetLastLogin(*t)
+	}
+	return uuo
+}
+
+// ClearLastLogin clears the value of the "lastLogin" field.
+func (uuo *UserUpdateOne) ClearLastLogin() *UserUpdateOne {
+	uuo.mutation.ClearLastLogin()
 	return uuo
 }
 
@@ -624,8 +717,11 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	if value, ok := uuo.mutation.Password(); ok {
 		_spec.SetField(user.FieldPassword, field.TypeString, value)
 	}
-	if value, ok := uuo.mutation.Token(); ok {
-		_spec.SetField(user.FieldToken, field.TypeString, value)
+	if value, ok := uuo.mutation.SsoIdentifier(); ok {
+		_spec.SetField(user.FieldSsoIdentifier, field.TypeString, value)
+	}
+	if uuo.mutation.SsoIdentifierCleared() {
+		_spec.ClearField(user.FieldSsoIdentifier, field.TypeString)
 	}
 	if value, ok := uuo.mutation.VCardURL(); ok {
 		_spec.SetField(user.FieldVCardURL, field.TypeString, value)
@@ -648,6 +744,12 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 		_spec.AddModifier(func(u *sql.UpdateBuilder) {
 			sqljson.Append(u, user.FieldTags, value)
 		})
+	}
+	if value, ok := uuo.mutation.LastLogin(); ok {
+		_spec.SetField(user.FieldLastLogin, field.TypeTime, value)
+	}
+	if uuo.mutation.LastLoginCleared() {
+		_spec.ClearField(user.FieldLastLogin, field.TypeTime)
 	}
 	if value, ok := uuo.mutation.CreatedAt(); ok {
 		_spec.SetField(user.FieldCreatedAt, field.TypeTime, value)

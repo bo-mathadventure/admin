@@ -27,6 +27,14 @@ func (uc *UserCreate) SetUUID(s string) *UserCreate {
 	return uc
 }
 
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (uc *UserCreate) SetNillableUUID(s *string) *UserCreate {
+	if s != nil {
+		uc.SetUUID(*s)
+	}
+	return uc
+}
+
 // SetEmail sets the "email" field.
 func (uc *UserCreate) SetEmail(s string) *UserCreate {
 	uc.mutation.SetEmail(s)
@@ -45,9 +53,17 @@ func (uc *UserCreate) SetPassword(s string) *UserCreate {
 	return uc
 }
 
-// SetToken sets the "token" field.
-func (uc *UserCreate) SetToken(s string) *UserCreate {
-	uc.mutation.SetToken(s)
+// SetSsoIdentifier sets the "ssoIdentifier" field.
+func (uc *UserCreate) SetSsoIdentifier(s string) *UserCreate {
+	uc.mutation.SetSsoIdentifier(s)
+	return uc
+}
+
+// SetNillableSsoIdentifier sets the "ssoIdentifier" field if the given value is not nil.
+func (uc *UserCreate) SetNillableSsoIdentifier(s *string) *UserCreate {
+	if s != nil {
+		uc.SetSsoIdentifier(*s)
+	}
 	return uc
 }
 
@@ -74,6 +90,20 @@ func (uc *UserCreate) SetPermissions(s []string) *UserCreate {
 // SetTags sets the "tags" field.
 func (uc *UserCreate) SetTags(s []string) *UserCreate {
 	uc.mutation.SetTags(s)
+	return uc
+}
+
+// SetLastLogin sets the "lastLogin" field.
+func (uc *UserCreate) SetLastLogin(t time.Time) *UserCreate {
+	uc.mutation.SetLastLogin(t)
+	return uc
+}
+
+// SetNillableLastLogin sets the "lastLogin" field if the given value is not nil.
+func (uc *UserCreate) SetNillableLastLogin(t *time.Time) *UserCreate {
+	if t != nil {
+		uc.SetLastLogin(*t)
+	}
 	return uc
 }
 
@@ -156,6 +186,10 @@ func (uc *UserCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (uc *UserCreate) defaults() {
+	if _, ok := uc.mutation.UUID(); !ok {
+		v := user.DefaultUUID()
+		uc.mutation.SetUUID(v)
+	}
 	if _, ok := uc.mutation.Permissions(); !ok {
 		v := user.DefaultPermissions
 		uc.mutation.SetPermissions(v)
@@ -183,9 +217,6 @@ func (uc *UserCreate) check() error {
 	}
 	if _, ok := uc.mutation.Password(); !ok {
 		return &ValidationError{Name: "password", err: errors.New(`ent: missing required field "User.password"`)}
-	}
-	if _, ok := uc.mutation.Token(); !ok {
-		return &ValidationError{Name: "token", err: errors.New(`ent: missing required field "User.token"`)}
 	}
 	if _, ok := uc.mutation.Permissions(); !ok {
 		return &ValidationError{Name: "permissions", err: errors.New(`ent: missing required field "User.permissions"`)}
@@ -238,9 +269,9 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldPassword, field.TypeString, value)
 		_node.Password = value
 	}
-	if value, ok := uc.mutation.Token(); ok {
-		_spec.SetField(user.FieldToken, field.TypeString, value)
-		_node.Token = value
+	if value, ok := uc.mutation.SsoIdentifier(); ok {
+		_spec.SetField(user.FieldSsoIdentifier, field.TypeString, value)
+		_node.SsoIdentifier = value
 	}
 	if value, ok := uc.mutation.VCardURL(); ok {
 		_spec.SetField(user.FieldVCardURL, field.TypeString, value)
@@ -253,6 +284,10 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.Tags(); ok {
 		_spec.SetField(user.FieldTags, field.TypeJSON, value)
 		_node.Tags = value
+	}
+	if value, ok := uc.mutation.LastLogin(); ok {
+		_spec.SetField(user.FieldLastLogin, field.TypeTime, value)
+		_node.LastLogin = value
 	}
 	if value, ok := uc.mutation.CreatedAt(); ok {
 		_spec.SetField(user.FieldCreatedAt, field.TypeTime, value)

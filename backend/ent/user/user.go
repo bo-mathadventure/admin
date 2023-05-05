@@ -22,14 +22,16 @@ const (
 	FieldUsername = "username"
 	// FieldPassword holds the string denoting the password field in the database.
 	FieldPassword = "password"
-	// FieldToken holds the string denoting the token field in the database.
-	FieldToken = "token"
+	// FieldSsoIdentifier holds the string denoting the ssoidentifier field in the database.
+	FieldSsoIdentifier = "sso_identifier"
 	// FieldVCardURL holds the string denoting the vcardurl field in the database.
 	FieldVCardURL = "v_card_url"
 	// FieldPermissions holds the string denoting the permissions field in the database.
 	FieldPermissions = "permissions"
 	// FieldTags holds the string denoting the tags field in the database.
 	FieldTags = "tags"
+	// FieldLastLogin holds the string denoting the lastlogin field in the database.
+	FieldLastLogin = "last_login"
 	// FieldCreatedAt holds the string denoting the createdat field in the database.
 	FieldCreatedAt = "created_at"
 	// EdgeReported holds the string denoting the reported edge name in mutations.
@@ -61,10 +63,11 @@ var Columns = []string{
 	FieldEmail,
 	FieldUsername,
 	FieldPassword,
-	FieldToken,
+	FieldSsoIdentifier,
 	FieldVCardURL,
 	FieldPermissions,
 	FieldTags,
+	FieldLastLogin,
 	FieldCreatedAt,
 }
 
@@ -79,6 +82,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultUUID holds the default value on creation for the "uuid" field.
+	DefaultUUID func() string
 	// DefaultPermissions holds the default value on creation for the "permissions" field.
 	DefaultPermissions []string
 	// DefaultTags holds the default value on creation for the "tags" field.
@@ -115,14 +120,19 @@ func ByPassword(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPassword, opts...).ToFunc()
 }
 
-// ByToken orders the results by the token field.
-func ByToken(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldToken, opts...).ToFunc()
+// BySsoIdentifier orders the results by the ssoIdentifier field.
+func BySsoIdentifier(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSsoIdentifier, opts...).ToFunc()
 }
 
 // ByVCardURL orders the results by the vCardURL field.
 func ByVCardURL(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldVCardURL, opts...).ToFunc()
+}
+
+// ByLastLogin orders the results by the lastLogin field.
+func ByLastLogin(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLastLogin, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the createdAt field.

@@ -59,6 +59,7 @@ func main() {
 	authRoute := app.Group("/auth")
 	authRoute.Post("/login", handler.Login(context.Background(), client))
 	authRoute.Post("/register", handler.Register(context.Background(), client))
+	handler.NewSAMLHandler(authRoute.Group("/saml"), context.Background(), client)
 
 	apiv1 := app.Group("/system", middleware.JWTProtected())
 	handler.NewUserHandler(apiv1.Group("/user"), context.Background(), client)

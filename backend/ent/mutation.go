@@ -3189,12 +3189,13 @@ type UserMutation struct {
 	email             *string
 	username          *string
 	password          *string
-	token             *string
+	ssoIdentifier     *string
 	vCardURL          *string
 	permissions       *[]string
 	appendpermissions []string
 	tags              *[]string
 	appendtags        []string
+	lastLogin         *time.Time
 	createdAt         *time.Time
 	clearedFields     map[string]struct{}
 	reported          map[int]struct{}
@@ -3450,40 +3451,53 @@ func (m *UserMutation) ResetPassword() {
 	m.password = nil
 }
 
-// SetToken sets the "token" field.
-func (m *UserMutation) SetToken(s string) {
-	m.token = &s
+// SetSsoIdentifier sets the "ssoIdentifier" field.
+func (m *UserMutation) SetSsoIdentifier(s string) {
+	m.ssoIdentifier = &s
 }
 
-// Token returns the value of the "token" field in the mutation.
-func (m *UserMutation) Token() (r string, exists bool) {
-	v := m.token
+// SsoIdentifier returns the value of the "ssoIdentifier" field in the mutation.
+func (m *UserMutation) SsoIdentifier() (r string, exists bool) {
+	v := m.ssoIdentifier
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldToken returns the old "token" field's value of the User entity.
+// OldSsoIdentifier returns the old "ssoIdentifier" field's value of the User entity.
 // If the User object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldToken(ctx context.Context) (v string, err error) {
+func (m *UserMutation) OldSsoIdentifier(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldToken is only allowed on UpdateOne operations")
+		return v, errors.New("OldSsoIdentifier is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldToken requires an ID field in the mutation")
+		return v, errors.New("OldSsoIdentifier requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldToken: %w", err)
+		return v, fmt.Errorf("querying old value for OldSsoIdentifier: %w", err)
 	}
-	return oldValue.Token, nil
+	return oldValue.SsoIdentifier, nil
 }
 
-// ResetToken resets all changes to the "token" field.
-func (m *UserMutation) ResetToken() {
-	m.token = nil
+// ClearSsoIdentifier clears the value of the "ssoIdentifier" field.
+func (m *UserMutation) ClearSsoIdentifier() {
+	m.ssoIdentifier = nil
+	m.clearedFields[user.FieldSsoIdentifier] = struct{}{}
+}
+
+// SsoIdentifierCleared returns if the "ssoIdentifier" field was cleared in this mutation.
+func (m *UserMutation) SsoIdentifierCleared() bool {
+	_, ok := m.clearedFields[user.FieldSsoIdentifier]
+	return ok
+}
+
+// ResetSsoIdentifier resets all changes to the "ssoIdentifier" field.
+func (m *UserMutation) ResetSsoIdentifier() {
+	m.ssoIdentifier = nil
+	delete(m.clearedFields, user.FieldSsoIdentifier)
 }
 
 // SetVCardURL sets the "vCardURL" field.
@@ -3635,6 +3649,55 @@ func (m *UserMutation) AppendedTags() ([]string, bool) {
 func (m *UserMutation) ResetTags() {
 	m.tags = nil
 	m.appendtags = nil
+}
+
+// SetLastLogin sets the "lastLogin" field.
+func (m *UserMutation) SetLastLogin(t time.Time) {
+	m.lastLogin = &t
+}
+
+// LastLogin returns the value of the "lastLogin" field in the mutation.
+func (m *UserMutation) LastLogin() (r time.Time, exists bool) {
+	v := m.lastLogin
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastLogin returns the old "lastLogin" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldLastLogin(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastLogin is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastLogin requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastLogin: %w", err)
+	}
+	return oldValue.LastLogin, nil
+}
+
+// ClearLastLogin clears the value of the "lastLogin" field.
+func (m *UserMutation) ClearLastLogin() {
+	m.lastLogin = nil
+	m.clearedFields[user.FieldLastLogin] = struct{}{}
+}
+
+// LastLoginCleared returns if the "lastLogin" field was cleared in this mutation.
+func (m *UserMutation) LastLoginCleared() bool {
+	_, ok := m.clearedFields[user.FieldLastLogin]
+	return ok
+}
+
+// ResetLastLogin resets all changes to the "lastLogin" field.
+func (m *UserMutation) ResetLastLogin() {
+	m.lastLogin = nil
+	delete(m.clearedFields, user.FieldLastLogin)
 }
 
 // SetCreatedAt sets the "createdAt" field.
@@ -3815,7 +3878,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 10)
 	if m.uuid != nil {
 		fields = append(fields, user.FieldUUID)
 	}
@@ -3828,8 +3891,8 @@ func (m *UserMutation) Fields() []string {
 	if m.password != nil {
 		fields = append(fields, user.FieldPassword)
 	}
-	if m.token != nil {
-		fields = append(fields, user.FieldToken)
+	if m.ssoIdentifier != nil {
+		fields = append(fields, user.FieldSsoIdentifier)
 	}
 	if m.vCardURL != nil {
 		fields = append(fields, user.FieldVCardURL)
@@ -3839,6 +3902,9 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.tags != nil {
 		fields = append(fields, user.FieldTags)
+	}
+	if m.lastLogin != nil {
+		fields = append(fields, user.FieldLastLogin)
 	}
 	if m.createdAt != nil {
 		fields = append(fields, user.FieldCreatedAt)
@@ -3859,14 +3925,16 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.Username()
 	case user.FieldPassword:
 		return m.Password()
-	case user.FieldToken:
-		return m.Token()
+	case user.FieldSsoIdentifier:
+		return m.SsoIdentifier()
 	case user.FieldVCardURL:
 		return m.VCardURL()
 	case user.FieldPermissions:
 		return m.Permissions()
 	case user.FieldTags:
 		return m.Tags()
+	case user.FieldLastLogin:
+		return m.LastLogin()
 	case user.FieldCreatedAt:
 		return m.CreatedAt()
 	}
@@ -3886,14 +3954,16 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldUsername(ctx)
 	case user.FieldPassword:
 		return m.OldPassword(ctx)
-	case user.FieldToken:
-		return m.OldToken(ctx)
+	case user.FieldSsoIdentifier:
+		return m.OldSsoIdentifier(ctx)
 	case user.FieldVCardURL:
 		return m.OldVCardURL(ctx)
 	case user.FieldPermissions:
 		return m.OldPermissions(ctx)
 	case user.FieldTags:
 		return m.OldTags(ctx)
+	case user.FieldLastLogin:
+		return m.OldLastLogin(ctx)
 	case user.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	}
@@ -3933,12 +4003,12 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetPassword(v)
 		return nil
-	case user.FieldToken:
+	case user.FieldSsoIdentifier:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetToken(v)
+		m.SetSsoIdentifier(v)
 		return nil
 	case user.FieldVCardURL:
 		v, ok := value.(string)
@@ -3960,6 +4030,13 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetTags(v)
+		return nil
+	case user.FieldLastLogin:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastLogin(v)
 		return nil
 	case user.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -3998,8 +4075,14 @@ func (m *UserMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *UserMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(user.FieldSsoIdentifier) {
+		fields = append(fields, user.FieldSsoIdentifier)
+	}
 	if m.FieldCleared(user.FieldVCardURL) {
 		fields = append(fields, user.FieldVCardURL)
+	}
+	if m.FieldCleared(user.FieldLastLogin) {
+		fields = append(fields, user.FieldLastLogin)
 	}
 	return fields
 }
@@ -4015,8 +4098,14 @@ func (m *UserMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *UserMutation) ClearField(name string) error {
 	switch name {
+	case user.FieldSsoIdentifier:
+		m.ClearSsoIdentifier()
+		return nil
 	case user.FieldVCardURL:
 		m.ClearVCardURL()
+		return nil
+	case user.FieldLastLogin:
+		m.ClearLastLogin()
 		return nil
 	}
 	return fmt.Errorf("unknown User nullable field %s", name)
@@ -4038,8 +4127,8 @@ func (m *UserMutation) ResetField(name string) error {
 	case user.FieldPassword:
 		m.ResetPassword()
 		return nil
-	case user.FieldToken:
-		m.ResetToken()
+	case user.FieldSsoIdentifier:
+		m.ResetSsoIdentifier()
 		return nil
 	case user.FieldVCardURL:
 		m.ResetVCardURL()
@@ -4049,6 +4138,9 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldTags:
 		m.ResetTags()
+		return nil
+	case user.FieldLastLogin:
+		m.ResetLastLogin()
 		return nil
 	case user.FieldCreatedAt:
 		m.ResetCreatedAt()

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"github.com/bo-mathadventure/admin/config"
 	"github.com/bo-mathadventure/admin/ent"
 	"github.com/bo-mathadventure/admin/ent/user"
 	"github.com/bo-mathadventure/admin/utils"
@@ -20,6 +21,10 @@ type RegisterRequest struct {
 
 func Register(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		if !config.GetConfig().EnableRegistration {
+			return HandleError(c, "ERR_REGISTRATION_DISABLED")
+		}
+
 		req := new(RegisterRequest)
 		if err := c.BodyParser(req); err != nil {
 			return HandleBodyParseError(c, err)
