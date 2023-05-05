@@ -12,6 +12,7 @@ import (
 
 type RegisterRequest struct {
 	EMail                    string `json:"email"`
+	Username                 string `json:"username"`
 	Language                 string `json:"language"`
 	ClearTextPassword        string `json:"password"`
 	ClearTextPasswordConfirm string `json:"confirmPassword"`
@@ -24,7 +25,7 @@ func Register(ctx context.Context, db *ent.Client) fiber.Handler {
 			return HandleBodyParseError(c, err)
 		}
 
-		if req.EMail == "" || req.ClearTextPassword == "" {
+		if req.EMail == "" || req.ClearTextPassword == "" || req.Username == "" {
 			return HandleError(c, "ERR_INVALID_REQUEST")
 		}
 
@@ -47,7 +48,7 @@ func Register(ctx context.Context, db *ent.Client) fiber.Handler {
 			return HandleError(c, "ERR_USER_EXISTS")
 		}
 
-		newUser, err := db.User.Create().SetEmail(email.Normalize(req.EMail)).SetPassword(hashedPassword).Save(ctx)
+		newUser, err := db.User.Create().SetEmail(email.Normalize(req.EMail)).SetPassword(hashedPassword).SetUsername(req.Username).Save(ctx)
 		if err != nil || newUser == nil {
 			return HandleInternalError(c, err)
 		}
