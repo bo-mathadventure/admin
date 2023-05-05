@@ -34,6 +34,7 @@ func getMe(ctx context.Context, db *ent.Client) fiber.Handler {
 			"email":       thisUser.Email,
 			"permissions": thisUser.Permissions,
 			"createdAt":   thisUser.CreatedAt,
+			"config":      config.GetConfig(),
 		})
 	}
 }

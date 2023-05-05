@@ -10,29 +10,29 @@ import (
 var cfg Config
 
 type Config struct {
-	Port        int    `env:"PORT" envDefault:"4664"`
-	AppName     string `env:"APP_NAME" envDefault:"WorkAdventure Back Office"`
-	FrontendURL string `env:"FRONTEND_URL" envDefault:"http://localhost"`
-	BackendURL  string `env:"BACKEND_URL" envDefault:"http://localhost"`
+	Port        int    `env:"PORT" envDefault:"4664" json:"-"`
+	AppName     string `env:"APP_NAME" envDefault:"WorkAdventure Back Office" json:"appName"`
+	FrontendURL string `env:"FRONTEND_URL" envDefault:"http://localhost" json:"-"`
+	BackendURL  string `env:"BACKEND_URL" envDefault:"http://localhost" json:"-"`
 
-	DatabaseType     string `env:"DB_TYPE" envDefault:"mysql"`
-	DatabaseHost     string `env:"DB_HOST"`
-	DatabasePort     int    `env:"DB_PORT" envDefault:"3306"`
-	DatabaseName     string `env:"DB_NAME"`
-	DatabaseUsername string `env:"DB_USER"`
-	DatabasePassword string `env:"DB_PASSWORD"`
+	DatabaseType     string `env:"DB_TYPE" envDefault:"mysql" json:"-"`
+	DatabaseHost     string `env:"DB_HOST" json:"-"`
+	DatabasePort     int    `env:"DB_PORT" envDefault:"3306" json:"-"`
+	DatabaseName     string `env:"DB_NAME" json:"-"`
+	DatabaseUsername string `env:"DB_USER" json:"-"`
+	DatabasePassword string `env:"DB_PASSWORD" json:"-"`
 
-	EnableRegistration bool `env:"ENABLE_REGISTRATION" envDefault:"true"`
+	EnableRegistration bool `env:"ENABLE_REGISTRATION" envDefault:"true" json:"enableRegistration"`
 
-	WorkadventureURL            string `env:"WORKADVENTURE_URL"`
-	WorkadventureURLProtocol    string `env:"WORKADVENTURE_URL_PROTOCOL" envDefault:"https"`
-	WorkadventureAdminAPISecret string `env:"WORKADVENTURE_ADMIN_API_SECRET"`
-	WorkadventureStartRoomURL   string `env:"WORKADVENTURE_START_ROOM_URL"`
-	WorkadventureSecretKey      string `env:"WORKADVENTURE_SECRET_KEY"`
+	WorkadventureURL            string `env:"WORKADVENTURE_URL" json:"workadventureURL"`
+	WorkadventureURLProtocol    string `env:"WORKADVENTURE_URL_PROTOCOL" envDefault:"https" json:"workadventureURLProtocol"`
+	WorkadventureAdminAPISecret string `env:"WORKADVENTURE_ADMIN_API_SECRET" json:"-"`
+	WorkadventureStartRoomURL   string `env:"WORKADVENTURE_START_ROOM_URL" json:"-"`
+	WorkadventureSecretKey      string `env:"WORKADVENTURE_SECRET_KEY" json:"-"`
 
-	MapStorageURL      string `env:"MAP_STORAGE_URL"`
-	MapStorageUser     string `env:"MAP_STORAGE_USER"`
-	MapStoragePassword string `env:"MAP_STORAGE_PASSWORD"`
+	MapStorageURL      string `env:"MAP_STORAGE_URL" json:"mapStorageURL"`
+	MapStorageUser     string `env:"MAP_STORAGE_USER" json:"-"`
+	MapStoragePassword string `env:"MAP_STORAGE_PASSWORD" json:"-"`
 }
 
 func Init() error {
