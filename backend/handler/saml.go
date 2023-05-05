@@ -20,7 +20,8 @@ import (
 )
 
 func NewSAMLHandler(app fiber.Router, ctx context.Context, db *ent.Client) {
-	t := reflect.ValueOf(config.GetConfig()).Elem()
+	cfg := config.GetConfig()
+	t := reflect.ValueOf(&cfg).Elem()
 	var missingValues []string
 	for i := 0; i < t.NumField(); i++ {
 		valueField := t.Field(i)
@@ -31,7 +32,7 @@ func NewSAMLHandler(app fiber.Router, ctx context.Context, db *ent.Client) {
 			continue
 		}
 		if valueField.IsZero() {
-			missingValues = append(missingValues, typeField.Name)
+			missingValues = append(missingValues, tag.Get("env"))
 		}
 	}
 
