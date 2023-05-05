@@ -22,7 +22,7 @@ type Config struct {
 	DatabaseUsername string `env:"DB_USER"`
 	DatabasePassword string `env:"DB_PASSWORD"`
 
-	JWTSecret string `env:"JWT_SECRET"`
+	EnableRegistration bool `env:"ENABLE_REGISTRATION" envDefault:"true"`
 
 	WorkadventureURL            string `env:"WORKADVENTURE_URL"`
 	WorkadventureURLProtocol    string `env:"WORKADVENTURE_URL_PROTOCOL" envDefault:"https"`
