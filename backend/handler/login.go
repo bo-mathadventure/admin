@@ -41,7 +41,7 @@ func Login(ctx context.Context, db *ent.Client) fiber.Handler {
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 		// Generate encoded token and send it as response.
-		t, err := token.SignedString([]byte(config.GetConfig().JWTSecret))
+		t, err := token.SignedString([]byte(config.GetConfig().WorkadventureSecretKey))
 		if err != nil {
 			return HandleInternalError(c, err)
 		}
