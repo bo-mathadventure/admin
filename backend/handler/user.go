@@ -2,7 +2,8 @@ package handler
 
 import (
 	"context"
-	"github.com/bo-mathadventure/admin/encoder"
+	"fmt"
+	"github.com/bo-mathadventure/admin/config"
 	"github.com/bo-mathadventure/admin/ent"
 	"github.com/bo-mathadventure/admin/ent/user"
 	"github.com/bo-mathadventure/admin/utils"
@@ -14,6 +15,7 @@ import (
 func NewUserHandler(app fiber.Router, ctx context.Context, db *ent.Client) {
 	app.Get("/", getMe(ctx, db))
 	app.Put("/", updateUser(ctx, db))
+	app.Get("/token", getTokenLogin(ctx, db))
 }
 
 func getMe(ctx context.Context, db *ent.Client) fiber.Handler {
@@ -27,8 +29,12 @@ func getMe(ctx context.Context, db *ent.Client) fiber.Handler {
 			return HandleInternalError(c, err)
 		}
 
-		result := encoder.ParseUser(thisUser)
-		return c.JSON(&result)
+		return c.JSON(fiber.Map{
+			"uuid":        thisUser.UUID,
+			"email":       thisUser.Email,
+			"permissions": thisUser.Permissions,
+			"createdAt":   thisUser.CreatedAt,
+		})
 	}
 }
 
@@ -95,5 +101,30 @@ func updateUser(ctx context.Context, db *ent.Client) fiber.Handler {
 		}
 
 		return HandleSuccess(c)
+	}
+}
+
+func getTokenLogin(ctx context.Context, db *ent.Client) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		jwtUser := c.Locals("user").(*jwt.Token)
+		claims := jwtUser.Claims.(jwt.MapClaims)
+		userId := int(claims["id"].(float64))
+
+		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		if err != nil {
+			return HandleInternalError(c, err)
+		}
+
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+			"identifier":  thisUser.UUID, // fixme may be also email
+			"accessToken": nil,
+			"username":    thisUser.Username,
+		})
+
+		tokenString, err := token.SignedString([]byte(config.GetConfig().WorkadventureSecretKey))
+		if err != nil {
+			return HandleInternalError(c, err)
+		}
+		return c.Redirect(fmt.Sprintf("%s?token=%s", config.GetConfig().WorkadventureURL, tokenString))
 	}
 }
