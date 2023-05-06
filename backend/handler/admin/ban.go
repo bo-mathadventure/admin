@@ -24,7 +24,7 @@ type AdminBanResponse struct {
 	ID         int    `json:"id"`
 	Check      string `json:"check" example:"60948703-fca9-4491-b3bc-588188d93eb3"`
 	Message    string `json:"message" example:"banned for verbal abuse"`
-	ValidUntil string `json:"validUntil" example:"2006-01-02T15:04:05Z07:00" validate:"omitempty"`
+	ValidUntil string `json:"validUntil" example:"2006-01-02T15:04:05Z07:00"`
 	CreatedAt  string `json:"createdAt" example:"2006-01-02T15:04:05Z07:00"`
 }
 
@@ -87,7 +87,7 @@ func getAdminBan(ctx context.Context, db *ent.Client) fiber.Handler {
 type CreateBan struct {
 	Check      string `json:"check" example:"60948703-fca9-4491-b3bc-588188d93eb3" validate:"required"`
 	Message    string `json:"message" example:"banned for verbal abuse" validate:"required"`
-	ValidUntil string `json:"validUntil" example:"2006-01-02T15:04:05Z07:00" validate:"omitempty,datetime"`
+	ValidUntil string `json:"validUntil" example:"2006-01-02T15:04:05Z07:00" validate:"required,rfc3339"`
 }
 
 // postAdminBan godoc
@@ -129,14 +129,11 @@ func postAdminBan(ctx context.Context, db *ent.Client) fiber.Handler {
 			return err
 		}
 
-		var validUntil *time.Time
-		if req.ValidUntil != "" {
-			validUntilParsed, err := time.Parse(time.RFC3339, req.ValidUntil)
-			if err != nil {
-				validUntil = &validUntilParsed
-			}
+		validUntilParsed, err := time.Parse(time.RFC3339, req.ValidUntil)
+		if err != nil {
+			return handler.HandleInternalError(c, err)
 		}
-		newBan, err := db.Ban.Create().SetCheck(req.Check).SetMessage(req.Message).SetNillableCreatedAt(validUntil).Save(ctx)
+		newBan, err := db.Ban.Create().SetCheck(req.Check).SetMessage(req.Message).SetValidUntil(validUntilParsed).Save(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}

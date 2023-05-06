@@ -97,7 +97,7 @@ func getAdminAnnouncement(ctx context.Context, db *ent.Client) fiber.Handler {
 type CreateAnnouncement struct {
 	Type       string `json:"type" enums:"ban,warning" validate:"required,announcement_type_validation"`
 	Message    string `json:"message" example:"This is an example alert" validate:"required"`
-	ValidUntil string `json:"validUntil" example:"2006-01-02T15:04:05Z07:00" validate:"omitempty,datetime"`
+	ValidUntil string `json:"validUntil" example:"2006-01-02T15:04:05Z07:00" validate:"omitempty,rfc3339"`
 }
 
 // postAdminAnnouncement godoc
@@ -206,7 +206,7 @@ func getAdminAnnouncementID(ctx context.Context, db *ent.Client) fiber.Handler {
 type UpdateAnnouncement struct {
 	Type       string `json:"type" enums:"ban,warning" validate:"required,announcement_type_validation"`
 	Message    string `json:"message" example:"This is an example alert" validate:"required"`
-	ValidUntil string `json:"validUntil" example:"2006-01-02T15:04:05Z07:00" validate:"omitempty,datetime"`
+	ValidUntil string `json:"validUntil" example:"2006-01-02T15:04:05Z07:00" validate:"omitempty,rfc3339"`
 }
 
 // putAdminAnnouncementID godoc

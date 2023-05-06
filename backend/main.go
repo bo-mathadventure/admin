@@ -10,6 +10,7 @@ import (
 	"github.com/bo-mathadventure/admin/handler/admin"
 	"github.com/bo-mathadventure/admin/handler/workadventure"
 	"github.com/bo-mathadventure/admin/middleware"
+	"github.com/go-playground/validator/v10"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -18,6 +19,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 	"github.com/gofiber/swagger"
 	log "github.com/sirupsen/logrus"
+	"time"
 )
 
 // @title						Workadventure Admin Back Office API
@@ -55,6 +57,14 @@ func main() {
 		}).WithError(err).Panic("failed opening connection to database")
 	}
 	defer client.Close()
+
+	err = handler.Validate.RegisterValidation("rfc3339", func(fl validator.FieldLevel) bool {
+		_, parseError := time.Parse(time.RFC3339, fl.Field().String())
+		return parseError == nil
+	})
+	if err != nil {
+		log.WithError(err).WithField("validation", "rfc3339").Panic("failed to setup custom validation")
+	}
 
 	app := fiber.New(fiber.Config{
 		Prefork:      false,

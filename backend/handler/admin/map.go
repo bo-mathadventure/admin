@@ -131,7 +131,7 @@ type CreateMap struct {
 	Tags        []string     `json:"tags" example:"admin,editor" validate:"required"`
 	Chat        AdminMapChat `json:"chat" validate:"dive"`
 	CanReport   bool         `json:"canReport" validate:"required,boolean"`
-	ExpireOn    string       `json:"expireOn" example:"2006-01-02T15:04:05Z07:00" validate:"required,datetime"`
+	ExpireOn    string       `json:"expireOn" example:"2006-01-02T15:04:05Z07:00" validate:"required,rfc3339"`
 }
 
 // postAdminMap godoc
@@ -257,7 +257,7 @@ type UpdateMap struct {
 	Tags        []string     `json:"tags" example:"admin,editor" validate:"required"`
 	Chat        AdminMapChat `json:"chat" validate:"dive"`
 	CanReport   bool         `json:"canReport" validate:"required,boolean"`
-	ExpireOn    string       `json:"expireOn" example:"2006-01-02T15:04:05Z07:00" validate:"required,datetime"`
+	ExpireOn    string       `json:"expireOn" example:"2006-01-02T15:04:05Z07:00" validate:"required,rfc3339"`
 }
 
 // putAdminMapID godoc
