@@ -6,6 +6,7 @@ import (
 	"github.com/bo-mathadventure/admin/config"
 	"github.com/bo-mathadventure/admin/ent"
 	"github.com/bo-mathadventure/admin/handler"
+	"github.com/bo-mathadventure/admin/handler/admin"
 	"github.com/bo-mathadventure/admin/handler/workadventure"
 	"github.com/bo-mathadventure/admin/middleware"
 	_ "github.com/go-sql-driver/mysql"
@@ -64,8 +65,15 @@ func main() {
 	apiv1 := app.Group("/system", middleware.JWTProtected())
 	handler.NewUserHandler(apiv1.Group("/user"), context.Background(), client)
 
-	//waApi := app.Group("/api", middleware.AdminAPIProtected())
-	waApi := app.Group("/api")
+	adminApi := apiv1.Group("/admin", middleware.JWTProtected())
+	admin.NewAdminUserHandler(adminApi.Group("/user"), context.Background(), client)
+	admin.NewAdminBanHandler(adminApi.Group("/ban"), context.Background(), client)
+	admin.NewAdminReportHandler(adminApi.Group("/report"), context.Background(), client)
+	admin.NewAdminMapHandler(adminApi.Group("/map"), context.Background(), client)
+	admin.NewAdminTextureHandler(adminApi.Group("/texture"), context.Background(), client)
+	admin.NewAdminAnnouncementHandler(adminApi.Group("/announcement"), context.Background(), client)
+
+	waApi := app.Group("/api", middleware.AdminAPIProtected())
 	workadventure.NewRoomHandler(waApi.Group("/room"), context.Background(), client)
 	workadventure.NewTextureHandler(waApi.Group("/woka"), context.Background(), client)
 	workadventure.NewTextureHandler(waApi.Group("/companion"), context.Background(), client)
