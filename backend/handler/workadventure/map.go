@@ -5,14 +5,12 @@ import (
 	"fmt"
 	"github.com/bo-mathadventure/admin/config"
 	"github.com/bo-mathadventure/admin/ent"
-	"github.com/bo-mathadventure/admin/ent/maps"
 	"github.com/bo-mathadventure/admin/ent/user"
 	"github.com/bo-mathadventure/admin/handler"
 	"github.com/bo-mathadventure/admin/utils"
 	email "github.com/cameronnewman/go-emailvalidation/v3"
 	"github.com/gofiber/fiber/v2"
 	"regexp"
-	"strings"
 	"time"
 )
 
@@ -32,14 +30,13 @@ func getMap(ctx context.Context, db *ent.Client) fiber.Handler {
 			return handler.HandleBodyParseError(c, err)
 		}
 
-		if qData.PlayURI == "" {
-			return handler.HandleInsufficientData(c)
+		foundMap, mapURL, err := utils.GetMapFromPlayURL(ctx, db, qData.PlayURI)
+		if qData.PlayURI == "" || mapURL == "" {
+			return c.JSON(map[string]interface{}{
+				"redirectUrl": config.GetConfig().WorkadventureStartRoomURL,
+			})
 		}
-
-		playingMap := "/" + strings.Join(strings.Split(qData.PlayURI, "/")[3:], "/")
-		mapURL := fmt.Sprintf("%s://%s%s", config.GetConfig().WorkadventureURLProtocol, config.GetConfig().WorkadventureURL, playingMap)
-
-		foundMap, err := db.Maps.Query().Where(maps.MapUrlEQ(playingMap)).First(ctx)
+		// should not be triggered because mapURL is empty string
 		if err != nil {
 			return handler.HandleInvalidLogin(c)
 		}

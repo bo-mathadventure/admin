@@ -6,7 +6,6 @@ import (
 	"github.com/bo-mathadventure/admin/config"
 	"github.com/bo-mathadventure/admin/ent"
 	"github.com/bo-mathadventure/admin/ent/announcement"
-	"github.com/bo-mathadventure/admin/ent/maps"
 	"github.com/bo-mathadventure/admin/ent/user"
 	"github.com/bo-mathadventure/admin/handler"
 	"github.com/bo-mathadventure/admin/utils"
@@ -73,15 +72,12 @@ func getAccess(ctx context.Context, db *ent.Client) fiber.Handler {
 			return handler.HandleInvalidLogin(c)
 		}
 
-		playingMap := "/" + strings.Join(strings.Split(qData.PlayURI, "/")[3:], "/")
-		mapURL := fmt.Sprintf("%s://%s%s", config.GetConfig().WorkadventureURLProtocol, config.GetConfig().WorkadventureURL, playingMap)
-
-		foundMap, err := db.Maps.Query().Where(maps.MapUrlEQ(playingMap)).First(ctx)
+		foundMap, mapURL, err := utils.GetMapFromPlayURL(ctx, db, qData.PlayURI)
 		if err != nil {
 			return handler.HandleInvalidLogin(c)
 		}
 
-		allAnouncements, err := db.Announcement.Query().Where(announcement.ValidUntilLTE(time.Now())).All(ctx)
+		allAnouncements, err := db.Announcement.Query().Where(announcement.Or(announcement.ValidUntilIsNil(), announcement.ValidUntilLTE(time.Now()))).All(ctx)
 		if err != nil {
 			return handler.HandleInvalidLogin(c)
 		}
