@@ -11,7 +11,7 @@ import (
 )
 
 func NewBanHandler(app fiber.Router, ctx context.Context, db *ent.Client) {
-	app.Get("/ban", getBan(ctx, db))
+	app.Get("/", getBan(ctx, db))
 }
 
 type BanQuery struct {

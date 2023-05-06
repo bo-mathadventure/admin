@@ -8,9 +8,9 @@ import (
 
 func AdminAPIProtected() func(*fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
-		if c.Get("Authorization") != config.GetConfig().WorkadventureAdminAPISecret {
+		if c.Get(fiber.HeaderAuthorization) != config.GetConfig().WorkadventureAdminAPISecret {
 			return handler.HandleErrorCode(c, fiber.StatusUnauthorized, "ERR_API_TOKEN")
 		}
-		return nil
+		return c.Next()
 	}
 }

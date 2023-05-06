@@ -17,7 +17,7 @@ import (
 )
 
 func NewMapHandler(app fiber.Router, ctx context.Context, db *ent.Client) {
-	app.Get("/map", getMap(ctx, db))
+	app.Get("/", getMap(ctx, db))
 }
 
 type MapQuery struct {

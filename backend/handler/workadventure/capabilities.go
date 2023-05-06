@@ -7,7 +7,7 @@ import (
 )
 
 func NewCapabilitiesHandler(app fiber.Router, ctx context.Context, db *ent.Client) {
-	app.Get("/capabilities", getCaps(ctx, db))
+	app.Get("/", getCaps(ctx, db))
 }
 
 func getCaps(ctx context.Context, db *ent.Client) fiber.Handler {

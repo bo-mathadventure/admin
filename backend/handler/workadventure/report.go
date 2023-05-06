@@ -10,7 +10,7 @@ import (
 )
 
 func NewReportHandler(app fiber.Router, ctx context.Context, db *ent.Client) {
-	app.Post("/report", getReport(ctx, db))
+	app.Post("/", getReport(ctx, db))
 }
 
 type ReportQuery struct {

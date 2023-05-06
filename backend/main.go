@@ -91,14 +91,14 @@ func main() {
 	admin.NewAdminTextureHandler(adminApi.Group("/texture"), context.Background(), client)
 	admin.NewAdminAnnouncementHandler(adminApi.Group("/announcement"), context.Background(), client)
 
-	waApi := app.Group("/api", middleware.AdminAPIProtected())
-	workadventure.NewRoomHandler(waApi.Group("/room"), context.Background(), client)
+	waApi := app.Group("/api")
+	workadventure.NewRoomHandler(waApi.Group("/room", middleware.AdminAPIProtected()), context.Background(), client)
 	workadventure.NewTextureHandler(waApi.Group("/woka"), context.Background(), client)
 	workadventure.NewTextureHandler(waApi.Group("/companion"), context.Background(), client)
-	workadventure.NewMapHandler(waApi.Group("/"), context.Background(), client)
-	workadventure.NewCapabilitiesHandler(waApi.Group("/"), context.Background(), client)
-	workadventure.NewBanHandler(waApi.Group("/"), context.Background(), client)
-	workadventure.NewReportHandler(waApi.Group("/"), context.Background(), client)
+	workadventure.NewMapHandler(waApi.Group("/map", middleware.AdminAPIProtected()), context.Background(), client)
+	workadventure.NewCapabilitiesHandler(waApi.Group("/capabilities"), context.Background(), client)
+	workadventure.NewBanHandler(waApi.Group("/ban", middleware.AdminAPIProtected()), context.Background(), client)
+	workadventure.NewReportHandler(waApi.Group("/report", middleware.AdminAPIProtected()), context.Background(), client)
 
 	app.Use(func(c *fiber.Ctx) error {
 		return c.Status(404).SendString("404 Not Found")
