@@ -28,8 +28,8 @@ const (
 	PERMISSION_MAP_EDITOR = admin_map_prefix + ".editor"
 
 	admin_user_prefix            = admin_prefix + ".user"
-	PERMISSION_USER_VIEW         = admin_map_prefix + ".view"
-	PERMISSION_USER_EDIT         = admin_map_prefix + ".edit"
-	PERMISSION_USER_INVITE       = admin_map_prefix + ".invite"
-	PERMISSION_USER_IMPOSTERNATE = admin_map_prefix + ".imposternate"
+	PERMISSION_USER_VIEW         = admin_user_prefix + ".view"
+	PERMISSION_USER_EDIT         = admin_user_prefix + ".edit"
+	PERMISSION_USER_INVITE       = admin_user_prefix + ".invite"
+	PERMISSION_USER_IMPOSTERNATE = admin_user_prefix + ".imposternate"
 )

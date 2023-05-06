@@ -74,7 +74,7 @@ type CreateUser struct {
 // postAdminUser godoc
 //
 //	@Summary		Invite user
-//	@Description	Invite/Create new user. Requires permission admin.user.edit
+//	@Description	Invite/Create new user. Requires permission admin.user.invite
 //	@Security		ApiKeyAuth
 //	@Tags			admin
 //	@Accept			json
@@ -97,7 +97,7 @@ func postAdminUser(ctx context.Context, db *ent.Client) fiber.Handler {
 			return handler.HandleInternalError(c, err)
 		}
 
-		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_USER_EDIT}) {
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_USER_INVITE}) {
 			return handler.HandleInvalidPermissions(c)
 		}
 
