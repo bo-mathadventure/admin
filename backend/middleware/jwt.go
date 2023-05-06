@@ -9,7 +9,7 @@ import (
 
 func JWTProtected() func(*fiber.Ctx) error {
 	return jwtware.New(jwtware.Config{
-		TokenLookup: "X-API-Key",
+		TokenLookup: "header:X-API-Key",
 		AuthScheme:  "",
 		SigningKey:  []byte(config.GetConfig().WorkadventureSecretKey),
 		ErrorHandler: func(c *fiber.Ctx, err error) error {
