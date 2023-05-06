@@ -249,33 +249,6 @@ definitions:
     - roomName
     - tags
     type: object
-  admin.CreateTexture:
-    properties:
-      layer:
-        enum:
-        - woka
-        - body
-        - hair
-        - eyes
-        - hat
-        - accessory
-        - clothes
-        - companion
-        type: string
-      tags:
-        example:
-        - editor
-        items:
-          type: string
-        type: array
-      texture:
-        example: eyes1
-        type: string
-    required:
-    - layer
-    - tags
-    - texture
-    type: object
   admin.CreateUser:
     properties:
       email:
@@ -355,33 +328,6 @@ definitions:
     - tags
     type: object
   admin.UpdateReport:
-    type: object
-  admin.UpdateTexture:
-    properties:
-      layer:
-        enum:
-        - woka
-        - body
-        - hair
-        - eyes
-        - hat
-        - accessory
-        - clothes
-        - companion
-        type: string
-      tags:
-        example:
-        - editor
-        items:
-          type: string
-        type: array
-      texture:
-        example: eyes1
-        type: string
-    required:
-    - layer
-    - tags
-    - texture
     type: object
   admin.UpdateUser:
     properties:
@@ -1428,12 +1374,37 @@ paths:
       - multipart/form-data
       description: Upload file via resource field. Requires permission admin.texture.edit
       parameters:
-      - description: '-'
-        in: body
-        name: params
+      - enum:
+        - woka
+        - body
+        - hair
+        - eyes
+        - hat
+        - accessory
+        - clothes
+        - companion
+        in: formData
+        name: layer
         required: true
-        schema:
-          $ref: '#/definitions/admin.CreateTexture'
+        type: string
+      - collectionFormat: csv
+        example:
+        - editor
+        in: formData
+        items:
+          type: string
+        name: tags
+        type: array
+      - example: eyes1
+        in: formData
+        name: texture
+        required: true
+        type: string
+      - description: the texture file
+        in: formData
+        name: resource
+        required: true
+        type: file
       produces:
       - application/json
       responses:
@@ -1544,17 +1515,42 @@ paths:
       - multipart/form-data
       description: Update texture by ID. Requires permission admin.texture.edit
       parameters:
-      - description: '-'
-        in: body
-        name: params
+      - enum:
+        - woka
+        - body
+        - hair
+        - eyes
+        - hat
+        - accessory
+        - clothes
+        - companion
+        in: formData
+        name: layer
         required: true
-        schema:
-          $ref: '#/definitions/admin.UpdateTexture'
+        type: string
+      - collectionFormat: csv
+        example:
+        - editor
+        in: formData
+        items:
+          type: string
+        name: tags
+        type: array
+      - example: eyes1
+        in: formData
+        name: texture
+        required: true
+        type: string
       - description: Texture ID
         in: path
         name: id
         required: true
         type: integer
+      - description: the texture file
+        in: formData
+        name: resource
+        required: true
+        type: file
       produces:
       - application/json
       responses:

@@ -1366,13 +1366,46 @@ const docTemplate = `{
                 "summary": "Create texture",
                 "parameters": [
                     {
-                        "description": "-",
-                        "name": "params",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/admin.CreateTexture"
-                        }
+                        "enum": [
+                            "woka",
+                            "body",
+                            "hair",
+                            "eyes",
+                            "hat",
+                            "accessory",
+                            "clothes",
+                            "companion"
+                        ],
+                        "type": "string",
+                        "name": "layer",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "example": [
+                            "editor"
+                        ],
+                        "name": "tags",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "eyes1",
+                        "name": "texture",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "the texture file",
+                        "name": "resource",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1488,19 +1521,52 @@ const docTemplate = `{
                 "summary": "Update texture",
                 "parameters": [
                     {
-                        "description": "-",
-                        "name": "params",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/admin.UpdateTexture"
-                        }
+                        "enum": [
+                            "woka",
+                            "body",
+                            "hair",
+                            "eyes",
+                            "hat",
+                            "accessory",
+                            "clothes",
+                            "companion"
+                        ],
+                        "type": "string",
+                        "name": "layer",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "example": [
+                            "editor"
+                        ],
+                        "name": "tags",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "eyes1",
+                        "name": "texture",
+                        "in": "formData",
+                        "required": true
                     },
                     {
                         "type": "integer",
                         "description": "Texture ID",
                         "name": "id",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "the texture file",
+                        "name": "resource",
+                        "in": "formData",
                         "required": true
                     }
                 ],
@@ -2390,42 +2456,6 @@ const docTemplate = `{
                 }
             }
         },
-        "admin.CreateTexture": {
-            "type": "object",
-            "required": [
-                "layer",
-                "tags",
-                "texture"
-            ],
-            "properties": {
-                "layer": {
-                    "type": "string",
-                    "enum": [
-                        "woka",
-                        "body",
-                        "hair",
-                        "eyes",
-                        "hat",
-                        "accessory",
-                        "clothes",
-                        "companion"
-                    ]
-                },
-                "tags": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "example": [
-                        "editor"
-                    ]
-                },
-                "texture": {
-                    "type": "string",
-                    "example": "eyes1"
-                }
-            }
-        },
         "admin.CreateUser": {
             "type": "object",
             "required": [
@@ -2533,42 +2563,6 @@ const docTemplate = `{
         },
         "admin.UpdateReport": {
             "type": "object"
-        },
-        "admin.UpdateTexture": {
-            "type": "object",
-            "required": [
-                "layer",
-                "tags",
-                "texture"
-            ],
-            "properties": {
-                "layer": {
-                    "type": "string",
-                    "enum": [
-                        "woka",
-                        "body",
-                        "hair",
-                        "eyes",
-                        "hat",
-                        "accessory",
-                        "clothes",
-                        "companion"
-                    ]
-                },
-                "tags": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "example": [
-                        "editor"
-                    ]
-                },
-                "texture": {
-                    "type": "string",
-                    "example": "eyes1"
-                }
-            }
         },
         "admin.UpdateUser": {
             "type": "object",

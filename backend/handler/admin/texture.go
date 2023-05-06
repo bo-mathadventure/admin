@@ -94,7 +94,7 @@ func getAdminTexture(ctx context.Context, db *ent.Client) fiber.Handler {
 type CreateTexture struct {
 	Texture string   `json:"texture" form:"texture" example:"eyes1" validate:"required"`
 	Layer   string   `json:"layer" form:"layer" enums:"woka,body,hair,eyes,hat,accessory,clothes,companion" validate:"required"`
-	Tags    []string `json:"tags" json:"tags" example:"editor" validate:"required"`
+	Tags    []string `json:"tags" form:"tags" example:"editor" validate:"omitempty"`
 }
 
 // postAdminTexture godoc
@@ -105,12 +105,13 @@ type CreateTexture struct {
 //	@Tags			admin
 //	@Accept			mpfd
 //	@Produce		json
-//	@Param			params	body		CreateTexture	true	"-"
-//	@Success		200		{object}	AdminTextureResponse
-//	@Failure		400		{object}	handler.APIResponse
-//	@Failure		401		{object}	handler.APIResponse
-//	@Failure		404		{object}	handler.APIResponse
-//	@Failure		500		{object}	handler.APIResponse
+//	@Param			params		formData		CreateTexture	true	"-"
+//	@Param			resource	formData	file			true	"the texture file"
+//	@Success		200			{object}	AdminTextureResponse
+//	@Failure		400			{object}	handler.APIResponse
+//	@Failure		401			{object}	handler.APIResponse
+//	@Failure		404			{object}	handler.APIResponse
+//	@Failure		500			{object}	handler.APIResponse
 //	@Router			/system/admin/texture [post]
 func postAdminTexture(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
@@ -221,7 +222,7 @@ func getAdminTextureID(ctx context.Context, db *ent.Client) fiber.Handler {
 type UpdateTexture struct {
 	Texture string   `json:"texture" form:"texture" example:"eyes1" validate:"required"`
 	Layer   string   `json:"layer" form:"layer" enums:"woka,body,hair,eyes,hat,accessory,clothes,companion" validate:"required"`
-	Tags    []string `json:"tags" json:"tags" example:"editor" validate:"required"`
+	Tags    []string `json:"tags" form:"tags" example:"editor" validate:"omitempty"`
 }
 
 // putAdminTextureID godoc
@@ -232,13 +233,14 @@ type UpdateTexture struct {
 //	@Tags			admin
 //	@Accept			mpfd
 //	@Produce		json
-//	@Param			params	body		UpdateTexture	true	"-"
-//	@Param			id		path		int				true	"Texture ID"
-//	@Success		200		{object}	AdminTextureResponse
-//	@Failure		400		{object}	handler.APIResponse
-//	@Failure		401		{object}	handler.APIResponse
-//	@Failure		404		{object}	handler.APIResponse
-//	@Failure		500		{object}	handler.APIResponse
+//	@Param			params		formData		UpdateTexture	true	"-"
+//	@Param			id			path		int				true	"Texture ID"
+//	@Param			resource	formData	file			true	"the texture file"
+//	@Success		200			{object}	AdminTextureResponse
+//	@Failure		400			{object}	handler.APIResponse
+//	@Failure		401			{object}	handler.APIResponse
+//	@Failure		404			{object}	handler.APIResponse
+//	@Failure		500			{object}	handler.APIResponse
 //	@Router			/system/admin/texture/{id} [put]
 func putAdminTextureID(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
