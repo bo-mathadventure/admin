@@ -28,7 +28,7 @@ func getBan(ctx context.Context, db *ent.Client) fiber.Handler {
 		}
 
 		if qData.RoomURL == "" || qData.Token == "" || qData.IPAddress == "" {
-			return handler.HandleInsufficentData(c)
+			return handler.HandleInsufficientData(c)
 		}
 
 		allBans, err := db.Ban.Query().Where(ban.Or(ban.CheckEQ(qData.Token), ban.CheckEQ(email.Normalize(qData.IPAddress)))).All(ctx)

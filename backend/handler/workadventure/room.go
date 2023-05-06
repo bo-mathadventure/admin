@@ -33,7 +33,7 @@ func getSameWorld(ctx context.Context, db *ent.Client) fiber.Handler {
 		}
 
 		if qData.RoomURL == "" {
-			return handler.HandleInsufficentData(c)
+			return handler.HandleInsufficientData(c)
 		}
 
 		foundMaps, err := db.Maps.Query().All(ctx)
@@ -65,7 +65,7 @@ func getAccess(ctx context.Context, db *ent.Client) fiber.Handler {
 		}
 
 		if qData.UserIdentifier == "" || qData.PlayURI == "" || qData.IPAddress == "" {
-			return handler.HandleInsufficentData(c)
+			return handler.HandleInsufficientData(c)
 		}
 
 		foundUsers, err := db.User.Query().Where(user.Or(user.UUIDEQ(qData.UserIdentifier), user.EmailEQ(email.Normalize(qData.UserIdentifier)))).All(ctx)

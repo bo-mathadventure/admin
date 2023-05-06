@@ -3,9 +3,14 @@ package utils
 const (
 	admin_prefix = "admin"
 
-	admin_ban_prefix    = admin_prefix + ".ban"
-	PERMISSION_BAN_VIEW = admin_ban_prefix + ".view"
-	PERMISSION_BAN_EDIT = admin_ban_prefix + ".edit"
+	admin_announcement_prefix    = admin_prefix + ".announcement"
+	PERMISSION_ANNOUNCEMENT_VIEW = admin_announcement_prefix + ".view"
+	PERMISSION_ANNOUNCEMENT_EDIT = admin_announcement_prefix + ".edit"
+
+	admin_ban_prefix      = admin_prefix + ".ban"
+	PERMISSION_BAN_VIEW   = admin_ban_prefix + ".view"
+	PERMISSION_BAN_CREATE = admin_ban_prefix + ".create"
+	PERMISSION_BAN_DELETE = admin_ban_prefix + ".delete"
 
 	admin_report_prefix    = admin_prefix + ".report"
 	PERMISSION_REPORT_VIEW = admin_report_prefix + ".view"

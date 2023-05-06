@@ -71,6 +71,16 @@ func NewSAMLHandler(app fiber.Router, ctx context.Context, db *ent.Client) {
 	app.Post("/acs", postSAMLacs(ctx, db, sp))
 }
 
+// getSAMLStart godoc
+//
+//	@Summary		Get SAML Auth URL
+//	@Description	Starts a new SAML authentication flow. This route is only available when SAML is correctly configured.
+//	@Tags			auth,saml
+//	@Accept			json
+//	@Produce		json
+//	@Success		302	{object}	nil
+//	@Failure		500	{object}	APIResponse
+//	@Router			/auth/saml/start [get]
 func getSAMLStart(ctx context.Context, db *ent.Client, sp *saml2.SAMLServiceProvider) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		authURL, err := sp.BuildAuthURL("")
@@ -82,10 +92,23 @@ func getSAMLStart(ctx context.Context, db *ent.Client, sp *saml2.SAMLServiceProv
 }
 
 type SAMLResponse struct {
-	SAMLResponse string `json:"SAMLResponse" xml:"SAMLResponse" form:"SAMLResponse"`
-	RelayState   string `json:"RelayState" xml:"RelayState" form:"RelayState"`
+	SAMLResponse string `json:"SAMLResponse" xml:"SAMLResponse" form:"SAMLResponse" json:"SAMLResponse"`
+	RelayState   string `json:"RelayState" xml:"RelayState" form:"RelayState" json:"RelayState"`
 }
 
+// postSAMLacs godoc
+//
+//	@Summary		SAML Response Callback
+//	@Description	Get SAML response of the IDP. This route is only available when SAML is correctly configured.
+//	@Tags			auth,saml
+//	@Accept			x-www-form-urlencoded
+//	@Produce		json
+//	@Param			params	formData	SAMLResponse	true	"-"
+//	@Success		302		{object}	nil
+//	@Failure		400		{object}	APIResponse
+//	@Failure		404		{object}	APIResponse
+//	@Failure		500		{object}	APIResponse
+//	@Router			/auth/saml/acs [post]
 func postSAMLacs(ctx context.Context, db *ent.Client, sp *saml2.SAMLServiceProvider) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		rData := new(SAMLResponse)

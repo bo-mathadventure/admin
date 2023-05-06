@@ -28,7 +28,7 @@ func getReport(ctx context.Context, db *ent.Client) fiber.Handler {
 		}
 
 		if qData.ReportedUserUUID == "" || qData.ReporterUserUIID == "" || qData.RommURL == "" {
-			return handler.HandleInsufficentData(c)
+			return handler.HandleInsufficientData(c)
 		}
 
 		reportedUser, _ := db.User.Query().Where(user.Or(user.UUIDEQ(qData.ReportedUserUUID), user.EmailEQ(email.Normalize(qData.ReportedUserUUID)))).First(ctx)

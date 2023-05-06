@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/bo-mathadventure/admin/config"
+	_ "github.com/bo-mathadventure/admin/docs"
 	"github.com/bo-mathadventure/admin/ent"
 	"github.com/bo-mathadventure/admin/handler"
 	"github.com/bo-mathadventure/admin/handler/admin"
@@ -15,9 +16,24 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/etag"
 	"github.com/gofiber/fiber/v2/middleware/favicon"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
+	"github.com/gofiber/swagger"
 	log "github.com/sirupsen/logrus"
 )
 
+// @title						Workadventure Admin Back Office API
+// @version					1.0
+// @description				API documentation for the workdadventure back office written at the Hochschule Bochum
+// @termsOfService				http://swagger.io/terms/
+// @contact.name				GitHub Issues
+// @contact.url				https://github.com/bo-mathadventure/admin
+// @license.name				AGPL 3.0
+// @license.url				https://github.com/teamdigitale/licenses/blob/master/AGPL-3.0-or-later
+// @host						localhost:4664
+// @BasePath					/
+// @securityDefinitions.apikey	ApiKeyAuth
+// @in							header
+// @name						X-API-Key
+// @description				JWT user token from login
 func main() {
 	log.SetFormatter(&log.TextFormatter{
 		DisableColors: false,
@@ -56,6 +72,8 @@ func main() {
 	})
 
 	app.Static("/public", "./public")
+
+	app.Get("/swagger/*", swagger.HandlerDefault)
 
 	authRoute := app.Group("/auth")
 	authRoute.Post("/login", handler.Login(context.Background(), client))

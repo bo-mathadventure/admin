@@ -33,7 +33,7 @@ func getMap(ctx context.Context, db *ent.Client) fiber.Handler {
 		}
 
 		if qData.PlayURI == "" {
-			return handler.HandleInsufficentData(c)
+			return handler.HandleInsufficientData(c)
 		}
 
 		playingMap := "/" + strings.Join(strings.Split(qData.PlayURI, "/")[3:], "/")

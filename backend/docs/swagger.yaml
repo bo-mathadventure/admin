@@ -1,0 +1,1812 @@
+basePath: /
+definitions:
+  admin.AdminAnnouncementResponse:
+    properties:
+      createdAt:
+        example: 2006-01-02T15:04:05Z07:00
+        type: string
+      id:
+        type: integer
+      message:
+        example: This is an example alert
+        type: string
+      type:
+        enum:
+        - ban
+        - warning
+        type: string
+      validUntil:
+        example: 2006-01-02T15:04:05Z07:00
+        type: string
+    type: object
+  admin.AdminBanResponse:
+    properties:
+      check:
+        example: 60948703-fca9-4491-b3bc-588188d93eb3
+        type: string
+      createdAt:
+        example: 2006-01-02T15:04:05Z07:00
+        type: string
+      id:
+        type: integer
+      message:
+        example: banned for verbal abuse
+        type: string
+      validUntil:
+        example: 2006-01-02T15:04:05Z07:00
+        type: string
+    type: object
+  admin.AdminMapResponse:
+    properties:
+      canReport:
+        type: boolean
+      chat:
+        properties:
+          enable:
+            type: boolean
+          enableDisconnectedList:
+            type: boolean
+          enableOnlineList:
+            type: boolean
+          enableUpload:
+            type: boolean
+        type: object
+      contactPage:
+        example: https://mycompany.com/contact-us
+        type: string
+      createdAt:
+        example: 2006-01-02T15:04:05Z07:00
+        type: string
+      expireOn:
+        example: 2006-01-02T15:04:05Z07:00
+        type: string
+      id:
+        type: integer
+      mapUrl:
+        example: /_/global/thecodingmachine.github.io/workadventure-map-starter-kit/map.tmj
+        type: string
+      policy:
+        enum:
+        - anonymous
+        - login
+        - permission
+        type: string
+      roomName:
+        example: Default Room
+        type: string
+      tags:
+        example:
+        - admin
+        - editor
+        items:
+          type: string
+        type: array
+    type: object
+  admin.AdminReportResponse:
+    properties:
+      createdAt:
+        example: 2006-01-02T15:04:05Z07:00
+        type: string
+      hide:
+        type: boolean
+      id:
+        type: integer
+      reportedUserComment:
+        type: string
+      roomUrl:
+        type: string
+    type: object
+  admin.AdminTextureResponse:
+    properties:
+      createdAt:
+        example: 2006-01-02T15:04:05Z07:00
+        type: string
+      id:
+        type: integer
+      layer:
+        enum:
+        - woka
+        - body
+        - hair
+        - eyes
+        - hat
+        - accessory
+        - clothes
+        - companion
+        type: string
+      tags:
+        example:
+        - editor
+        items:
+          type: string
+        type: array
+      texture:
+        example: eyes1
+        type: string
+      url:
+        example: '%FRONTEND_URL%/public/resources/customisation/character_eyes/character_eyes1.png'
+        type: string
+    type: object
+  admin.AdminUserResponse:
+    properties:
+      createdAt:
+        example: 2006-01-02T15:04:05Z07:00
+        type: string
+      email:
+        example: bob@example.com
+        type: string
+      id:
+        type: integer
+      lastLogin:
+        example: 2006-01-02T15:04:05Z07:00
+        type: string
+      permissions:
+        example:
+        - admin.editor
+        - admin.user.*
+        items:
+          type: string
+        type: array
+      ssoIdentifier:
+        type: string
+      tags:
+        example:
+        - admin
+        - mod
+        - editor
+        - student
+        items:
+          type: string
+        type: array
+      username:
+        example: Bob
+        type: string
+      uuid:
+        example: 60948703-fca9-4491-b3bc-588188d93eb3
+        type: string
+      vCardURL:
+        type: string
+    type: object
+  admin.CreateAnnouncement:
+    properties:
+      message:
+        example: This is an example alert
+        type: string
+      type:
+        enum:
+        - ban
+        - warning
+        type: string
+      validUntil:
+        example: 2006-01-02T15:04:05Z07:00
+        type: string
+    type: object
+  admin.CreateBan:
+    properties:
+      check:
+        example: 60948703-fca9-4491-b3bc-588188d93eb3
+        type: string
+      message:
+        example: banned for verbal abuse
+        type: string
+      validUntil:
+        example: 2006-01-02T15:04:05Z07:00
+        type: string
+    type: object
+  admin.CreateMap:
+    properties:
+      canReport:
+        type: boolean
+      chat:
+        properties:
+          enable:
+            type: boolean
+          enableDisconnectedList:
+            type: boolean
+          enableOnlineList:
+            type: boolean
+          enableUpload:
+            type: boolean
+        type: object
+      contactPage:
+        example: https://mycompany.com/contact-us
+        type: string
+      expireOn:
+        example: 2006-01-02T15:04:05Z07:00
+        type: string
+      mapUrl:
+        example: /_/global/thecodingmachine.github.io/workadventure-map-starter-kit/map.tmj
+        type: string
+      policy:
+        enum:
+        - anonymous
+        - login
+        - permission
+        type: string
+      roomName:
+        example: Default Room
+        type: string
+      tags:
+        example:
+        - admin
+        - editor
+        items:
+          type: string
+        type: array
+    type: object
+  admin.CreateTexture:
+    properties:
+      layer:
+        enum:
+        - woka
+        - body
+        - hair
+        - eyes
+        - hat
+        - accessory
+        - clothes
+        - companion
+        type: string
+      tags:
+        example:
+        - editor
+        items:
+          type: string
+        type: array
+      texture:
+        example: eyes1
+        type: string
+      url:
+        example: '%FRONTEND_URL%/public/resources/customisation/character_eyes/character_eyes1.png'
+        type: string
+    type: object
+  admin.CreateUser:
+    properties:
+      email:
+        example: bob@example.com
+        type: string
+      password:
+        example: my$ecur3P4$$word
+        type: string
+      username:
+        example: Bob
+        type: string
+    type: object
+  admin.UpdateAnnouncement:
+    properties:
+      message:
+        example: This is an example alert
+        type: string
+      type:
+        enum:
+        - ban
+        - warning
+        type: string
+      validUntil:
+        example: 2006-01-02T15:04:05Z07:00
+        type: string
+    type: object
+  admin.UpdateMap:
+    properties:
+      canReport:
+        type: boolean
+      chat:
+        properties:
+          enable:
+            type: boolean
+          enableDisconnectedList:
+            type: boolean
+          enableOnlineList:
+            type: boolean
+          enableUpload:
+            type: boolean
+        type: object
+      contactPage:
+        example: https://mycompany.com/contact-us
+        type: string
+      expireOn:
+        example: 2006-01-02T15:04:05Z07:00
+        type: string
+      mapUrl:
+        example: /_/global/thecodingmachine.github.io/workadventure-map-starter-kit/map.tmj
+        type: string
+      policy:
+        enum:
+        - anonymous
+        - login
+        - permission
+        type: string
+      roomName:
+        example: Default Room
+        type: string
+      tags:
+        example:
+        - admin
+        - editor
+        items:
+          type: string
+        type: array
+    type: object
+  admin.UpdateReport:
+    type: object
+  admin.UpdateTexture:
+    properties:
+      layer:
+        enum:
+        - woka
+        - body
+        - hair
+        - eyes
+        - hat
+        - accessory
+        - clothes
+        - companion
+        type: string
+      tags:
+        example:
+        - editor
+        items:
+          type: string
+        type: array
+      texture:
+        example: eyes1
+        type: string
+      url:
+        example: '%FRONTEND_URL%/public/resources/customisation/character_eyes/character_eyes1.png'
+        type: string
+    type: object
+  admin.UpdateUser:
+    properties:
+      email:
+        example: bob@example.com
+        type: string
+      permissions:
+        example:
+        - admin.editor
+        - admin.user.*
+        items:
+          type: string
+        type: array
+      tags:
+        example:
+        - admin
+        - mod
+        - editor
+        - student
+        items:
+          type: string
+        type: array
+      username:
+        example: Bob
+        type: string
+      vCardURL:
+        type: string
+    type: object
+  config.Config:
+    properties:
+      appName:
+        type: string
+      enableRegistration:
+        type: boolean
+      mapStorageURL:
+        type: string
+      workadventureURL:
+        type: string
+      workadventureURLProtocol:
+        type: string
+    type: object
+  handler.APIResponse:
+    properties:
+      error:
+        type: boolean
+      extra:
+        type: string
+      message:
+        example: ERR_INVALID_PERMISSIONS
+        type: string
+      status:
+        example: 200
+        type: integer
+      success:
+        type: boolean
+    type: object
+  handler.LoginRequest:
+    properties:
+      email:
+        example: bob@example.com
+        type: string
+      password:
+        example: my$ecur3P4$$word
+        type: string
+    type: object
+  handler.LoginResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  handler.RegisterRequest:
+    properties:
+      confirmPassword:
+        example: my$ecur3P4$$word
+        type: string
+      email:
+        example: bob@example.com
+        type: string
+      language:
+        example: de
+        type: string
+      password:
+        example: my$ecur3P4$$word
+        type: string
+      username:
+        example: Bob
+        type: string
+    type: object
+  handler.UpdateUserRequest:
+    properties:
+      confirmPassword:
+        example: my$ecur3P4$$word
+        type: string
+      email:
+        example: bob@exameple.com
+        format: email
+        type: string
+      newPassword:
+        example: my$ecur3P4$$word
+        type: string
+      password:
+        example: my$ecur3P4$$word
+        type: string
+    required:
+    - password
+    type: object
+  handler.UserResponse:
+    properties:
+      config:
+        $ref: '#/definitions/config.Config'
+      createdAt:
+        type: string
+      email:
+        type: string
+      lastLogin:
+        type: string
+      permissions:
+        items:
+          type: string
+        type: array
+      tags:
+        items:
+          type: string
+        type: array
+      username:
+        type: string
+      uuid:
+        type: string
+    type: object
+host: localhost:4664
+info:
+  contact:
+    name: GitHub Issues
+    url: https://github.com/bo-mathadventure/admin
+  description: API documentation for the workdadventure back office written at the
+    Hochschule Bochum
+  license:
+    name: AGPL 3.0
+    url: https://github.com/teamdigitale/licenses/blob/master/AGPL-3.0-or-later
+  termsOfService: http://swagger.io/terms/
+  title: Workadventure Admin Back Office API
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Do a login with user credentials (email/password) when a password
+        is set
+      parameters:
+      - description: '-'
+        in: body
+        name: params
+        required: true
+        schema:
+          $ref: '#/definitions/handler.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.LoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      summary: Get Login Token
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Start a registration of a new user. Only works when registration
+        are enabled
+      parameters:
+      - description: '-'
+        in: body
+        name: params
+        required: true
+        schema:
+          $ref: '#/definitions/handler.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      summary: Register new user
+      tags:
+      - auth
+  /auth/saml/acs:
+    post:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: Get SAML response of the IDP. This route is only available when
+        SAML is correctly configured.
+      parameters:
+      - in: formData
+        name: RelayState
+        type: string
+      - in: formData
+        name: SAMLResponse
+        type: string
+      produces:
+      - application/json
+      responses:
+        "302":
+          description: Found
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      summary: SAML Response Callback
+      tags:
+      - auth
+      - saml
+  /auth/saml/start:
+    get:
+      consumes:
+      - application/json
+      description: Starts a new SAML authentication flow. This route is only available
+        when SAML is correctly configured.
+      produces:
+      - application/json
+      responses:
+        "302":
+          description: Found
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      summary: Get SAML Auth URL
+      tags:
+      - auth
+      - saml
+  /system/admin/announcement:
+    get:
+      consumes:
+      - application/json
+      description: Get all announcements. Requires permission admin.announcement.view
+        or admin.announcement.edit
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/admin.AdminAnnouncementResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: List announcements
+      tags:
+      - admin
+    post:
+      consumes:
+      - application/json
+      description: Requires permission admin.announcement.edit
+      parameters:
+      - description: '-'
+        in: body
+        name: params
+        required: true
+        schema:
+          $ref: '#/definitions/admin.CreateAnnouncement'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/admin.AdminAnnouncementResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new announcement
+      tags:
+      - admin
+  /system/admin/announcement/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete announcement by ID. Requires permission admin.announcement.edit
+      parameters:
+      - description: Announcement ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete announcement
+      tags:
+      - admin
+    get:
+      consumes:
+      - application/json
+      description: Get announcement by ID. Requires permission admin.announcement.view
+        or admin.announcement.edit
+      parameters:
+      - description: Announcement ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/admin.AdminAnnouncementResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get specific announcement
+      tags:
+      - admin
+    put:
+      consumes:
+      - application/json
+      description: Update announcement by ID. Requires Permission admin.announcement.edit
+      parameters:
+      - description: '-'
+        in: body
+        name: params
+        required: true
+        schema:
+          $ref: '#/definitions/admin.UpdateAnnouncement'
+      - description: Announcement ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/admin.AdminAnnouncementResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update announcement
+      tags:
+      - admin
+  /system/admin/ban:
+    get:
+      consumes:
+      - application/json
+      description: Get all bans. Requires permission admin.ban.view or admin.ban.create
+        or admin.ban.delete
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/admin.AdminBanResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: List bans
+      tags:
+      - admin
+    post:
+      consumes:
+      - application/json
+      description: Create a ban for an identifier or ip address. Requires permission
+        admin.ban.create
+      parameters:
+      - description: '-'
+        in: body
+        name: params
+        required: true
+        schema:
+          $ref: '#/definitions/admin.CreateBan'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/admin.AdminBanResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create ban
+      tags:
+      - admin
+  /system/admin/ban/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete ban by ID. Sets validUntil to now() to keep history. Requires
+        permission admin.ban.delete
+      parameters:
+      - description: Ban ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete ban
+      tags:
+      - admin
+    get:
+      consumes:
+      - application/json
+      description: Get ban by ID. Requires permission admin.ban.view or admin.ban.create
+        or admin.ban.delete
+      parameters:
+      - description: Ban ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/admin.AdminBanResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get specific ban
+      tags:
+      - admin
+  /system/admin/map:
+    get:
+      consumes:
+      - application/json
+      description: Get all maps. Requires permission admin.map.view or admin.map.edit
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/admin.AdminMapResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: List maps
+      tags:
+      - admin
+    post:
+      consumes:
+      - application/json
+      description: Requires permission admin.map.edit
+      parameters:
+      - description: '-'
+        in: body
+        name: params
+        required: true
+        schema:
+          $ref: '#/definitions/admin.CreateMap'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/admin.AdminMapResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create map
+      tags:
+      - admin
+  /system/admin/map/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete map by ID. Requires permission admin.map.edit
+      parameters:
+      - description: Map ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete map
+      tags:
+      - admin
+    get:
+      consumes:
+      - application/json
+      description: Get map by ID. Requires permission admin.map.view or admin.map.edit
+      parameters:
+      - description: Map ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/admin.AdminMapResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get specific map
+      tags:
+      - admin
+    put:
+      consumes:
+      - application/json
+      description: Update map by ID. Requires permission admin.map.edit
+      parameters:
+      - description: '-'
+        in: body
+        name: params
+        required: true
+        schema:
+          $ref: '#/definitions/admin.UpdateMap'
+      - description: Map ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/admin.AdminMapResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update map
+      tags:
+      - admin
+  /system/admin/report:
+    get:
+      consumes:
+      - application/json
+      description: Get all reports. Requires permission admin.report.view or admin.report.edit
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/admin.AdminReportResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: List reports
+      tags:
+      - admin
+  /system/admin/report/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete report by ID. Sets hide to true to keep history. Requires
+        permission admin.report.edit
+      parameters:
+      - description: Report ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete report
+      tags:
+      - admin
+    get:
+      consumes:
+      - application/json
+      description: Get report by ID. Requires permission admin.report.view pr admin.report.edit
+      parameters:
+      - description: Report ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/admin.AdminReportResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get specific report
+      tags:
+      - admin
+    put:
+      consumes:
+      - application/json
+      description: Update report by ID. Requires permission admin.report.edit
+      parameters:
+      - description: '-'
+        in: body
+        name: params
+        required: true
+        schema:
+          $ref: '#/definitions/admin.UpdateReport'
+      - description: Report ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/admin.AdminReportResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update report
+      tags:
+      - admin
+  /system/admin/texture:
+    get:
+      consumes:
+      - application/json
+      description: Get all textures. Requires permission admin.texture.view or admin.texture.edit
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/admin.AdminTextureResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: List textures
+      tags:
+      - admin
+    post:
+      consumes:
+      - application/json
+      description: Requires permission admin.texture.edit
+      parameters:
+      - description: '-'
+        in: body
+        name: params
+        required: true
+        schema:
+          $ref: '#/definitions/admin.CreateTexture'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/admin.AdminTextureResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create texture
+      tags:
+      - admin
+  /system/admin/texture/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete texture by ID. Requires permission admin.texture.edit
+      parameters:
+      - description: Texture ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete texture
+      tags:
+      - admin
+    get:
+      consumes:
+      - application/json
+      description: Get texture by ID. Requires permission admin.texture.view or admin.texture.edit
+      parameters:
+      - description: Texture ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/admin.AdminTextureResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get specific texture
+      tags:
+      - admin
+    put:
+      consumes:
+      - application/json
+      description: Update texture by ID. Requires permission admin.texture.edit
+      parameters:
+      - description: '-'
+        in: body
+        name: params
+        required: true
+        schema:
+          $ref: '#/definitions/admin.UpdateTexture'
+      - description: Texture ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/admin.AdminTextureResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update texture
+      tags:
+      - admin
+  /system/admin/user:
+    get:
+      consumes:
+      - application/json
+      description: Get all users. Requires permission admin.user.view or admin.user.edit
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/admin.AdminUserResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: List users
+      tags:
+      - admin
+  /system/admin/user/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete user by ID. Requires permission admin.user.edit
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete user
+      tags:
+      - admin
+    get:
+      consumes:
+      - application/json
+      description: Get user by ID. Requires permission admin.user.view or admin.user.edit
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/admin.AdminUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get specific user
+      tags:
+      - admin
+    put:
+      consumes:
+      - application/json
+      description: Update user by ID. Requires permission admin.user.edit
+      parameters:
+      - description: '-'
+        in: body
+        name: params
+        required: true
+        schema:
+          $ref: '#/definitions/admin.UpdateUser'
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/admin.AdminUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update user
+      tags:
+      - admin
+  /system/admin/user/invite:
+    post:
+      consumes:
+      - application/json
+      description: Invite/Create new user. Requires permission admin.user.edit
+      parameters:
+      - description: '-'
+        in: body
+        name: params
+        required: true
+        schema:
+          $ref: '#/definitions/admin.CreateUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/admin.AdminUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Invite user
+      tags:
+      - admin
+  /system/user:
+    get:
+      consumes:
+      - application/json
+      description: Get user details of logged-in user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.UserResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: User Info
+      tags:
+      - user
+    put:
+      consumes:
+      - application/json
+      description: Update details of the logged-in user
+      parameters:
+      - description: '-'
+        in: body
+        name: params
+        required: true
+        schema:
+          $ref: '#/definitions/handler.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update User
+      tags:
+      - user
+  /system/user/token:
+    get:
+      consumes:
+      - application/json
+      description: Generate JWT Token of logged-in user and directly redirect user
+        to Workadventure
+      produces:
+      - application/json
+      responses:
+        "302":
+          description: Found
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Workadventure token
+      tags:
+      - user
+securityDefinitions:
+  ApiKeyAuth:
+    description: JWT user token from login
+    in: header
+    name: X-API-Key
+    type: apiKey
+swagger: "2.0"

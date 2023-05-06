@@ -14,10 +14,27 @@ import (
 )
 
 type LoginRequest struct {
-	EMail             string `json:"email"`
-	ClearTextPassword string `json:"password"`
+	EMail             string `json:"email" example:"bob@example.com"`
+	ClearTextPassword string `json:"password" example:"my$ecur3P4$$word"`
 }
 
+type LoginResponse struct {
+	Token string `json:"token"`
+}
+
+// Login godoc
+//
+//	@Summary		Get Login Token
+//	@Description	Do a login with user credentials (email/password) when a password is set
+//	@Tags			auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			params	body		LoginRequest	true	"-"
+//	@Success		200		{object}	LoginResponse
+//	@Failure		400		{object}	APIResponse
+//	@Failure		404		{object}	APIResponse
+//	@Failure		500		{object}	APIResponse
+//	@Router			/auth/login [post]
 func Login(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		req := new(LoginRequest)
@@ -53,6 +70,6 @@ func Login(ctx context.Context, db *ent.Client) fiber.Handler {
 			"userID": foundUser.ID,
 		}).Info("user login")
 
-		return c.JSON(fiber.Map{"token": t})
+		return c.JSON(LoginResponse{t})
 	}
 }
