@@ -2316,7 +2316,8 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "check",
-                "message"
+                "message",
+                "validUntil"
             ],
             "properties": {
                 "check": {
@@ -2672,10 +2673,12 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "field": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "validUntil"
                 },
                 "tag": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "datetime"
                 }
             }
         },

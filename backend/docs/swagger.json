@@ -2309,7 +2309,8 @@
             "type": "object",
             "required": [
                 "check",
-                "message"
+                "message",
+                "validUntil"
             ],
             "properties": {
                 "check": {
@@ -2665,10 +2666,12 @@
             "type": "object",
             "properties": {
                 "field": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "validUntil"
                 },
                 "tag": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "datetime"
                 }
             }
         },

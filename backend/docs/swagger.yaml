@@ -205,6 +205,7 @@ definitions:
     required:
     - check
     - message
+    - validUntil
     type: object
   admin.CreateMap:
     properties:
@@ -455,8 +456,10 @@ definitions:
   handler.ErrorResponse:
     properties:
       field:
+        example: validUntil
         type: string
       tag:
+        example: datetime
         type: string
     type: object
   handler.LoginRequest:

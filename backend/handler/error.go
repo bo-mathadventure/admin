@@ -99,8 +99,8 @@ func HandleNotFound(c *fiber.Ctx) error {
 }
 
 type ErrorResponse struct {
-	FailedField string `json:"field"`
-	Tag         string `json:"tag"`
+	FailedField string `json:"field" example:"validUntil"`
+	Tag         string `json:"tag" example:"datetime"`
 }
 
 var Validate = validator.New()
