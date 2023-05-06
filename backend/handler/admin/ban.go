@@ -3,8 +3,11 @@ package admin
 import (
 	"context"
 	"github.com/bo-mathadventure/admin/ent"
+	"github.com/bo-mathadventure/admin/ent/user"
 	"github.com/bo-mathadventure/admin/handler"
+	"github.com/bo-mathadventure/admin/utils"
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v4"
 	"time"
 )
 
@@ -39,7 +42,18 @@ type AdminBanResponse struct {
 //	@Router			/system/admin/ban [get]
 func getAdminBan(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		// utils.PERMISSION_BAN_VIEW || utils.PERMISSION_BAN_CREATE || utils.PERMISSION_BAN_DELETE
+		jwtUser := c.Locals("user").(*jwt.Token)
+		claims := jwtUser.Claims.(jwt.MapClaims)
+		userId := int(claims["id"].(float64))
+
+		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		if err != nil {
+			return handler.HandleInternalError(c, err)
+		}
+
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_BAN_VIEW, utils.PERMISSION_BAN_CREATE, utils.PERMISSION_BAN_DELETE}) {
+			return handler.HandleInvalidPermissions(c)
+		}
 		return handler.HandleSuccess(c)
 	}
 }
@@ -67,7 +81,18 @@ type CreateBan struct {
 //	@Router			/system/admin/ban [post]
 func postAdminBan(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		// utils.PERMISSION_BAN_CREATE
+		jwtUser := c.Locals("user").(*jwt.Token)
+		claims := jwtUser.Claims.(jwt.MapClaims)
+		userId := int(claims["id"].(float64))
+
+		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		if err != nil {
+			return handler.HandleInternalError(c, err)
+		}
+
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_BAN_CREATE}) {
+			return handler.HandleInvalidPermissions(c)
+		}
 		return handler.HandleSuccess(c)
 	}
 }
@@ -89,7 +114,18 @@ func postAdminBan(ctx context.Context, db *ent.Client) fiber.Handler {
 //	@Router			/system/admin/ban/{id} [get]
 func getAdminBanID(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		// utils.PERMISSION_BAN_VIEW || utils.PERMISSION_BAN_CREATE || utils.PERMISSION_BAN_DELETE
+		jwtUser := c.Locals("user").(*jwt.Token)
+		claims := jwtUser.Claims.(jwt.MapClaims)
+		userId := int(claims["id"].(float64))
+
+		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		if err != nil {
+			return handler.HandleInternalError(c, err)
+		}
+
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_BAN_VIEW, utils.PERMISSION_BAN_CREATE, utils.PERMISSION_BAN_DELETE}) {
+			return handler.HandleInvalidPermissions(c)
+		}
 		return handler.HandleSuccess(c)
 	}
 }
@@ -111,7 +147,18 @@ func getAdminBanID(ctx context.Context, db *ent.Client) fiber.Handler {
 //	@Router			/system/admin/ban/{id} [delete]
 func deleteAdminBanID(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		// utils.PERMISSION_BAN_DELETE
+		jwtUser := c.Locals("user").(*jwt.Token)
+		claims := jwtUser.Claims.(jwt.MapClaims)
+		userId := int(claims["id"].(float64))
+
+		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		if err != nil {
+			return handler.HandleInternalError(c, err)
+		}
+
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_BAN_DELETE}) {
+			return handler.HandleInvalidPermissions(c)
+		}
 		return handler.HandleSuccess(c)
 	}
 }

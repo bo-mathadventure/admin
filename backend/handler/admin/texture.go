@@ -3,8 +3,11 @@ package admin
 import (
 	"context"
 	"github.com/bo-mathadventure/admin/ent"
+	"github.com/bo-mathadventure/admin/ent/user"
 	"github.com/bo-mathadventure/admin/handler"
+	"github.com/bo-mathadventure/admin/utils"
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v4"
 	"time"
 )
 
@@ -41,7 +44,19 @@ type AdminTextureResponse struct {
 //	@Router			/system/admin/texture [get]
 func getAdminTexture(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		// utils.PERMISSION_TEXTURE_VIEW || utils.PERMISSION_TEXTURE_EDIT
+		jwtUser := c.Locals("user").(*jwt.Token)
+		claims := jwtUser.Claims.(jwt.MapClaims)
+		userId := int(claims["id"].(float64))
+
+		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		if err != nil {
+			return handler.HandleInternalError(c, err)
+		}
+
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_TEXTURE_VIEW, utils.PERMISSION_TEXTURE_EDIT}) {
+			return handler.HandleInvalidPermissions(c)
+		}
+
 		return handler.HandleSuccess(c)
 	}
 }
@@ -70,7 +85,19 @@ type CreateTexture struct {
 //	@Router			/system/admin/texture [post]
 func postAdminTexture(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		// utils.PERMISSION_TEXTURE_EDIT
+		jwtUser := c.Locals("user").(*jwt.Token)
+		claims := jwtUser.Claims.(jwt.MapClaims)
+		userId := int(claims["id"].(float64))
+
+		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		if err != nil {
+			return handler.HandleInternalError(c, err)
+		}
+
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_TEXTURE_EDIT}) {
+			return handler.HandleInvalidPermissions(c)
+		}
+
 		return handler.HandleSuccess(c)
 	}
 }
@@ -92,7 +119,19 @@ func postAdminTexture(ctx context.Context, db *ent.Client) fiber.Handler {
 //	@Router			/system/admin/texture/{id} [get]
 func getAdminTextureID(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		// utils.PERMISSION_TEXTURE_VIEW || utils.PERMISSION_TEXTURE_EDIT
+		jwtUser := c.Locals("user").(*jwt.Token)
+		claims := jwtUser.Claims.(jwt.MapClaims)
+		userId := int(claims["id"].(float64))
+
+		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		if err != nil {
+			return handler.HandleInternalError(c, err)
+		}
+
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_TEXTURE_VIEW, utils.PERMISSION_TEXTURE_EDIT}) {
+			return handler.HandleInvalidPermissions(c)
+		}
+
 		return handler.HandleSuccess(c)
 	}
 }
@@ -122,7 +161,18 @@ type UpdateTexture struct {
 //	@Router			/system/admin/texture/{id} [put]
 func putAdminTextureID(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		// utils.PERMISSION_TEXTURE_EDIT
+		jwtUser := c.Locals("user").(*jwt.Token)
+		claims := jwtUser.Claims.(jwt.MapClaims)
+		userId := int(claims["id"].(float64))
+
+		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		if err != nil {
+			return handler.HandleInternalError(c, err)
+		}
+
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_TEXTURE_EDIT}) {
+			return handler.HandleInvalidPermissions(c)
+		}
 		return handler.HandleSuccess(c)
 	}
 }
@@ -144,7 +194,18 @@ func putAdminTextureID(ctx context.Context, db *ent.Client) fiber.Handler {
 //	@Router			/system/admin/texture/{id} [delete]
 func deleteAdminTextureID(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		// utils.PERMISSION_TEXTURE_EDIT
+		jwtUser := c.Locals("user").(*jwt.Token)
+		claims := jwtUser.Claims.(jwt.MapClaims)
+		userId := int(claims["id"].(float64))
+
+		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		if err != nil {
+			return handler.HandleInternalError(c, err)
+		}
+
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_TEXTURE_EDIT}) {
+			return handler.HandleInvalidPermissions(c)
+		}
 		return handler.HandleSuccess(c)
 	}
 }

@@ -5,6 +5,15 @@ import (
 	"strings"
 )
 
+func CheckPermissionAny(user *ent.User, requiredPermission []string) bool {
+	for _, perm := range requiredPermission {
+		if CheckPermission(user, perm) {
+			return true
+		}
+	}
+	return false
+}
+
 func CheckPermission(user *ent.User, requiredPermission string) bool {
 	if user == nil {
 		return false

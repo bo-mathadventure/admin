@@ -3,8 +3,11 @@ package admin
 import (
 	"context"
 	"github.com/bo-mathadventure/admin/ent"
+	"github.com/bo-mathadventure/admin/ent/user"
 	"github.com/bo-mathadventure/admin/handler"
+	"github.com/bo-mathadventure/admin/utils"
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v4"
 	"time"
 )
 
@@ -45,7 +48,19 @@ type AdminUserResponse struct {
 //	@Router			/system/admin/user [get]
 func getAdminUser(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		// utils.PERMISSION_USER_VIEW || utils.PERMISSION_USER_EDIT
+		jwtUser := c.Locals("user").(*jwt.Token)
+		claims := jwtUser.Claims.(jwt.MapClaims)
+		userId := int(claims["id"].(float64))
+
+		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		if err != nil {
+			return handler.HandleInternalError(c, err)
+		}
+
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_USER_VIEW, utils.PERMISSION_USER_EDIT}) {
+			return handler.HandleInvalidPermissions(c)
+		}
+
 		return handler.HandleSuccess(c)
 	}
 }
@@ -73,7 +88,19 @@ type CreateUser struct {
 //	@Router			/system/admin/user/invite [post]
 func postAdminUser(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		// utils.PERMISSION_USER_EDIT
+		jwtUser := c.Locals("user").(*jwt.Token)
+		claims := jwtUser.Claims.(jwt.MapClaims)
+		userId := int(claims["id"].(float64))
+
+		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		if err != nil {
+			return handler.HandleInternalError(c, err)
+		}
+
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_USER_EDIT}) {
+			return handler.HandleInvalidPermissions(c)
+		}
+
 		return handler.HandleSuccess(c)
 	}
 }
@@ -95,7 +122,19 @@ func postAdminUser(ctx context.Context, db *ent.Client) fiber.Handler {
 //	@Router			/system/admin/user/{id} [get]
 func getAdminUserID(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		// utils.PERMISSION_USER_VIEW || utils.PERMISSION_USER_EDIT
+		jwtUser := c.Locals("user").(*jwt.Token)
+		claims := jwtUser.Claims.(jwt.MapClaims)
+		userId := int(claims["id"].(float64))
+
+		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		if err != nil {
+			return handler.HandleInternalError(c, err)
+		}
+
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_USER_VIEW, utils.PERMISSION_USER_EDIT}) {
+			return handler.HandleInvalidPermissions(c)
+		}
+
 		return handler.HandleSuccess(c)
 	}
 }
@@ -126,7 +165,19 @@ type UpdateUser struct {
 //	@Router			/system/admin/user/{id} [put]
 func putAdminUserID(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		// utils.PERMISSION_USER_EDIT
+		jwtUser := c.Locals("user").(*jwt.Token)
+		claims := jwtUser.Claims.(jwt.MapClaims)
+		userId := int(claims["id"].(float64))
+
+		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		if err != nil {
+			return handler.HandleInternalError(c, err)
+		}
+
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_USER_EDIT}) {
+			return handler.HandleInvalidPermissions(c)
+		}
+
 		return handler.HandleSuccess(c)
 	}
 }
@@ -148,7 +199,19 @@ func putAdminUserID(ctx context.Context, db *ent.Client) fiber.Handler {
 //	@Router			/system/admin/user/{id} [delete]
 func deleteAdminUserID(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		// utils.PERMISSION_USER_EDIT
+		jwtUser := c.Locals("user").(*jwt.Token)
+		claims := jwtUser.Claims.(jwt.MapClaims)
+		userId := int(claims["id"].(float64))
+
+		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		if err != nil {
+			return handler.HandleInternalError(c, err)
+		}
+
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_USER_EDIT}) {
+			return handler.HandleInvalidPermissions(c)
+		}
+
 		return handler.HandleSuccess(c)
 	}
 }
