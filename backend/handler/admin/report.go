@@ -3,11 +3,13 @@ package admin
 import (
 	"context"
 	"github.com/bo-mathadventure/admin/ent"
+	"github.com/bo-mathadventure/admin/ent/report"
 	"github.com/bo-mathadventure/admin/ent/user"
 	"github.com/bo-mathadventure/admin/handler"
 	"github.com/bo-mathadventure/admin/utils"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
+	"strconv"
 	"time"
 )
 
@@ -19,11 +21,29 @@ func NewAdminReportHandler(app fiber.Router, ctx context.Context, db *ent.Client
 }
 
 type AdminReportResponse struct {
-	ID                  int       `json:"id"`
-	ReportedUserComment string    `json:"reportedUserComment"`
-	RoomUrl             string    `json:"roomUrl"`
-	Hide                bool      `json:"hide"`
-	CreatedAt           time.Time `json:"createdAt" example:"2006-01-02T15:04:05Z07:00"`
+	ID                  int    `json:"id"`
+	ReportedUserComment string `json:"reportedUserComment"`
+	RoomUrl             string `json:"roomUrl"`
+	Hide                bool   `json:"hide"`
+	CreatedAt           string `json:"createdAt" example:"2006-01-02T15:04:05Z07:00"`
+}
+
+func responseAdminReportResponse(this *ent.Report) *AdminReportResponse {
+	return &AdminReportResponse{
+		ID:                  this.ID,
+		ReportedUserComment: this.ReportedUserComment,
+		RoomUrl:             this.RoomUrl,
+		Hide:                this.Hide,
+		CreatedAt:           this.CreatedAt.Format(time.RFC3339),
+	}
+}
+
+func responseAdminReportResponses(this []*ent.Report) []*AdminReportResponse {
+	data := make([]*AdminReportResponse, len(this))
+	for i, e := range this {
+		data[i] = responseAdminReportResponse(e)
+	}
+	return data
 }
 
 // getAdminReport godoc
@@ -55,7 +75,12 @@ func getAdminReport(ctx context.Context, db *ent.Client) fiber.Handler {
 			return handler.HandleInvalidPermissions(c)
 		}
 
-		return handler.HandleSuccess(c)
+		allEntires, err := db.Report.Query().All(ctx)
+		if err != nil {
+			return handler.HandleInternalError(c, err)
+		}
+
+		return c.JSON(responseAdminReportResponses(allEntires))
 	}
 }
 
@@ -88,11 +113,26 @@ func getAdminReportID(ctx context.Context, db *ent.Client) fiber.Handler {
 		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_REPORT_VIEW, utils.PERMISSION_REPORT_EDIT}) {
 			return handler.HandleInvalidPermissions(c)
 		}
-		return handler.HandleSuccess(c)
+
+		pathID, err := strconv.Atoi(c.Params("id"))
+		if err != nil {
+			return handler.HandleInvalidID(c)
+		}
+
+		foundEntry, err := db.Report.Query().Where(report.ID(pathID)).First(ctx)
+		if err != nil {
+			if ent.IsNotFound(err) {
+				return handler.HandleNotFound(c)
+			}
+			return handler.HandleInternalError(c, err)
+		}
+
+		return c.JSON(responseAdminReportResponse(foundEntry))
 	}
 }
 
 type UpdateReport struct {
+	// fixme add at least staff comments
 }
 
 // putAdminReportID godoc
@@ -125,7 +165,35 @@ func putAdminReportID(ctx context.Context, db *ent.Client) fiber.Handler {
 		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_REPORT_EDIT}) {
 			return handler.HandleInvalidPermissions(c)
 		}
-		return handler.HandleSuccess(c)
+
+		pathID, err := strconv.Atoi(c.Params("id"))
+		if err != nil {
+			return handler.HandleInvalidID(c)
+		}
+
+		req := new(UpdateReport)
+		if err := c.BodyParser(req); err != nil {
+			return handler.HandleBodyParseError(c, err)
+		}
+
+		if valid, err := handler.ValidateStruct(c, req); !valid {
+			return err
+		}
+
+		found, err := db.Report.Query().Where(report.ID(pathID)).First(ctx)
+		if err != nil {
+			if ent.IsNotFound(err) {
+				return handler.HandleNotFound(c)
+			}
+			return handler.HandleInternalError(c, err)
+		}
+
+		newFound, err := found.Update().Save(ctx)
+		if err != nil {
+			return handler.HandleInternalError(c, err)
+		}
+
+		return c.JSON(responseAdminReportResponse(newFound))
 	}
 }
 
@@ -158,6 +226,25 @@ func deleteAdminReportID(ctx context.Context, db *ent.Client) fiber.Handler {
 		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_REPORT_EDIT}) {
 			return handler.HandleInvalidPermissions(c)
 		}
+
+		pathID, err := strconv.Atoi(c.Params("id"))
+		if err != nil {
+			return handler.HandleInvalidID(c)
+		}
+
+		found, err := db.Report.Query().Where(report.ID(pathID)).First(ctx)
+		if err != nil {
+			if ent.IsNotFound(err) {
+				return handler.HandleNotFound(c)
+			}
+			return handler.HandleInternalError(c, err)
+		}
+
+		_, err = found.Update().SetHide(true).Save(ctx)
+		if err != nil {
+			return handler.HandleInternalError(c, err)
+		}
+
 		return handler.HandleSuccess(c)
 	}
 }

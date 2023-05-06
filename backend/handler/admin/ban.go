@@ -3,11 +3,13 @@ package admin
 import (
 	"context"
 	"github.com/bo-mathadventure/admin/ent"
+	"github.com/bo-mathadventure/admin/ent/ban"
 	"github.com/bo-mathadventure/admin/ent/user"
 	"github.com/bo-mathadventure/admin/handler"
 	"github.com/bo-mathadventure/admin/utils"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
+	"strconv"
 	"time"
 )
 
@@ -19,11 +21,29 @@ func NewAdminBanHandler(app fiber.Router, ctx context.Context, db *ent.Client) {
 }
 
 type AdminBanResponse struct {
-	ID         int       `json:"id"`
-	Check      string    `json:"check" example:"60948703-fca9-4491-b3bc-588188d93eb3"`
-	Message    string    `json:"message" example:"banned for verbal abuse"`
-	ValidUntil time.Time `json:"validUntil" example:"2006-01-02T15:04:05Z07:00" validate:"optional"`
-	CreatedAt  time.Time `json:"createdAt" example:"2006-01-02T15:04:05Z07:00"`
+	ID         int    `json:"id"`
+	Check      string `json:"check" example:"60948703-fca9-4491-b3bc-588188d93eb3"`
+	Message    string `json:"message" example:"banned for verbal abuse"`
+	ValidUntil string `json:"validUntil" example:"2006-01-02T15:04:05Z07:00" validate:"omitempty"`
+	CreatedAt  string `json:"createdAt" example:"2006-01-02T15:04:05Z07:00"`
+}
+
+func responseAdminBanResponse(this *ent.Ban) *AdminBanResponse {
+	return &AdminBanResponse{
+		ID:         this.ID,
+		Check:      this.Check,
+		Message:    this.Message,
+		ValidUntil: this.ValidUntil.Format(time.RFC3339),
+		CreatedAt:  this.CreatedAt.Format(time.RFC3339),
+	}
+}
+
+func responseAdminBanResponses(this []*ent.Ban) []*AdminBanResponse {
+	data := make([]*AdminBanResponse, len(this))
+	for i, e := range this {
+		data[i] = responseAdminBanResponse(e)
+	}
+	return data
 }
 
 // getAdminBan godoc
@@ -54,14 +74,20 @@ func getAdminBan(ctx context.Context, db *ent.Client) fiber.Handler {
 		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_BAN_VIEW, utils.PERMISSION_BAN_CREATE, utils.PERMISSION_BAN_DELETE}) {
 			return handler.HandleInvalidPermissions(c)
 		}
-		return handler.HandleSuccess(c)
+
+		allEntires, err := db.Ban.Query().All(ctx)
+		if err != nil {
+			return handler.HandleInternalError(c, err)
+		}
+
+		return c.JSON(responseAdminBanResponses(allEntires))
 	}
 }
 
 type CreateBan struct {
-	Check      string    `json:"check" example:"60948703-fca9-4491-b3bc-588188d93eb3"`
-	Message    string    `json:"message" example:"banned for verbal abuse"`
-	ValidUntil time.Time `json:"validUntil" example:"2006-01-02T15:04:05Z07:00" validate:"optional"`
+	Check      string `json:"check" example:"60948703-fca9-4491-b3bc-588188d93eb3" validate:"required"`
+	Message    string `json:"message" example:"banned for verbal abuse" validate:"required"`
+	ValidUntil string `json:"validUntil" example:"2006-01-02T15:04:05Z07:00" validate:"omitempty,datetime"`
 }
 
 // postAdminBan godoc
@@ -93,7 +119,29 @@ func postAdminBan(ctx context.Context, db *ent.Client) fiber.Handler {
 		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_BAN_CREATE}) {
 			return handler.HandleInvalidPermissions(c)
 		}
-		return handler.HandleSuccess(c)
+
+		req := new(CreateBan)
+		if err := c.BodyParser(req); err != nil {
+			return handler.HandleBodyParseError(c, err)
+		}
+
+		if valid, err := handler.ValidateStruct(c, req); !valid {
+			return err
+		}
+
+		var validUntil *time.Time
+		if req.ValidUntil != "" {
+			validUntilParsed, err := time.Parse(time.RFC3339, req.ValidUntil)
+			if err != nil {
+				validUntil = &validUntilParsed
+			}
+		}
+		newBan, err := db.Ban.Create().SetCheck(req.Check).SetMessage(req.Message).SetNillableCreatedAt(validUntil).Save(ctx)
+		if err != nil {
+			return handler.HandleInternalError(c, err)
+		}
+
+		return c.JSON(responseAdminBanResponse(newBan))
 	}
 }
 
@@ -126,7 +174,21 @@ func getAdminBanID(ctx context.Context, db *ent.Client) fiber.Handler {
 		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_BAN_VIEW, utils.PERMISSION_BAN_CREATE, utils.PERMISSION_BAN_DELETE}) {
 			return handler.HandleInvalidPermissions(c)
 		}
-		return handler.HandleSuccess(c)
+
+		pathID, err := strconv.Atoi(c.Params("id"))
+		if err != nil {
+			return handler.HandleInvalidID(c)
+		}
+
+		foundEntry, err := db.Ban.Query().Where(ban.ID(pathID)).First(ctx)
+		if err != nil {
+			if ent.IsNotFound(err) {
+				return handler.HandleNotFound(c)
+			}
+			return handler.HandleInternalError(c, err)
+		}
+
+		return c.JSON(responseAdminBanResponse(foundEntry))
 	}
 }
 
@@ -159,6 +221,25 @@ func deleteAdminBanID(ctx context.Context, db *ent.Client) fiber.Handler {
 		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_BAN_DELETE}) {
 			return handler.HandleInvalidPermissions(c)
 		}
+
+		pathID, err := strconv.Atoi(c.Params("id"))
+		if err != nil {
+			return handler.HandleInvalidID(c)
+		}
+
+		found, err := db.Ban.Query().Where(ban.ID(pathID)).First(ctx)
+		if err != nil {
+			if ent.IsNotFound(err) {
+				return handler.HandleNotFound(c)
+			}
+			return handler.HandleInternalError(c, err)
+		}
+
+		_, err = found.Update().SetValidUntil(time.Now()).Save(ctx)
+		if err != nil {
+			return handler.HandleInternalError(c, err)
+		}
+
 		return handler.HandleSuccess(c)
 	}
 }

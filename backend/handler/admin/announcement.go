@@ -3,15 +3,26 @@ package admin
 import (
 	"context"
 	"github.com/bo-mathadventure/admin/ent"
+	"github.com/bo-mathadventure/admin/ent/announcement"
 	"github.com/bo-mathadventure/admin/ent/user"
 	"github.com/bo-mathadventure/admin/handler"
 	"github.com/bo-mathadventure/admin/utils"
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
+	log "github.com/sirupsen/logrus"
+	"strconv"
 	"time"
 )
 
 func NewAdminAnnouncementHandler(app fiber.Router, ctx context.Context, db *ent.Client) {
+	err := handler.Validate.RegisterValidation("announcement_type_validation", func(fl validator.FieldLevel) bool {
+		return utils.Contains([]string{"ban", "warning"}, fl.Field().String())
+	})
+	if err != nil {
+		log.WithError(err).WithField("validation", "policy_validation").Panic("failed to setup custom validation")
+	}
+
 	app.Get("/", getAdminAnnouncement(ctx, db))
 	app.Post("/", postAdminAnnouncement(ctx, db))
 	app.Get("/:id", getAdminAnnouncementID(ctx, db))
@@ -20,11 +31,29 @@ func NewAdminAnnouncementHandler(app fiber.Router, ctx context.Context, db *ent.
 }
 
 type AdminAnnouncementResponse struct {
-	ID         int       `json:"id"`
-	Type       string    `json:"type" enums:"ban,warning"`
-	Message    string    `json:"message" example:"This is an example alert"`
-	CreatedAt  time.Time `json:"createdAt" example:"2006-01-02T15:04:05Z07:00"`
-	ValidUntil time.Time `json:"validUntil" example:"2006-01-02T15:04:05Z07:00" validate:"optional"`
+	ID         int    `json:"id"`
+	Type       string `json:"type" enums:"ban,warning"`
+	Message    string `json:"message" example:"This is an example alert"`
+	CreatedAt  string `json:"createdAt" example:"2006-01-02T15:04:05Z07:00"`
+	ValidUntil string `json:"validUntil" example:"2006-01-02T15:04:05Z07:00" validate:"omitempty"`
+}
+
+func responseAdminAnnouncementResponse(this *ent.Announcement) *AdminAnnouncementResponse {
+	return &AdminAnnouncementResponse{
+		ID:         this.ID,
+		Type:       this.Type,
+		Message:    this.Message,
+		CreatedAt:  this.CreatedAt.Format(time.RFC3339),
+		ValidUntil: this.ValidUntil.Format(time.RFC3339),
+	}
+}
+
+func responseAdminAnnouncementResponses(this []*ent.Announcement) []*AdminAnnouncementResponse {
+	data := make([]*AdminAnnouncementResponse, len(this))
+	for i, e := range this {
+		data[i] = responseAdminAnnouncementResponse(e)
+	}
+	return data
 }
 
 // getAdminAnnouncement godoc
@@ -55,14 +84,20 @@ func getAdminAnnouncement(ctx context.Context, db *ent.Client) fiber.Handler {
 		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_ANNOUNCEMENT_VIEW, utils.PERMISSION_ANNOUNCEMENT_EDIT}) {
 			return handler.HandleInvalidPermissions(c)
 		}
-		return handler.HandleSuccess(c)
+
+		allEntires, err := db.Announcement.Query().All(ctx)
+		if err != nil {
+			return handler.HandleInternalError(c, err)
+		}
+
+		return c.JSON(responseAdminAnnouncementResponses(allEntires))
 	}
 }
 
 type CreateAnnouncement struct {
-	Type       string    `json:"type" enums:"ban,warning"`
-	Message    string    `json:"message" example:"This is an example alert"`
-	ValidUntil time.Time `json:"validUntil" example:"2006-01-02T15:04:05Z07:00" validate:"optional"`
+	Type       string `json:"type" enums:"ban,warning" validate:"required,announcement_type_validation"`
+	Message    string `json:"message" example:"This is an example alert" validate:"required"`
+	ValidUntil string `json:"validUntil" example:"2006-01-02T15:04:05Z07:00" validate:"omitempty,datetime"`
 }
 
 // postAdminAnnouncement godoc
@@ -95,7 +130,29 @@ func postAdminAnnouncement(ctx context.Context, db *ent.Client) fiber.Handler {
 			return handler.HandleInvalidPermissions(c)
 		}
 
-		return handler.HandleSuccess(c)
+		req := new(CreateAnnouncement)
+		if err := c.BodyParser(req); err != nil {
+			return handler.HandleBodyParseError(c, err)
+		}
+
+		if valid, err := handler.ValidateStruct(c, req); !valid {
+			return err
+		}
+
+		var validUntil *time.Time
+		if req.ValidUntil != "" {
+			validUntilParsed, err := time.Parse(time.RFC3339, req.ValidUntil)
+			if err != nil {
+				validUntil = &validUntilParsed
+			}
+		}
+
+		newEntry, err := db.Announcement.Create().SetType(req.Type).SetMessage(req.Message).SetNillableValidUntil(validUntil).Save(ctx)
+		if err != nil {
+			return handler.HandleInternalError(c, err)
+		}
+
+		return c.JSON(responseAdminAnnouncementResponse(newEntry))
 	}
 }
 
@@ -128,14 +185,28 @@ func getAdminAnnouncementID(ctx context.Context, db *ent.Client) fiber.Handler {
 		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_ANNOUNCEMENT_VIEW, utils.PERMISSION_ANNOUNCEMENT_EDIT}) {
 			return handler.HandleInvalidPermissions(c)
 		}
-		return handler.HandleSuccess(c)
+
+		pathID, err := strconv.Atoi(c.Params("id"))
+		if err != nil {
+			return handler.HandleInvalidID(c)
+		}
+
+		foundEntry, err := db.Announcement.Query().Where(announcement.ID(pathID)).First(ctx)
+		if err != nil {
+			if ent.IsNotFound(err) {
+				return handler.HandleNotFound(c)
+			}
+			return handler.HandleInternalError(c, err)
+		}
+
+		return c.JSON(responseAdminAnnouncementResponse(foundEntry))
 	}
 }
 
 type UpdateAnnouncement struct {
-	Type       string    `json:"type" enums:"ban,warning"`
-	Message    string    `json:"message" example:"This is an example alert"`
-	ValidUntil time.Time `json:"validUntil" example:"2006-01-02T15:04:05Z07:00" validate:"optional"`
+	Type       string `json:"type" enums:"ban,warning" validate:"required,announcement_type_validation"`
+	Message    string `json:"message" example:"This is an example alert" validate:"required"`
+	ValidUntil string `json:"validUntil" example:"2006-01-02T15:04:05Z07:00" validate:"omitempty,datetime"`
 }
 
 // putAdminAnnouncementID godoc
@@ -168,7 +239,43 @@ func putAdminAnnouncementID(ctx context.Context, db *ent.Client) fiber.Handler {
 		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_ANNOUNCEMENT_EDIT}) {
 			return handler.HandleInvalidPermissions(c)
 		}
-		return handler.HandleSuccess(c)
+
+		pathID, err := strconv.Atoi(c.Params("id"))
+		if err != nil {
+			return handler.HandleInvalidID(c)
+		}
+
+		req := new(UpdateAnnouncement)
+		if err := c.BodyParser(req); err != nil {
+			return handler.HandleBodyParseError(c, err)
+		}
+
+		if valid, err := handler.ValidateStruct(c, req); !valid {
+			return err
+		}
+
+		found, err := db.Announcement.Query().Where(announcement.ID(pathID)).First(ctx)
+		if err != nil {
+			if ent.IsNotFound(err) {
+				return handler.HandleNotFound(c)
+			}
+			return handler.HandleInternalError(c, err)
+		}
+
+		var validUntil *time.Time
+		if req.ValidUntil != "" {
+			validUntilParsed, err := time.Parse(time.RFC3339, req.ValidUntil)
+			if err != nil {
+				validUntil = &validUntilParsed
+			}
+		}
+
+		newFound, err := found.Update().SetType(req.Type).SetMessage(req.Message).SetNillableValidUntil(validUntil).Save(ctx)
+		if err != nil {
+			return handler.HandleInternalError(c, err)
+		}
+
+		return c.JSON(responseAdminAnnouncementResponse(newFound))
 	}
 }
 
@@ -201,6 +308,17 @@ func deleteAdminAnnouncementID(ctx context.Context, db *ent.Client) fiber.Handle
 		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_ANNOUNCEMENT_EDIT}) {
 			return handler.HandleInvalidPermissions(c)
 		}
+
+		pathID, err := strconv.Atoi(c.Params("id"))
+		if err != nil {
+			return handler.HandleInvalidID(c)
+		}
+
+		err = db.Announcement.DeleteOneID(pathID).Exec(ctx)
+		if err != nil {
+			return handler.HandleInternalError(c, err)
+		}
+
 		return handler.HandleSuccess(c)
 	}
 }

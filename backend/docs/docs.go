@@ -1353,9 +1353,9 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Requires permission admin.texture.edit",
+                "description": "Upload file via resource field. Requires permission admin.texture.edit",
                 "consumes": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -1477,7 +1477,7 @@ const docTemplate = `{
                 ],
                 "description": "Update texture by ID. Requires permission admin.texture.edit",
                 "consumes": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -1659,7 +1659,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Invite/Create new user. Requires permission admin.user.edit",
+                "description": "Invite/Create new user. Requires permission admin.user.invite",
                 "consumes": [
                     "application/json"
                 ],
@@ -2094,6 +2094,29 @@ const docTemplate = `{
                 }
             }
         },
+        "admin.AdminMapChat": {
+            "type": "object",
+            "required": [
+                "enable",
+                "enableDisconnectedList",
+                "enableOnlineList",
+                "enableUpload"
+            ],
+            "properties": {
+                "enable": {
+                    "type": "boolean"
+                },
+                "enableDisconnectedList": {
+                    "type": "boolean"
+                },
+                "enableOnlineList": {
+                    "type": "boolean"
+                },
+                "enableUpload": {
+                    "type": "boolean"
+                }
+            }
+        },
         "admin.AdminMapResponse": {
             "type": "object",
             "properties": {
@@ -2101,21 +2124,7 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "chat": {
-                    "type": "object",
-                    "properties": {
-                        "enable": {
-                            "type": "boolean"
-                        },
-                        "enableDisconnectedList": {
-                            "type": "boolean"
-                        },
-                        "enableOnlineList": {
-                            "type": "boolean"
-                        },
-                        "enableUpload": {
-                            "type": "boolean"
-                        }
-                    }
+                    "$ref": "#/definitions/admin.AdminMapChat"
                 },
                 "contactPage": {
                     "type": "string",
@@ -2281,6 +2290,10 @@ const docTemplate = `{
         },
         "admin.CreateAnnouncement": {
             "type": "object",
+            "required": [
+                "message",
+                "type"
+            ],
             "properties": {
                 "message": {
                     "type": "string",
@@ -2301,6 +2314,10 @@ const docTemplate = `{
         },
         "admin.CreateBan": {
             "type": "object",
+            "required": [
+                "check",
+                "message"
+            ],
             "properties": {
                 "check": {
                     "type": "string",
@@ -2318,26 +2335,21 @@ const docTemplate = `{
         },
         "admin.CreateMap": {
             "type": "object",
+            "required": [
+                "canReport",
+                "contactPage",
+                "expireOn",
+                "mapUrl",
+                "policy",
+                "roomName",
+                "tags"
+            ],
             "properties": {
                 "canReport": {
                     "type": "boolean"
                 },
                 "chat": {
-                    "type": "object",
-                    "properties": {
-                        "enable": {
-                            "type": "boolean"
-                        },
-                        "enableDisconnectedList": {
-                            "type": "boolean"
-                        },
-                        "enableOnlineList": {
-                            "type": "boolean"
-                        },
-                        "enableUpload": {
-                            "type": "boolean"
-                        }
-                    }
+                    "$ref": "#/definitions/admin.AdminMapChat"
                 },
                 "contactPage": {
                     "type": "string",
@@ -2361,6 +2373,8 @@ const docTemplate = `{
                 },
                 "roomName": {
                     "type": "string",
+                    "maxLength": 32,
+                    "minLength": 3,
                     "example": "Default Room"
                 },
                 "tags": {
@@ -2377,6 +2391,11 @@ const docTemplate = `{
         },
         "admin.CreateTexture": {
             "type": "object",
+            "required": [
+                "layer",
+                "tags",
+                "texture"
+            ],
             "properties": {
                 "layer": {
                     "type": "string",
@@ -2403,15 +2422,16 @@ const docTemplate = `{
                 "texture": {
                     "type": "string",
                     "example": "eyes1"
-                },
-                "url": {
-                    "type": "string",
-                    "example": "%FRONTEND_URL%/public/resources/customisation/character_eyes/character_eyes1.png"
                 }
             }
         },
         "admin.CreateUser": {
             "type": "object",
+            "required": [
+                "email",
+                "password",
+                "username"
+            ],
             "properties": {
                 "email": {
                     "type": "string",
@@ -2419,16 +2439,23 @@ const docTemplate = `{
                 },
                 "password": {
                     "type": "string",
+                    "minLength": 8,
                     "example": "my$ecur3P4$$word"
                 },
                 "username": {
                     "type": "string",
+                    "maxLength": 16,
+                    "minLength": 3,
                     "example": "Bob"
                 }
             }
         },
         "admin.UpdateAnnouncement": {
             "type": "object",
+            "required": [
+                "message",
+                "type"
+            ],
             "properties": {
                 "message": {
                     "type": "string",
@@ -2449,26 +2476,21 @@ const docTemplate = `{
         },
         "admin.UpdateMap": {
             "type": "object",
+            "required": [
+                "canReport",
+                "contactPage",
+                "expireOn",
+                "mapUrl",
+                "policy",
+                "roomName",
+                "tags"
+            ],
             "properties": {
                 "canReport": {
                     "type": "boolean"
                 },
                 "chat": {
-                    "type": "object",
-                    "properties": {
-                        "enable": {
-                            "type": "boolean"
-                        },
-                        "enableDisconnectedList": {
-                            "type": "boolean"
-                        },
-                        "enableOnlineList": {
-                            "type": "boolean"
-                        },
-                        "enableUpload": {
-                            "type": "boolean"
-                        }
-                    }
+                    "$ref": "#/definitions/admin.AdminMapChat"
                 },
                 "contactPage": {
                     "type": "string",
@@ -2492,6 +2514,8 @@ const docTemplate = `{
                 },
                 "roomName": {
                     "type": "string",
+                    "maxLength": 32,
+                    "minLength": 3,
                     "example": "Default Room"
                 },
                 "tags": {
@@ -2511,6 +2535,11 @@ const docTemplate = `{
         },
         "admin.UpdateTexture": {
             "type": "object",
+            "required": [
+                "layer",
+                "tags",
+                "texture"
+            ],
             "properties": {
                 "layer": {
                     "type": "string",
@@ -2537,19 +2566,25 @@ const docTemplate = `{
                 "texture": {
                     "type": "string",
                     "example": "eyes1"
-                },
-                "url": {
-                    "type": "string",
-                    "example": "%FRONTEND_URL%/public/resources/customisation/character_eyes/character_eyes1.png"
                 }
             }
         },
         "admin.UpdateUser": {
             "type": "object",
+            "required": [
+                "email",
+                "permissions",
+                "tags",
+                "username"
+            ],
             "properties": {
                 "email": {
                     "type": "string",
                     "example": "bob@example.com"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 8
                 },
                 "permissions": {
                     "type": "array",
@@ -2558,7 +2593,7 @@ const docTemplate = `{
                     },
                     "example": [
                         "admin.editor",
-                        "admin.user.*"
+                        "admin.user.edit"
                     ]
                 },
                 "tags": {
@@ -2575,6 +2610,8 @@ const docTemplate = `{
                 },
                 "username": {
                     "type": "string",
+                    "maxLength": 16,
+                    "minLength": 3,
                     "example": "Bob"
                 },
                 "vCardURL": {
@@ -2609,7 +2646,8 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "extra": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "user don't have permissions"
                 },
                 "message": {
                     "type": "string",
@@ -2621,11 +2659,32 @@ const docTemplate = `{
                 },
                 "success": {
                     "type": "boolean"
+                },
+                "validation": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/handler.ErrorResponse"
+                    }
+                }
+            }
+        },
+        "handler.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "field": {
+                    "type": "string"
+                },
+                "tag": {
+                    "type": "string"
                 }
             }
         },
         "handler.LoginRequest": {
             "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
             "properties": {
                 "email": {
                     "type": "string",
@@ -2647,9 +2706,16 @@ const docTemplate = `{
         },
         "handler.RegisterRequest": {
             "type": "object",
+            "required": [
+                "confirmPassword",
+                "email",
+                "password",
+                "username"
+            ],
             "properties": {
                 "confirmPassword": {
                     "type": "string",
+                    "minLength": 8,
                     "example": "my$ecur3P4$$word"
                 },
                 "email": {
@@ -2662,10 +2728,13 @@ const docTemplate = `{
                 },
                 "password": {
                     "type": "string",
+                    "minLength": 8,
                     "example": "my$ecur3P4$$word"
                 },
                 "username": {
                     "type": "string",
+                    "maxLength": 16,
+                    "minLength": 3,
                     "example": "Bob"
                 }
             }

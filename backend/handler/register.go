@@ -12,11 +12,11 @@ import (
 )
 
 type RegisterRequest struct {
-	EMail                    string `json:"email" example:"bob@example.com"`
-	Username                 string `json:"username" example:"Bob"`
-	Language                 string `json:"language" example:"de"`
-	ClearTextPassword        string `json:"password" example:"my$ecur3P4$$word"`
-	ClearTextPasswordConfirm string `json:"confirmPassword" example:"my$ecur3P4$$word"`
+	EMail                    string `json:"email" example:"bob@example.com" validate:"required,email"`
+	Username                 string `json:"username" example:"Bob" validate:"required,alphaunicode,min=3,max=16"`
+	Language                 string `json:"language" example:"de" validate:"omitempty"`
+	ClearTextPassword        string `json:"password" example:"my$ecur3P4$$word" validate:"required,min=8"`
+	ClearTextPasswordConfirm string `json:"confirmPassword" example:"my$ecur3P4$$word" validate:"required,min=8,eqcsfield=ClearTextPassword"`
 }
 
 // Register godoc
@@ -43,8 +43,8 @@ func Register(ctx context.Context, db *ent.Client) fiber.Handler {
 			return HandleBodyParseError(c, err)
 		}
 
-		if req.EMail == "" || req.ClearTextPassword == "" || req.Username == "" {
-			return HandleError(c, "ERR_INVALID_REQUEST")
+		if valid, err := ValidateStruct(c, req); !valid {
+			return err
 		}
 
 		err := email.Validate(req.EMail)

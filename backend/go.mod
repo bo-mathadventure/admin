@@ -6,6 +6,7 @@ require (
 	entgo.io/ent v0.12.3
 	github.com/caarlos0/env/v8 v8.0.0
 	github.com/cameronnewman/go-emailvalidation/v3 v3.2.74
+	github.com/go-playground/validator/v10 v10.13.0
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/gofiber/fiber/v2 v2.44.0
 	github.com/gofiber/jwt/v3 v3.3.9
@@ -32,11 +33,14 @@ require (
 	github.com/go-openapi/jsonreference v0.20.2 // indirect
 	github.com/go-openapi/spec v0.20.9 // indirect
 	github.com/go-openapi/swag v0.22.3 // indirect
+	github.com/go-playground/locales v0.14.1 // indirect
+	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/google/go-cmp v0.5.6 // indirect
 	github.com/hashicorp/hcl/v2 v2.13.0 // indirect
 	github.com/jonboulle/clockwork v0.3.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/klauspost/compress v1.16.5 // indirect
+	github.com/leodido/go-urn v1.2.3 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattermost/xml-roundtrip-validator v0.1.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect

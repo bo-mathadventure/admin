@@ -14,8 +14,8 @@ import (
 )
 
 type LoginRequest struct {
-	EMail             string `json:"email" example:"bob@example.com"`
-	ClearTextPassword string `json:"password" example:"my$ecur3P4$$word"`
+	EMail             string `json:"email" example:"bob@example.com" validate:"required,email"`
+	ClearTextPassword string `json:"password" example:"my$ecur3P4$$word" validate:"required"`
 }
 
 type LoginResponse struct {
@@ -40,6 +40,10 @@ func Login(ctx context.Context, db *ent.Client) fiber.Handler {
 		req := new(LoginRequest)
 		if err := c.BodyParser(req); err != nil {
 			return HandleBodyParseError(c, err)
+		}
+
+		if valid, err := ValidateStruct(c, req); !valid {
+			return err
 		}
 
 		foundUser, err := db.User.Query().Where(user.Email(email.Normalize(req.EMail))).First(ctx)

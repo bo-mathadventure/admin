@@ -8,6 +8,7 @@ import (
 	"github.com/bo-mathadventure/admin/utils"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
+	"strconv"
 	"time"
 )
 
@@ -20,16 +21,39 @@ func NewAdminUserHandler(app fiber.Router, ctx context.Context, db *ent.Client) 
 }
 
 type AdminUserResponse struct {
-	ID            int       `json:"id"`
-	UUID          string    `json:"uuid" example:"60948703-fca9-4491-b3bc-588188d93eb3"`
-	Email         string    `json:"email" example:"bob@example.com"`
-	Username      string    `json:"username" example:"Bob"`
-	SsoIdentifier string    `json:"ssoIdentifier"`
-	VCardURL      string    `json:"vCardURL" validate:"optional"`
-	Permissions   []string  `json:"permissions" example:"admin.editor,admin.user.*"`
-	Tags          []string  `json:"tags" example:"admin,mod,editor,student"`
-	LastLogin     time.Time `json:"lastLogin" example:"2006-01-02T15:04:05Z07:00" validate:"optional"`
-	CreatedAt     time.Time `json:"createdAt" example:"2006-01-02T15:04:05Z07:00"`
+	ID            int      `json:"id"`
+	UUID          string   `json:"uuid" example:"60948703-fca9-4491-b3bc-588188d93eb3"`
+	Email         string   `json:"email" example:"bob@example.com"`
+	Username      string   `json:"username" example:"Bob"`
+	SsoIdentifier string   `json:"ssoIdentifier"`
+	VCardURL      string   `json:"vCardURL" validate:"omitempty"`
+	Permissions   []string `json:"permissions" example:"admin.editor,admin.user.*"`
+	Tags          []string `json:"tags" example:"admin,mod,editor,student"`
+	LastLogin     string   `json:"lastLogin" example:"2006-01-02T15:04:05Z07:00" validate:"omitempty"`
+	CreatedAt     string   `json:"createdAt" example:"2006-01-02T15:04:05Z07:00"`
+}
+
+func responseAdminUserResponse(this *ent.User) *AdminUserResponse {
+	return &AdminUserResponse{
+		ID:            this.ID,
+		UUID:          this.UUID,
+		Email:         this.Email,
+		Username:      this.Username,
+		SsoIdentifier: this.SsoIdentifier,
+		VCardURL:      this.VCardURL,
+		Permissions:   this.Permissions,
+		Tags:          this.Tags,
+		LastLogin:     this.LastLogin.Format(time.RFC3339),
+		CreatedAt:     this.CreatedAt.Format(time.RFC3339),
+	}
+}
+
+func responseAdminUserResponses(this []*ent.User) []*AdminUserResponse {
+	data := make([]*AdminUserResponse, len(this))
+	for i, e := range this {
+		data[i] = responseAdminUserResponse(e)
+	}
+	return data
 }
 
 // getAdminUser godoc
@@ -61,14 +85,19 @@ func getAdminUser(ctx context.Context, db *ent.Client) fiber.Handler {
 			return handler.HandleInvalidPermissions(c)
 		}
 
-		return handler.HandleSuccess(c)
+		allEntires, err := db.User.Query().All(ctx)
+		if err != nil {
+			return handler.HandleInternalError(c, err)
+		}
+
+		return c.JSON(responseAdminUserResponses(allEntires))
 	}
 }
 
 type CreateUser struct {
-	Email    string `json:"email" example:"bob@example.com"`
-	Username string `json:"username" example:"Bob"`
-	Password string `json:"password" example:"my$ecur3P4$$word"`
+	Email    string `json:"email" example:"bob@example.com" validate:"required,email"`
+	Username string `json:"username" example:"Bob" validate:"required,alphaunicode,min=3,max=16"`
+	Password string `json:"password" example:"my$ecur3P4$$word" validate:"required,min=8"`
 }
 
 // postAdminUser godoc
@@ -101,7 +130,26 @@ func postAdminUser(ctx context.Context, db *ent.Client) fiber.Handler {
 			return handler.HandleInvalidPermissions(c)
 		}
 
-		return handler.HandleSuccess(c)
+		req := new(CreateUser)
+		if err := c.BodyParser(req); err != nil {
+			return handler.HandleBodyParseError(c, err)
+		}
+
+		if valid, err := handler.ValidateStruct(c, req); !valid {
+			return err
+		}
+
+		hashPassword, err := utils.HashPassword(req.Password)
+		if err != nil {
+			return handler.HandleInternalError(c, err)
+		}
+
+		newEntry, err := db.User.Create().SetEmail(req.Email).SetUsername(req.Username).SetPassword(hashPassword).Save(ctx)
+		if err != nil {
+			return handler.HandleInternalError(c, err)
+		}
+
+		return c.JSON(responseAdminUserResponse(newEntry))
 	}
 }
 
@@ -135,16 +183,30 @@ func getAdminUserID(ctx context.Context, db *ent.Client) fiber.Handler {
 			return handler.HandleInvalidPermissions(c)
 		}
 
-		return handler.HandleSuccess(c)
+		pathID, err := strconv.Atoi(c.Params("id"))
+		if err != nil {
+			return handler.HandleInvalidID(c)
+		}
+
+		foundEntry, err := db.User.Query().Where(user.ID(pathID)).First(ctx)
+		if err != nil {
+			if ent.IsNotFound(err) {
+				return handler.HandleNotFound(c)
+			}
+			return handler.HandleInternalError(c, err)
+		}
+
+		return c.JSON(responseAdminUserResponse(foundEntry))
 	}
 }
 
 type UpdateUser struct {
-	Email       string   `json:"email" example:"bob@example.com"`
-	Username    string   `json:"username" example:"Bob"`
-	VCardURL    string   `json:"vCardURL" validate:"optional"`
-	Permissions []string `json:"permissions" example:"admin.editor,admin.user.*"`
-	Tags        []string `json:"tags" example:"admin,mod,editor,student"`
+	Email       string   `json:"email" example:"bob@example.com" validate:"required,email"`
+	Username    string   `json:"username" example:"Bob" validate:"required,min=3,max=16"`
+	Password    string   `json:"password" validate:"omitempty,min=8"`
+	VCardURL    string   `json:"vCardURL" validate:"omitempty,url"`
+	Permissions []string `json:"permissions" example:"admin.editor,admin.user.edit" validate:"required"`
+	Tags        []string `json:"tags" example:"admin,mod,editor,student" validate:"required"`
 }
 
 // putAdminUserID godoc
@@ -178,7 +240,43 @@ func putAdminUserID(ctx context.Context, db *ent.Client) fiber.Handler {
 			return handler.HandleInvalidPermissions(c)
 		}
 
-		return handler.HandleSuccess(c)
+		pathID, err := strconv.Atoi(c.Params("id"))
+		if err != nil {
+			return handler.HandleInvalidID(c)
+		}
+
+		req := new(UpdateUser)
+		if err := c.BodyParser(req); err != nil {
+			return handler.HandleBodyParseError(c, err)
+		}
+
+		if valid, err := handler.ValidateStruct(c, req); !valid {
+			return err
+		}
+
+		found, err := db.User.Query().Where(user.ID(pathID)).First(ctx)
+		if err != nil {
+			if ent.IsNotFound(err) {
+				return handler.HandleNotFound(c)
+			}
+			return handler.HandleInternalError(c, err)
+		}
+
+		foundUpdate := found.Update().SetEmail(req.Email).SetUsername(req.Username).SetVCardURL(req.VCardURL).SetPermissions(req.Permissions).SetTags(req.Tags)
+		if req.Password != "" {
+			hashPassword, err := utils.HashPassword(req.Password)
+			if err != nil {
+				return handler.HandleInternalError(c, err)
+			}
+			foundUpdate = foundUpdate.SetPassword(hashPassword)
+		}
+
+		newFound, err := foundUpdate.Save(ctx)
+		if err != nil {
+			return handler.HandleInternalError(c, err)
+		}
+
+		return c.JSON(responseAdminUserResponse(newFound))
 	}
 }
 
@@ -210,6 +308,16 @@ func deleteAdminUserID(ctx context.Context, db *ent.Client) fiber.Handler {
 
 		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_USER_EDIT}) {
 			return handler.HandleInvalidPermissions(c)
+		}
+
+		pathID, err := strconv.Atoi(c.Params("id"))
+		if err != nil {
+			return handler.HandleInvalidID(c)
+		}
+
+		err = db.User.DeleteOneID(pathID).Exec(ctx)
+		if err != nil {
+			return handler.HandleInternalError(c, err)
 		}
 
 		return handler.HandleSuccess(c)

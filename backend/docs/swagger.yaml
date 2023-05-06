@@ -36,21 +36,28 @@ definitions:
         example: 2006-01-02T15:04:05Z07:00
         type: string
     type: object
+  admin.AdminMapChat:
+    properties:
+      enable:
+        type: boolean
+      enableDisconnectedList:
+        type: boolean
+      enableOnlineList:
+        type: boolean
+      enableUpload:
+        type: boolean
+    required:
+    - enable
+    - enableDisconnectedList
+    - enableOnlineList
+    - enableUpload
+    type: object
   admin.AdminMapResponse:
     properties:
       canReport:
         type: boolean
       chat:
-        properties:
-          enable:
-            type: boolean
-          enableDisconnectedList:
-            type: boolean
-          enableOnlineList:
-            type: boolean
-          enableUpload:
-            type: boolean
-        type: object
+        $ref: '#/definitions/admin.AdminMapChat'
       contactPage:
         example: https://mycompany.com/contact-us
         type: string
@@ -180,6 +187,9 @@ definitions:
       validUntil:
         example: 2006-01-02T15:04:05Z07:00
         type: string
+    required:
+    - message
+    - type
     type: object
   admin.CreateBan:
     properties:
@@ -192,22 +202,16 @@ definitions:
       validUntil:
         example: 2006-01-02T15:04:05Z07:00
         type: string
+    required:
+    - check
+    - message
     type: object
   admin.CreateMap:
     properties:
       canReport:
         type: boolean
       chat:
-        properties:
-          enable:
-            type: boolean
-          enableDisconnectedList:
-            type: boolean
-          enableOnlineList:
-            type: boolean
-          enableUpload:
-            type: boolean
-        type: object
+        $ref: '#/definitions/admin.AdminMapChat'
       contactPage:
         example: https://mycompany.com/contact-us
         type: string
@@ -225,6 +229,8 @@ definitions:
         type: string
       roomName:
         example: Default Room
+        maxLength: 32
+        minLength: 3
         type: string
       tags:
         example:
@@ -233,6 +239,14 @@ definitions:
         items:
           type: string
         type: array
+    required:
+    - canReport
+    - contactPage
+    - expireOn
+    - mapUrl
+    - policy
+    - roomName
+    - tags
     type: object
   admin.CreateTexture:
     properties:
@@ -256,9 +270,10 @@ definitions:
       texture:
         example: eyes1
         type: string
-      url:
-        example: '%FRONTEND_URL%/public/resources/customisation/character_eyes/character_eyes1.png'
-        type: string
+    required:
+    - layer
+    - tags
+    - texture
     type: object
   admin.CreateUser:
     properties:
@@ -267,10 +282,17 @@ definitions:
         type: string
       password:
         example: my$ecur3P4$$word
+        minLength: 8
         type: string
       username:
         example: Bob
+        maxLength: 16
+        minLength: 3
         type: string
+    required:
+    - email
+    - password
+    - username
     type: object
   admin.UpdateAnnouncement:
     properties:
@@ -285,22 +307,16 @@ definitions:
       validUntil:
         example: 2006-01-02T15:04:05Z07:00
         type: string
+    required:
+    - message
+    - type
     type: object
   admin.UpdateMap:
     properties:
       canReport:
         type: boolean
       chat:
-        properties:
-          enable:
-            type: boolean
-          enableDisconnectedList:
-            type: boolean
-          enableOnlineList:
-            type: boolean
-          enableUpload:
-            type: boolean
-        type: object
+        $ref: '#/definitions/admin.AdminMapChat'
       contactPage:
         example: https://mycompany.com/contact-us
         type: string
@@ -318,6 +334,8 @@ definitions:
         type: string
       roomName:
         example: Default Room
+        maxLength: 32
+        minLength: 3
         type: string
       tags:
         example:
@@ -326,6 +344,14 @@ definitions:
         items:
           type: string
         type: array
+    required:
+    - canReport
+    - contactPage
+    - expireOn
+    - mapUrl
+    - policy
+    - roomName
+    - tags
     type: object
   admin.UpdateReport:
     type: object
@@ -351,19 +377,23 @@ definitions:
       texture:
         example: eyes1
         type: string
-      url:
-        example: '%FRONTEND_URL%/public/resources/customisation/character_eyes/character_eyes1.png'
-        type: string
+    required:
+    - layer
+    - tags
+    - texture
     type: object
   admin.UpdateUser:
     properties:
       email:
         example: bob@example.com
         type: string
+      password:
+        minLength: 8
+        type: string
       permissions:
         example:
         - admin.editor
-        - admin.user.*
+        - admin.user.edit
         items:
           type: string
         type: array
@@ -378,9 +408,16 @@ definitions:
         type: array
       username:
         example: Bob
+        maxLength: 16
+        minLength: 3
         type: string
       vCardURL:
         type: string
+    required:
+    - email
+    - permissions
+    - tags
+    - username
     type: object
   config.Config:
     properties:
@@ -400,6 +437,7 @@ definitions:
       error:
         type: boolean
       extra:
+        example: user don't have permissions
         type: string
       message:
         example: ERR_INVALID_PERMISSIONS
@@ -409,6 +447,17 @@ definitions:
         type: integer
       success:
         type: boolean
+      validation:
+        items:
+          $ref: '#/definitions/handler.ErrorResponse'
+        type: array
+    type: object
+  handler.ErrorResponse:
+    properties:
+      field:
+        type: string
+      tag:
+        type: string
     type: object
   handler.LoginRequest:
     properties:
@@ -418,6 +467,9 @@ definitions:
       password:
         example: my$ecur3P4$$word
         type: string
+    required:
+    - email
+    - password
     type: object
   handler.LoginResponse:
     properties:
@@ -428,6 +480,7 @@ definitions:
     properties:
       confirmPassword:
         example: my$ecur3P4$$word
+        minLength: 8
         type: string
       email:
         example: bob@example.com
@@ -437,10 +490,18 @@ definitions:
         type: string
       password:
         example: my$ecur3P4$$word
+        minLength: 8
         type: string
       username:
         example: Bob
+        maxLength: 16
+        minLength: 3
         type: string
+    required:
+    - confirmPassword
+    - email
+    - password
+    - username
     type: object
   handler.UpdateUserRequest:
     properties:
@@ -1361,8 +1422,8 @@ paths:
       - admin
     post:
       consumes:
-      - application/json
-      description: Requires permission admin.texture.edit
+      - multipart/form-data
+      description: Upload file via resource field. Requires permission admin.texture.edit
       parameters:
       - description: '-'
         in: body
@@ -1477,7 +1538,7 @@ paths:
       - admin
     put:
       consumes:
-      - application/json
+      - multipart/form-data
       description: Update texture by ID. Requires permission admin.texture.edit
       parameters:
       - description: '-'
@@ -1679,7 +1740,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Invite/Create new user. Requires permission admin.user.edit
+      description: Invite/Create new user. Requires permission admin.user.invite
       parameters:
       - description: '-'
         in: body

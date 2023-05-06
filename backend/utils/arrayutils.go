@@ -1,5 +1,17 @@
 package utils
 
+func SliceIndex[T comparable](element T, data []T, defaultValue *int) int {
+	for k, v := range data {
+		if element == v {
+			return k
+		}
+	}
+	if defaultValue == nil {
+		return -1
+	}
+	return *defaultValue
+}
+
 func Contains[T comparable](arr []T, x T) bool {
 	for _, v := range arr {
 		if v == x {

@@ -25,7 +25,7 @@ type UserResponse struct {
 	Username    string        `json:"username"`
 	Permissions []string      `json:"permissions"`
 	Tags        []string      `json:"tags"`
-	LastLogin   time.Time     `json:"lastLogin" validate:"optional"`
+	LastLogin   time.Time     `json:"lastLogin" validate:"omitempty"`
 	CreatedAt   time.Time     `json:"createdAt"`
 	Config      config.Config `json:"config"`
 }
@@ -71,10 +71,10 @@ func getMe(ctx context.Context, db *ent.Client) fiber.Handler {
 }
 
 type UpdateUserRequest struct {
-	EMail                    string `json:"email" example:"bob@exameple.com" format:"email" validate:"optional"`
-	ClearTextPassword        string `json:"newPassword" example:"my$ecur3P4$$word" validate:"optional"`
-	ClearTextPasswordConfirm string `json:"confirmPassword" example:"my$ecur3P4$$word" validate:"optional"`
-	ClearTextCurrentPassword string `json:"password" example:"my$ecur3P4$$word" validate:"required"`
+	EMail                    string `json:"email" example:"bob@exameple.com" format:"email" validate:"omitempty" validate:"required,email"`
+	ClearTextPassword        string `json:"newPassword" example:"my$ecur3P4$$word" validate:"omitempty" validate:"omitempty,min=8"`
+	ClearTextPasswordConfirm string `json:"confirmPassword" example:"my$ecur3P4$$word" validate:"omitempty" validate:"omitempty,min=8,eqcsfield=ClearTextPassword"`
+	ClearTextCurrentPassword string `json:"password" example:"my$ecur3P4$$word" validate:"required" validate:"required"`
 }
 
 // updateUser godoc
@@ -101,6 +101,10 @@ func updateUser(ctx context.Context, db *ent.Client) fiber.Handler {
 		req := new(UpdateUserRequest)
 		if err := c.BodyParser(req); err != nil {
 			return HandleBodyParseError(c, err)
+		}
+
+		if valid, err := ValidateStruct(c, req); !valid {
+			return err
 		}
 
 		foundUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
