@@ -434,6 +434,16 @@ func ExpireOnLTE(v time.Time) predicate.Maps {
 	return predicate.Maps(sql.FieldLTE(FieldExpireOn, v))
 }
 
+// ExpireOnIsNil applies the IsNil predicate on the "expireOn" field.
+func ExpireOnIsNil() predicate.Maps {
+	return predicate.Maps(sql.FieldIsNull(FieldExpireOn))
+}
+
+// ExpireOnNotNil applies the NotNil predicate on the "expireOn" field.
+func ExpireOnNotNil() predicate.Maps {
+	return predicate.Maps(sql.FieldNotNull(FieldExpireOn))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "createdAt" field.
 func CreatedAtEQ(v time.Time) predicate.Maps {
 	return predicate.Maps(sql.FieldEQ(FieldCreatedAt, v))

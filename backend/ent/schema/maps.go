@@ -24,7 +24,7 @@ func (Maps) Fields() []ent.Field {
 		field.Bool("enableChatOnlineList"),
 		field.Bool("enableChatDisconnectedList"),
 		field.Bool("canReport"),
-		field.Time("expireOn"),
+		field.Time("expireOn").Optional(),
 		field.Time("createdAt").Default(time.Now),
 	}
 }

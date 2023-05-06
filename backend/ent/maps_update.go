@@ -108,6 +108,20 @@ func (mu *MapsUpdate) SetExpireOn(t time.Time) *MapsUpdate {
 	return mu
 }
 
+// SetNillableExpireOn sets the "expireOn" field if the given value is not nil.
+func (mu *MapsUpdate) SetNillableExpireOn(t *time.Time) *MapsUpdate {
+	if t != nil {
+		mu.SetExpireOn(*t)
+	}
+	return mu
+}
+
+// ClearExpireOn clears the value of the "expireOn" field.
+func (mu *MapsUpdate) ClearExpireOn() *MapsUpdate {
+	mu.mutation.ClearExpireOn()
+	return mu
+}
+
 // SetCreatedAt sets the "createdAt" field.
 func (mu *MapsUpdate) SetCreatedAt(t time.Time) *MapsUpdate {
 	mu.mutation.SetCreatedAt(t)
@@ -203,6 +217,9 @@ func (mu *MapsUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := mu.mutation.ExpireOn(); ok {
 		_spec.SetField(maps.FieldExpireOn, field.TypeTime, value)
+	}
+	if mu.mutation.ExpireOnCleared() {
+		_spec.ClearField(maps.FieldExpireOn, field.TypeTime)
 	}
 	if value, ok := mu.mutation.CreatedAt(); ok {
 		_spec.SetField(maps.FieldCreatedAt, field.TypeTime, value)
@@ -303,6 +320,20 @@ func (muo *MapsUpdateOne) SetCanReport(b bool) *MapsUpdateOne {
 // SetExpireOn sets the "expireOn" field.
 func (muo *MapsUpdateOne) SetExpireOn(t time.Time) *MapsUpdateOne {
 	muo.mutation.SetExpireOn(t)
+	return muo
+}
+
+// SetNillableExpireOn sets the "expireOn" field if the given value is not nil.
+func (muo *MapsUpdateOne) SetNillableExpireOn(t *time.Time) *MapsUpdateOne {
+	if t != nil {
+		muo.SetExpireOn(*t)
+	}
+	return muo
+}
+
+// ClearExpireOn clears the value of the "expireOn" field.
+func (muo *MapsUpdateOne) ClearExpireOn() *MapsUpdateOne {
+	muo.mutation.ClearExpireOn()
 	return muo
 }
 
@@ -431,6 +462,9 @@ func (muo *MapsUpdateOne) sqlSave(ctx context.Context) (_node *Maps, err error) 
 	}
 	if value, ok := muo.mutation.ExpireOn(); ok {
 		_spec.SetField(maps.FieldExpireOn, field.TypeTime, value)
+	}
+	if muo.mutation.ExpireOnCleared() {
+		_spec.ClearField(maps.FieldExpireOn, field.TypeTime)
 	}
 	if value, ok := muo.mutation.CreatedAt(); ok {
 		_spec.SetField(maps.FieldCreatedAt, field.TypeTime, value)

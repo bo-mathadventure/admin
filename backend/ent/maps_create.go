@@ -86,6 +86,14 @@ func (mc *MapsCreate) SetExpireOn(t time.Time) *MapsCreate {
 	return mc
 }
 
+// SetNillableExpireOn sets the "expireOn" field if the given value is not nil.
+func (mc *MapsCreate) SetNillableExpireOn(t *time.Time) *MapsCreate {
+	if t != nil {
+		mc.SetExpireOn(*t)
+	}
+	return mc
+}
+
 // SetCreatedAt sets the "createdAt" field.
 func (mc *MapsCreate) SetCreatedAt(t time.Time) *MapsCreate {
 	mc.mutation.SetCreatedAt(t)
@@ -176,9 +184,6 @@ func (mc *MapsCreate) check() error {
 	}
 	if _, ok := mc.mutation.CanReport(); !ok {
 		return &ValidationError{Name: "canReport", err: errors.New(`ent: missing required field "Maps.canReport"`)}
-	}
-	if _, ok := mc.mutation.ExpireOn(); !ok {
-		return &ValidationError{Name: "expireOn", err: errors.New(`ent: missing required field "Maps.expireOn"`)}
 	}
 	if _, ok := mc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "createdAt", err: errors.New(`ent: missing required field "Maps.createdAt"`)}

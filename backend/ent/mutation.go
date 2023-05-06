@@ -1585,9 +1585,22 @@ func (m *MapsMutation) OldExpireOn(ctx context.Context) (v time.Time, err error)
 	return oldValue.ExpireOn, nil
 }
 
+// ClearExpireOn clears the value of the "expireOn" field.
+func (m *MapsMutation) ClearExpireOn() {
+	m.expireOn = nil
+	m.clearedFields[maps.FieldExpireOn] = struct{}{}
+}
+
+// ExpireOnCleared returns if the "expireOn" field was cleared in this mutation.
+func (m *MapsMutation) ExpireOnCleared() bool {
+	_, ok := m.clearedFields[maps.FieldExpireOn]
+	return ok
+}
+
 // ResetExpireOn resets all changes to the "expireOn" field.
 func (m *MapsMutation) ResetExpireOn() {
 	m.expireOn = nil
+	delete(m.clearedFields, maps.FieldExpireOn)
 }
 
 // SetCreatedAt sets the "createdAt" field.
@@ -1899,7 +1912,11 @@ func (m *MapsMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *MapsMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(maps.FieldExpireOn) {
+		fields = append(fields, maps.FieldExpireOn)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -1912,6 +1929,11 @@ func (m *MapsMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *MapsMutation) ClearField(name string) error {
+	switch name {
+	case maps.FieldExpireOn:
+		m.ClearExpireOn()
+		return nil
+	}
 	return fmt.Errorf("unknown Maps nullable field %s", name)
 }
 

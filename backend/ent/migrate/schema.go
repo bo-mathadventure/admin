@@ -49,7 +49,7 @@ var (
 		{Name: "enable_chat_online_list", Type: field.TypeBool},
 		{Name: "enable_chat_disconnected_list", Type: field.TypeBool},
 		{Name: "can_report", Type: field.TypeBool},
-		{Name: "expire_on", Type: field.TypeTime},
+		{Name: "expire_on", Type: field.TypeTime, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
 	}
 	// MapsTable holds the schema information for the "maps" table.

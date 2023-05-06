@@ -7,6 +7,7 @@ import (
 	"github.com/bo-mathadventure/admin/ent"
 	"github.com/bo-mathadventure/admin/ent/maps"
 	"strings"
+	"time"
 )
 
 func UserCanAccessMap(userUUID string, foundUser *ent.User, foundMap *ent.Maps) bool {
@@ -35,7 +36,7 @@ func UserCanAccessMap(userUUID string, foundUser *ent.User, foundMap *ent.Maps) 
 func GetMapFromPlayURL(ctx context.Context, db *ent.Client, playURL string) (*ent.Maps, string, error) {
 	playingMap := "/" + strings.Join(strings.Split(playURL, "/")[3:], "/")
 	mapURL := fmt.Sprintf("%s://%s%s", config.GetConfig().WorkadventureURLProtocol, config.GetConfig().WorkadventureURL, playingMap)
-	foundMap, err := db.Maps.Query().Where(maps.MapUrlEQ(playingMap)).First(ctx)
+	foundMap, err := db.Maps.Query().Where(maps.MapUrlEQ(playingMap)).Where(maps.Or(maps.ExpireOnIsNil(), maps.ExpireOnGTE(time.Now()))).First(ctx)
 	if err != nil {
 		return nil, "", err
 	}
