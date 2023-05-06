@@ -11,18 +11,18 @@ func UserCanAccessMap(userUUID string, foundUser *ent.User, foundMap *ent.Maps) 
 		return true
 	}
 
-	if foundMap.PolicyNumber != 1 {
-		if foundMap.PolicyNumber == 2 {
-			return foundUser != nil
-		} else if foundMap.PolicyNumber == 3 {
-			if len(foundMap.Tags) == 0 {
-				return true
-			}
-			if foundUser == nil {
-				return false
-			}
-			return len(ArrayIntersect(foundMap.Tags, foundUser.Tags)) >= 1
+	if foundMap.PolicyNumber == 0 {
+		return true
+	} else if foundMap.PolicyNumber == 1 {
+		return foundUser != nil
+	} else if foundMap.PolicyNumber == 2 {
+		if len(foundMap.Tags) == 0 {
+			return true
 		}
+		if foundUser == nil {
+			return false
+		}
+		return len(ArrayIntersect(foundMap.Tags, foundUser.Tags)) >= 1
 	}
 	return true
 }

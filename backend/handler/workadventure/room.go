@@ -131,7 +131,7 @@ func getAccess(ctx context.Context, db *ent.Client) fiber.Handler {
 			"tags":                []string{},
 			"textures":            availableTexturesList,
 			"messages":            anouncementsList,
-			"anonymous":           foundMap.PolicyNumber == 1,
+			"anonymous":           foundMap.PolicyNumber == 0,
 			"visitCardUrl":        nil,
 			"canEdit":             utils.CheckPermission(foundUser, utils.PERMISSION_MAP_EDITOR),
 			"activatedInviteUser": false,

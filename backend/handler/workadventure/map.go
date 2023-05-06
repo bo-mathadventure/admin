@@ -54,7 +54,7 @@ func getMap(ctx context.Context, db *ent.Client) fiber.Handler {
 		result := map[string]interface{}{
 			//"mapUrl":                  nil,
 			//"wamUrl":                  nil,
-			"authenticationMandatory": foundMap.PolicyNumber != 1,
+			"authenticationMandatory": foundMap.PolicyNumber != 0,
 			"group":                   nil,
 			"mucRooms": []interface{}{
 				map[string]string{
