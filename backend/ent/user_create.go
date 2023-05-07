@@ -68,20 +68,6 @@ func (uc *UserCreate) SetNillableSsoIdentifier(s *string) *UserCreate {
 	return uc
 }
 
-// SetVCardURL sets the "vCardURL" field.
-func (uc *UserCreate) SetVCardURL(s string) *UserCreate {
-	uc.mutation.SetVCardURL(s)
-	return uc
-}
-
-// SetNillableVCardURL sets the "vCardURL" field if the given value is not nil.
-func (uc *UserCreate) SetNillableVCardURL(s *string) *UserCreate {
-	if s != nil {
-		uc.SetVCardURL(*s)
-	}
-	return uc
-}
-
 // SetPermissions sets the "permissions" field.
 func (uc *UserCreate) SetPermissions(s []string) *UserCreate {
 	uc.mutation.SetPermissions(s)
@@ -288,10 +274,6 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.SsoIdentifier(); ok {
 		_spec.SetField(user.FieldSsoIdentifier, field.TypeString, value)
 		_node.SsoIdentifier = value
-	}
-	if value, ok := uc.mutation.VCardURL(); ok {
-		_spec.SetField(user.FieldVCardURL, field.TypeString, value)
-		_node.VCardURL = value
 	}
 	if value, ok := uc.mutation.Permissions(); ok {
 		_spec.SetField(user.FieldPermissions, field.TypeJSON, value)

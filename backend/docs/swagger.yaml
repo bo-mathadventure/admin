@@ -221,8 +221,6 @@ definitions:
       uuid:
         example: 60948703-fca9-4491-b3bc-588188d93eb3
         type: string
-      vCardURL:
-        type: string
     type: object
   admin.CreateAnnouncement:
     properties:
@@ -451,8 +449,6 @@ definitions:
         example: Bob
         maxLength: 16
         minLength: 3
-        type: string
-      vCardURL:
         type: string
     required:
     - email

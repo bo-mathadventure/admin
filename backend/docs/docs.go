@@ -2723,9 +2723,6 @@ const docTemplate = `{
                 "uuid": {
                     "type": "string",
                     "example": "60948703-fca9-4491-b3bc-588188d93eb3"
-                },
-                "vCardURL": {
-                    "type": "string"
                 }
             }
         },
@@ -3046,9 +3043,6 @@ const docTemplate = `{
                     "maxLength": 16,
                     "minLength": 3,
                     "example": "Bob"
-                },
-                "vCardURL": {
-                    "type": "string"
                 }
             }
         },

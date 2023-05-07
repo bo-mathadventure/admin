@@ -80,11 +80,6 @@ func SsoIdentifier(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldSsoIdentifier, v))
 }
 
-// VCardURL applies equality check predicate on the "vCardURL" field. It's identical to VCardURLEQ.
-func VCardURL(v string) predicate.User {
-	return predicate.User(sql.FieldEQ(FieldVCardURL, v))
-}
-
 // LastLogin applies equality check predicate on the "lastLogin" field. It's identical to LastLoginEQ.
 func LastLogin(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldLastLogin, v))
@@ -428,81 +423,6 @@ func SsoIdentifierEqualFold(v string) predicate.User {
 // SsoIdentifierContainsFold applies the ContainsFold predicate on the "ssoIdentifier" field.
 func SsoIdentifierContainsFold(v string) predicate.User {
 	return predicate.User(sql.FieldContainsFold(FieldSsoIdentifier, v))
-}
-
-// VCardURLEQ applies the EQ predicate on the "vCardURL" field.
-func VCardURLEQ(v string) predicate.User {
-	return predicate.User(sql.FieldEQ(FieldVCardURL, v))
-}
-
-// VCardURLNEQ applies the NEQ predicate on the "vCardURL" field.
-func VCardURLNEQ(v string) predicate.User {
-	return predicate.User(sql.FieldNEQ(FieldVCardURL, v))
-}
-
-// VCardURLIn applies the In predicate on the "vCardURL" field.
-func VCardURLIn(vs ...string) predicate.User {
-	return predicate.User(sql.FieldIn(FieldVCardURL, vs...))
-}
-
-// VCardURLNotIn applies the NotIn predicate on the "vCardURL" field.
-func VCardURLNotIn(vs ...string) predicate.User {
-	return predicate.User(sql.FieldNotIn(FieldVCardURL, vs...))
-}
-
-// VCardURLGT applies the GT predicate on the "vCardURL" field.
-func VCardURLGT(v string) predicate.User {
-	return predicate.User(sql.FieldGT(FieldVCardURL, v))
-}
-
-// VCardURLGTE applies the GTE predicate on the "vCardURL" field.
-func VCardURLGTE(v string) predicate.User {
-	return predicate.User(sql.FieldGTE(FieldVCardURL, v))
-}
-
-// VCardURLLT applies the LT predicate on the "vCardURL" field.
-func VCardURLLT(v string) predicate.User {
-	return predicate.User(sql.FieldLT(FieldVCardURL, v))
-}
-
-// VCardURLLTE applies the LTE predicate on the "vCardURL" field.
-func VCardURLLTE(v string) predicate.User {
-	return predicate.User(sql.FieldLTE(FieldVCardURL, v))
-}
-
-// VCardURLContains applies the Contains predicate on the "vCardURL" field.
-func VCardURLContains(v string) predicate.User {
-	return predicate.User(sql.FieldContains(FieldVCardURL, v))
-}
-
-// VCardURLHasPrefix applies the HasPrefix predicate on the "vCardURL" field.
-func VCardURLHasPrefix(v string) predicate.User {
-	return predicate.User(sql.FieldHasPrefix(FieldVCardURL, v))
-}
-
-// VCardURLHasSuffix applies the HasSuffix predicate on the "vCardURL" field.
-func VCardURLHasSuffix(v string) predicate.User {
-	return predicate.User(sql.FieldHasSuffix(FieldVCardURL, v))
-}
-
-// VCardURLIsNil applies the IsNil predicate on the "vCardURL" field.
-func VCardURLIsNil() predicate.User {
-	return predicate.User(sql.FieldIsNull(FieldVCardURL))
-}
-
-// VCardURLNotNil applies the NotNil predicate on the "vCardURL" field.
-func VCardURLNotNil() predicate.User {
-	return predicate.User(sql.FieldNotNull(FieldVCardURL))
-}
-
-// VCardURLEqualFold applies the EqualFold predicate on the "vCardURL" field.
-func VCardURLEqualFold(v string) predicate.User {
-	return predicate.User(sql.FieldEqualFold(FieldVCardURL, v))
-}
-
-// VCardURLContainsFold applies the ContainsFold predicate on the "vCardURL" field.
-func VCardURLContainsFold(v string) predicate.User {
-	return predicate.User(sql.FieldContainsFold(FieldVCardURL, v))
 }
 
 // LastLoginEQ applies the EQ predicate on the "lastLogin" field.

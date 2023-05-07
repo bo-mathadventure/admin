@@ -126,7 +126,6 @@ var (
 		{Name: "username", Type: field.TypeString},
 		{Name: "password", Type: field.TypeString},
 		{Name: "sso_identifier", Type: field.TypeString, Nullable: true},
-		{Name: "v_card_url", Type: field.TypeString, Nullable: true},
 		{Name: "permissions", Type: field.TypeJSON},
 		{Name: "tags", Type: field.TypeJSON},
 		{Name: "last_login", Type: field.TypeTime, Nullable: true},

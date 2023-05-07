@@ -86,15 +86,15 @@ func init() {
 	// user.DefaultUUID holds the default value on creation for the uuid field.
 	user.DefaultUUID = userDescUUID.Default.(func() string)
 	// userDescPermissions is the schema descriptor for permissions field.
-	userDescPermissions := userFields[6].Descriptor()
+	userDescPermissions := userFields[5].Descriptor()
 	// user.DefaultPermissions holds the default value on creation for the permissions field.
 	user.DefaultPermissions = userDescPermissions.Default.([]string)
 	// userDescTags is the schema descriptor for tags field.
-	userDescTags := userFields[7].Descriptor()
+	userDescTags := userFields[6].Descriptor()
 	// user.DefaultTags holds the default value on creation for the tags field.
 	user.DefaultTags = userDescTags.Default.([]string)
 	// userDescCreatedAt is the schema descriptor for createdAt field.
-	userDescCreatedAt := userFields[9].Descriptor()
+	userDescCreatedAt := userFields[8].Descriptor()
 	// user.DefaultCreatedAt holds the default value on creation for the createdAt field.
 	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
 }

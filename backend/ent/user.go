@@ -28,8 +28,6 @@ type User struct {
 	Password string `json:"password,omitempty"`
 	// SsoIdentifier holds the value of the "ssoIdentifier" field.
 	SsoIdentifier string `json:"ssoIdentifier,omitempty"`
-	// VCardURL holds the value of the "vCardURL" field.
-	VCardURL string `json:"vCardURL,omitempty"`
 	// Permissions holds the value of the "permissions" field.
 	Permissions []string `json:"permissions,omitempty"`
 	// Tags holds the value of the "tags" field.
@@ -93,7 +91,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case user.FieldID:
 			values[i] = new(sql.NullInt64)
-		case user.FieldUUID, user.FieldEmail, user.FieldUsername, user.FieldPassword, user.FieldSsoIdentifier, user.FieldVCardURL:
+		case user.FieldUUID, user.FieldEmail, user.FieldUsername, user.FieldPassword, user.FieldSsoIdentifier:
 			values[i] = new(sql.NullString)
 		case user.FieldLastLogin, user.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -147,12 +145,6 @@ func (u *User) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field ssoIdentifier", values[i])
 			} else if value.Valid {
 				u.SsoIdentifier = value.String
-			}
-		case user.FieldVCardURL:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field vCardURL", values[i])
-			} else if value.Valid {
-				u.VCardURL = value.String
 			}
 		case user.FieldPermissions:
 			if value, ok := values[i].(*[]byte); !ok {
@@ -247,9 +239,6 @@ func (u *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("ssoIdentifier=")
 	builder.WriteString(u.SsoIdentifier)
-	builder.WriteString(", ")
-	builder.WriteString("vCardURL=")
-	builder.WriteString(u.VCardURL)
 	builder.WriteString(", ")
 	builder.WriteString("permissions=")
 	builder.WriteString(fmt.Sprintf("%v", u.Permissions))

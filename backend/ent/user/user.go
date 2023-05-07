@@ -24,8 +24,6 @@ const (
 	FieldPassword = "password"
 	// FieldSsoIdentifier holds the string denoting the ssoidentifier field in the database.
 	FieldSsoIdentifier = "sso_identifier"
-	// FieldVCardURL holds the string denoting the vcardurl field in the database.
-	FieldVCardURL = "v_card_url"
 	// FieldPermissions holds the string denoting the permissions field in the database.
 	FieldPermissions = "permissions"
 	// FieldTags holds the string denoting the tags field in the database.
@@ -71,7 +69,6 @@ var Columns = []string{
 	FieldUsername,
 	FieldPassword,
 	FieldSsoIdentifier,
-	FieldVCardURL,
 	FieldPermissions,
 	FieldTags,
 	FieldLastLogin,
@@ -136,11 +133,6 @@ func ByPassword(opts ...sql.OrderTermOption) OrderOption {
 // BySsoIdentifier orders the results by the ssoIdentifier field.
 func BySsoIdentifier(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSsoIdentifier, opts...).ToFunc()
-}
-
-// ByVCardURL orders the results by the vCardURL field.
-func ByVCardURL(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldVCardURL, opts...).ToFunc()
 }
 
 // ByLastLogin orders the results by the lastLogin field.

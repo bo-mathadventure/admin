@@ -26,7 +26,6 @@ type AdminUserResponse struct {
 	Email           string                `json:"email" example:"bob@example.com"`
 	Username        string                `json:"username" example:"Bob"`
 	SsoIdentifier   string                `json:"ssoIdentifier"`
-	VCardURL        string                `json:"vCardURL" validate:"omitempty"`
 	Permissions     []string              `json:"permissions" example:"admin.editor,admin.user.edit"`
 	UserPermissions []string              `json:"userPermissions" example:"admin.editor,admin.user.edit"`
 	Tags            []string              `json:"tags" example:"admin,mod,editor,student"`
@@ -43,7 +42,6 @@ func responseAdminUserResponse(this *ent.User) *AdminUserResponse {
 		Email:           this.Email,
 		Username:        this.Username,
 		SsoIdentifier:   this.SsoIdentifier,
-		VCardURL:        this.VCardURL,
 		Permissions:     utils.CombinePermissions(this),
 		UserPermissions: this.Permissions,
 		Tags:            utils.CombineTags(this),
@@ -210,7 +208,6 @@ type UpdateUser struct {
 	Email       string   `json:"email" example:"bob@example.com" validate:"required,email"`
 	Username    string   `json:"username" example:"Bob" validate:"required,min=3,max=16"`
 	Password    string   `json:"password" validate:"omitempty,min=8"`
-	VCardURL    string   `json:"vCardURL" validate:"omitempty,url"`
 	Permissions []string `json:"permissions" example:"admin.editor,admin.user.edit" validate:"required"`
 	Tags        []string `json:"tags" example:"admin,mod,editor,student" validate:"required"`
 	Groups      []int    `json:"groups" example:"10" validate:"required"`
@@ -269,7 +266,7 @@ func putAdminUserID(ctx context.Context, db *ent.Client) fiber.Handler {
 			return handler.HandleInternalError(c, err)
 		}
 
-		foundUpdate := found.Update().SetEmail(req.Email).SetUsername(req.Username).SetVCardURL(req.VCardURL).SetPermissions(req.Permissions).AddGroupIDs(req.Groups...).SetTags(req.Tags)
+		foundUpdate := found.Update().SetEmail(req.Email).SetUsername(req.Username).SetPermissions(req.Permissions).AddGroupIDs(req.Groups...).SetTags(req.Tags)
 		if req.Password != "" {
 			hashPassword, err := utils.HashPassword(req.Password)
 			if err != nil {

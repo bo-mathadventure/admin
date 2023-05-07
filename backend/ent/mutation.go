@@ -3881,7 +3881,6 @@ type UserMutation struct {
 	username          *string
 	password          *string
 	ssoIdentifier     *string
-	vCardURL          *string
 	permissions       *[]string
 	appendpermissions []string
 	tags              *[]string
@@ -4192,55 +4191,6 @@ func (m *UserMutation) SsoIdentifierCleared() bool {
 func (m *UserMutation) ResetSsoIdentifier() {
 	m.ssoIdentifier = nil
 	delete(m.clearedFields, user.FieldSsoIdentifier)
-}
-
-// SetVCardURL sets the "vCardURL" field.
-func (m *UserMutation) SetVCardURL(s string) {
-	m.vCardURL = &s
-}
-
-// VCardURL returns the value of the "vCardURL" field in the mutation.
-func (m *UserMutation) VCardURL() (r string, exists bool) {
-	v := m.vCardURL
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldVCardURL returns the old "vCardURL" field's value of the User entity.
-// If the User object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldVCardURL(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldVCardURL is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldVCardURL requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldVCardURL: %w", err)
-	}
-	return oldValue.VCardURL, nil
-}
-
-// ClearVCardURL clears the value of the "vCardURL" field.
-func (m *UserMutation) ClearVCardURL() {
-	m.vCardURL = nil
-	m.clearedFields[user.FieldVCardURL] = struct{}{}
-}
-
-// VCardURLCleared returns if the "vCardURL" field was cleared in this mutation.
-func (m *UserMutation) VCardURLCleared() bool {
-	_, ok := m.clearedFields[user.FieldVCardURL]
-	return ok
-}
-
-// ResetVCardURL resets all changes to the "vCardURL" field.
-func (m *UserMutation) ResetVCardURL() {
-	m.vCardURL = nil
-	delete(m.clearedFields, user.FieldVCardURL)
 }
 
 // SetPermissions sets the "permissions" field.
@@ -4626,7 +4576,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 9)
 	if m.uuid != nil {
 		fields = append(fields, user.FieldUUID)
 	}
@@ -4641,9 +4591,6 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.ssoIdentifier != nil {
 		fields = append(fields, user.FieldSsoIdentifier)
-	}
-	if m.vCardURL != nil {
-		fields = append(fields, user.FieldVCardURL)
 	}
 	if m.permissions != nil {
 		fields = append(fields, user.FieldPermissions)
@@ -4675,8 +4622,6 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.Password()
 	case user.FieldSsoIdentifier:
 		return m.SsoIdentifier()
-	case user.FieldVCardURL:
-		return m.VCardURL()
 	case user.FieldPermissions:
 		return m.Permissions()
 	case user.FieldTags:
@@ -4704,8 +4649,6 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldPassword(ctx)
 	case user.FieldSsoIdentifier:
 		return m.OldSsoIdentifier(ctx)
-	case user.FieldVCardURL:
-		return m.OldVCardURL(ctx)
 	case user.FieldPermissions:
 		return m.OldPermissions(ctx)
 	case user.FieldTags:
@@ -4757,13 +4700,6 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetSsoIdentifier(v)
-		return nil
-	case user.FieldVCardURL:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetVCardURL(v)
 		return nil
 	case user.FieldPermissions:
 		v, ok := value.([]string)
@@ -4826,9 +4762,6 @@ func (m *UserMutation) ClearedFields() []string {
 	if m.FieldCleared(user.FieldSsoIdentifier) {
 		fields = append(fields, user.FieldSsoIdentifier)
 	}
-	if m.FieldCleared(user.FieldVCardURL) {
-		fields = append(fields, user.FieldVCardURL)
-	}
 	if m.FieldCleared(user.FieldLastLogin) {
 		fields = append(fields, user.FieldLastLogin)
 	}
@@ -4848,9 +4781,6 @@ func (m *UserMutation) ClearField(name string) error {
 	switch name {
 	case user.FieldSsoIdentifier:
 		m.ClearSsoIdentifier()
-		return nil
-	case user.FieldVCardURL:
-		m.ClearVCardURL()
 		return nil
 	case user.FieldLastLogin:
 		m.ClearLastLogin()
@@ -4877,9 +4807,6 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldSsoIdentifier:
 		m.ResetSsoIdentifier()
-		return nil
-	case user.FieldVCardURL:
-		m.ResetVCardURL()
 		return nil
 	case user.FieldPermissions:
 		m.ResetPermissions()

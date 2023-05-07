@@ -146,9 +146,7 @@ func getAccess(ctx context.Context, db *ent.Client) fiber.Handler {
 			resultData["tags"] = foundUser.Tags
 			resultData["username"] = foundUser.Username
 
-			if foundUser.VCardURL != "" {
-				resultData["visitCardUrl"] = foundUser.VCardURL
-			}
+			// todo: add generate visitCardUrl at some time when implemented
 		}
 
 		return c.JSON(resultData)

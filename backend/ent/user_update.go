@@ -83,26 +83,6 @@ func (uu *UserUpdate) ClearSsoIdentifier() *UserUpdate {
 	return uu
 }
 
-// SetVCardURL sets the "vCardURL" field.
-func (uu *UserUpdate) SetVCardURL(s string) *UserUpdate {
-	uu.mutation.SetVCardURL(s)
-	return uu
-}
-
-// SetNillableVCardURL sets the "vCardURL" field if the given value is not nil.
-func (uu *UserUpdate) SetNillableVCardURL(s *string) *UserUpdate {
-	if s != nil {
-		uu.SetVCardURL(*s)
-	}
-	return uu
-}
-
-// ClearVCardURL clears the value of the "vCardURL" field.
-func (uu *UserUpdate) ClearVCardURL() *UserUpdate {
-	uu.mutation.ClearVCardURL()
-	return uu
-}
-
 // SetPermissions sets the "permissions" field.
 func (uu *UserUpdate) SetPermissions(s []string) *UserUpdate {
 	uu.mutation.SetPermissions(s)
@@ -327,12 +307,6 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if uu.mutation.SsoIdentifierCleared() {
 		_spec.ClearField(user.FieldSsoIdentifier, field.TypeString)
-	}
-	if value, ok := uu.mutation.VCardURL(); ok {
-		_spec.SetField(user.FieldVCardURL, field.TypeString, value)
-	}
-	if uu.mutation.VCardURLCleared() {
-		_spec.ClearField(user.FieldVCardURL, field.TypeString)
 	}
 	if value, ok := uu.mutation.Permissions(); ok {
 		_spec.SetField(user.FieldPermissions, field.TypeJSON, value)
@@ -563,26 +537,6 @@ func (uuo *UserUpdateOne) SetNillableSsoIdentifier(s *string) *UserUpdateOne {
 // ClearSsoIdentifier clears the value of the "ssoIdentifier" field.
 func (uuo *UserUpdateOne) ClearSsoIdentifier() *UserUpdateOne {
 	uuo.mutation.ClearSsoIdentifier()
-	return uuo
-}
-
-// SetVCardURL sets the "vCardURL" field.
-func (uuo *UserUpdateOne) SetVCardURL(s string) *UserUpdateOne {
-	uuo.mutation.SetVCardURL(s)
-	return uuo
-}
-
-// SetNillableVCardURL sets the "vCardURL" field if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableVCardURL(s *string) *UserUpdateOne {
-	if s != nil {
-		uuo.SetVCardURL(*s)
-	}
-	return uuo
-}
-
-// ClearVCardURL clears the value of the "vCardURL" field.
-func (uuo *UserUpdateOne) ClearVCardURL() *UserUpdateOne {
-	uuo.mutation.ClearVCardURL()
 	return uuo
 }
 
@@ -840,12 +794,6 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if uuo.mutation.SsoIdentifierCleared() {
 		_spec.ClearField(user.FieldSsoIdentifier, field.TypeString)
-	}
-	if value, ok := uuo.mutation.VCardURL(); ok {
-		_spec.SetField(user.FieldVCardURL, field.TypeString, value)
-	}
-	if uuo.mutation.VCardURLCleared() {
-		_spec.ClearField(user.FieldVCardURL, field.TypeString)
 	}
 	if value, ok := uuo.mutation.Permissions(); ok {
 		_spec.SetField(user.FieldPermissions, field.TypeJSON, value)
