@@ -24,7 +24,8 @@ WORKDIR /app
 COPY --from=builder /app/server /app/server
 
 COPY ent/migrate/migrations /app/migrations
-COPY i18n /app/i18n
+# should be mounted via volume
+COPY public /app/public
 
 COPY migrate.sh /app/migrate.sh
 RUN chmod +x /app/migrate.sh
