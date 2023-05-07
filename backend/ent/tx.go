@@ -16,6 +16,8 @@ type Tx struct {
 	Announcement *AnnouncementClient
 	// Ban is the client for interacting with the Ban builders.
 	Ban *BanClient
+	// Group is the client for interacting with the Group builders.
+	Group *GroupClient
 	// Maps is the client for interacting with the Maps builders.
 	Maps *MapsClient
 	// Report is the client for interacting with the Report builders.
@@ -157,6 +159,7 @@ func (tx *Tx) Client() *Client {
 func (tx *Tx) init() {
 	tx.Announcement = NewAnnouncementClient(tx.config)
 	tx.Ban = NewBanClient(tx.config)
+	tx.Group = NewGroupClient(tx.config)
 	tx.Maps = NewMapsClient(tx.config)
 	tx.Report = NewReportClient(tx.config)
 	tx.Textures = NewTexturesClient(tx.config)

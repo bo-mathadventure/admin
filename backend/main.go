@@ -22,20 +22,20 @@ import (
 	"time"
 )
 
-// @title						Workadventure Admin Back Office API
-// @version					1.0
-// @description				API documentation for the workdadventure back office written at the Hochschule Bochum
-// @termsOfService				http://swagger.io/terms/
-// @contact.name				GitHub Issues
-// @contact.url				https://github.com/bo-mathadventure/admin
-// @license.name				AGPL 3.0
-// @license.url				https://github.com/teamdigitale/licenses/blob/master/AGPL-3.0-or-later
-// @host						localhost:4664
-// @BasePath					/
-// @securityDefinitions.apikey	ApiKeyAuth
-// @in							header
-// @name						X-API-Key
-// @description				JWT user token from login
+//	@title						Workadventure Admin Back Office API
+//	@version					1.0
+//	@description				API documentation for the workdadventure back office written at the Hochschule Bochum
+//	@termsOfService				http://swagger.io/terms/
+//	@contact.name				GitHub Issues
+//	@contact.url				https://github.com/bo-mathadventure/admin
+//	@license.name				AGPL 3.0
+//	@license.url				https://github.com/teamdigitale/licenses/blob/master/AGPL-3.0-or-later
+//	@host						localhost:4664
+//	@BasePath					/
+//	@securityDefinitions.apikey	ApiKeyAuth
+//	@in							header
+//	@name						X-API-Key
+//	@description				JWT user token from login
 func main() {
 	log.SetFormatter(&log.TextFormatter{
 		DisableColors: false,
@@ -100,6 +100,7 @@ func main() {
 	admin.NewAdminMapHandler(adminApi.Group("/map"), context.Background(), client)
 	admin.NewAdminTextureHandler(adminApi.Group("/texture"), context.Background(), client)
 	admin.NewAdminAnnouncementHandler(adminApi.Group("/announcement"), context.Background(), client)
+	admin.NewAdminGroupHandler(adminApi.Group("/group"), context.Background(), client)
 
 	waApi := app.Group("/api")
 	workadventure.NewRoomHandler(waApi.Group("/room", middleware.AdminAPIProtected()), context.Background(), client)

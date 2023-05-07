@@ -32,4 +32,7 @@ const (
 	PERMISSION_USER_EDIT         = admin_user_prefix + ".edit"
 	PERMISSION_USER_INVITE       = admin_user_prefix + ".invite"
 	PERMISSION_USER_IMPOSTERNATE = admin_user_prefix + ".imposternate"
+
+	admin_group_prefix    = admin_prefix + ".group"
+	PERMISSION_GROUP_EDIT = admin_group_prefix + ".edit"
 )

@@ -66,7 +66,7 @@ func getAdminBan(ctx context.Context, db *ent.Client) fiber.Handler {
 		claims := jwtUser.Claims.(jwt.MapClaims)
 		userId := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
@@ -111,7 +111,7 @@ func postAdminBan(ctx context.Context, db *ent.Client) fiber.Handler {
 		claims := jwtUser.Claims.(jwt.MapClaims)
 		userId := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
@@ -163,7 +163,7 @@ func getAdminBanID(ctx context.Context, db *ent.Client) fiber.Handler {
 		claims := jwtUser.Claims.(jwt.MapClaims)
 		userId := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
@@ -210,7 +210,7 @@ func deleteAdminBanID(ctx context.Context, db *ent.Client) fiber.Handler {
 		claims := jwtUser.Claims.(jwt.MapClaims)
 		userId := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}

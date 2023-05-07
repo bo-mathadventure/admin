@@ -36,6 +36,35 @@ definitions:
         example: 2006-01-02T15:04:05Z07:00
         type: string
     type: object
+  admin.AdminGroupResponse:
+    properties:
+      createdAt:
+        example: 2006-01-02T15:04:05Z07:00
+        type: string
+      deleteable:
+        type: boolean
+      description:
+        example: ""
+        type: string
+      id:
+        type: integer
+      name:
+        example: administration
+        type: string
+      permissions:
+        example:
+        - admin.user.view
+        - admin.user.view
+        items:
+          type: string
+        type: array
+      tags:
+        example:
+        - admin
+        items:
+          type: string
+        type: array
+    type: object
   admin.AdminMapChat:
     properties:
       enable:
@@ -142,6 +171,10 @@ definitions:
       email:
         example: bob@example.com
         type: string
+      groups:
+        items:
+          $ref: '#/definitions/admin.AdminGroupResponse'
+        type: array
       id:
         type: integer
       lastLogin:
@@ -150,13 +183,29 @@ definitions:
       permissions:
         example:
         - admin.editor
-        - admin.user.*
+        - admin.user.edit
         items:
           type: string
         type: array
       ssoIdentifier:
         type: string
       tags:
+        example:
+        - admin
+        - mod
+        - editor
+        - student
+        items:
+          type: string
+        type: array
+      userPermissions:
+        example:
+        - admin.editor
+        - admin.user.edit
+        items:
+          type: string
+        type: array
+      userTags:
         example:
         - admin
         - mod
@@ -206,6 +255,16 @@ definitions:
     - check
     - message
     - validUntil
+    type: object
+  admin.CreateGroup:
+    properties:
+      name:
+        example: administration
+        maxLength: 32
+        minLength: 3
+        type: string
+    required:
+    - name
     type: object
   admin.CreateMap:
     properties:
@@ -285,6 +344,32 @@ definitions:
     - message
     - type
     type: object
+  admin.UpdateGroup:
+    properties:
+      description:
+        example: ""
+        type: string
+      name:
+        example: administration
+        maxLength: 32
+        minLength: 3
+        type: string
+      permissions:
+        example:
+        - admin.user.view
+        - admin.user.view
+        items:
+          type: string
+        type: array
+      tags:
+        example:
+        - admin
+        items:
+          type: string
+        type: array
+    required:
+    - name
+    type: object
   admin.UpdateMap:
     properties:
       canReport:
@@ -334,6 +419,12 @@ definitions:
       email:
         example: bob@example.com
         type: string
+      groups:
+        example:
+        - 10
+        items:
+          type: integer
+        type: array
       password:
         minLength: 8
         type: string
@@ -362,6 +453,7 @@ definitions:
         type: string
     required:
     - email
+    - groups
     - permissions
     - tags
     - username
@@ -980,6 +1072,201 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Get specific ban
+      tags:
+      - admin
+  /system/admin/group:
+    get:
+      consumes:
+      - application/json
+      description: Get all groups. Requires permission admin.group.edit
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/admin.AdminGroupResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: List Groups
+      tags:
+      - admin
+    post:
+      consumes:
+      - application/json
+      description: Create new Group. Requires permission admin.group.edit
+      parameters:
+      - description: '-'
+        in: body
+        name: params
+        required: true
+        schema:
+          $ref: '#/definitions/admin.CreateGroup'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/admin.AdminGroupResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Group
+      tags:
+      - admin
+  /system/admin/group/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete group by ID. Requires permission admin.group.edit
+      parameters:
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete group
+      tags:
+      - admin
+    get:
+      consumes:
+      - application/json
+      description: Get group by ID. Requires permission admin.group.edit
+      parameters:
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/admin.AdminGroupResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get specific group
+      tags:
+      - admin
+    put:
+      consumes:
+      - application/json
+      description: Update group by ID. Requires permission admin.group.edit
+      parameters:
+      - description: '-'
+        in: body
+        name: params
+        required: true
+        schema:
+          $ref: '#/definitions/admin.UpdateGroup'
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/admin.AdminGroupResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update group
       tags:
       - admin
   /system/admin/map:

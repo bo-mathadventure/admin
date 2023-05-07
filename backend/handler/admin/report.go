@@ -66,7 +66,7 @@ func getAdminReport(ctx context.Context, db *ent.Client) fiber.Handler {
 		claims := jwtUser.Claims.(jwt.MapClaims)
 		userId := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
@@ -105,7 +105,7 @@ func getAdminReportID(ctx context.Context, db *ent.Client) fiber.Handler {
 		claims := jwtUser.Claims.(jwt.MapClaims)
 		userId := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
@@ -157,7 +157,7 @@ func putAdminReportID(ctx context.Context, db *ent.Client) fiber.Handler {
 		claims := jwtUser.Claims.(jwt.MapClaims)
 		userId := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
@@ -218,7 +218,7 @@ func deleteAdminReportID(ctx context.Context, db *ent.Client) fiber.Handler {
 		claims := jwtUser.Claims.(jwt.MapClaims)
 		userId := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}

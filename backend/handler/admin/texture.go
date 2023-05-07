@@ -73,7 +73,7 @@ func getAdminTexture(ctx context.Context, db *ent.Client) fiber.Handler {
 		claims := jwtUser.Claims.(jwt.MapClaims)
 		userId := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
@@ -105,7 +105,7 @@ type CreateTexture struct {
 //	@Tags			admin
 //	@Accept			mpfd
 //	@Produce		json
-//	@Param			params		formData		CreateTexture	true	"-"
+//	@Param			params		formData	CreateTexture	true	"-"
 //	@Param			resource	formData	file			true	"the texture file"
 //	@Success		200			{object}	AdminTextureResponse
 //	@Failure		400			{object}	handler.APIResponse
@@ -119,7 +119,7 @@ func postAdminTexture(ctx context.Context, db *ent.Client) fiber.Handler {
 		claims := jwtUser.Claims.(jwt.MapClaims)
 		userId := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
@@ -193,7 +193,7 @@ func getAdminTextureID(ctx context.Context, db *ent.Client) fiber.Handler {
 		claims := jwtUser.Claims.(jwt.MapClaims)
 		userId := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
@@ -233,7 +233,7 @@ type UpdateTexture struct {
 //	@Tags			admin
 //	@Accept			mpfd
 //	@Produce		json
-//	@Param			params		formData		UpdateTexture	true	"-"
+//	@Param			params		formData	UpdateTexture	true	"-"
 //	@Param			id			path		int				true	"Texture ID"
 //	@Param			resource	formData	file			true	"the texture file"
 //	@Success		200			{object}	AdminTextureResponse
@@ -248,7 +248,7 @@ func putAdminTextureID(ctx context.Context, db *ent.Client) fiber.Handler {
 		claims := jwtUser.Claims.(jwt.MapClaims)
 		userId := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
@@ -335,7 +335,7 @@ func deleteAdminTextureID(ctx context.Context, db *ent.Client) fiber.Handler {
 		claims := jwtUser.Claims.(jwt.MapClaims)
 		userId := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}

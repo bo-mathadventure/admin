@@ -12,6 +12,9 @@ type Announcement func(*sql.Selector)
 // Ban is the predicate function for ban builders.
 type Ban func(*sql.Selector)
 
+// Group is the predicate function for group builders.
+type Group func(*sql.Selector)
+
 // Maps is the predicate function for maps builders.
 type Maps func(*sql.Selector)
 

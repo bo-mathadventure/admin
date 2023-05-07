@@ -14,6 +14,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/bo-mathadventure/admin/ent/announcement"
 	"github.com/bo-mathadventure/admin/ent/ban"
+	"github.com/bo-mathadventure/admin/ent/group"
 	"github.com/bo-mathadventure/admin/ent/maps"
 	"github.com/bo-mathadventure/admin/ent/report"
 	"github.com/bo-mathadventure/admin/ent/textures"
@@ -80,6 +81,7 @@ func checkColumn(table, column string) error {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
 			announcement.Table: announcement.ValidColumn,
 			ban.Table:          ban.ValidColumn,
+			group.Table:        group.ValidColumn,
 			maps.Table:         maps.ValidColumn,
 			report.Table:       report.ValidColumn,
 			textures.Table:     textures.ValidColumn,

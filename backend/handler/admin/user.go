@@ -21,30 +21,36 @@ func NewAdminUserHandler(app fiber.Router, ctx context.Context, db *ent.Client) 
 }
 
 type AdminUserResponse struct {
-	ID            int      `json:"id"`
-	UUID          string   `json:"uuid" example:"60948703-fca9-4491-b3bc-588188d93eb3"`
-	Email         string   `json:"email" example:"bob@example.com"`
-	Username      string   `json:"username" example:"Bob"`
-	SsoIdentifier string   `json:"ssoIdentifier"`
-	VCardURL      string   `json:"vCardURL" validate:"omitempty"`
-	Permissions   []string `json:"permissions" example:"admin.editor,admin.user.*"`
-	Tags          []string `json:"tags" example:"admin,mod,editor,student"`
-	LastLogin     string   `json:"lastLogin" example:"2006-01-02T15:04:05Z07:00" validate:"omitempty"`
-	CreatedAt     string   `json:"createdAt" example:"2006-01-02T15:04:05Z07:00"`
+	ID              int                   `json:"id"`
+	UUID            string                `json:"uuid" example:"60948703-fca9-4491-b3bc-588188d93eb3"`
+	Email           string                `json:"email" example:"bob@example.com"`
+	Username        string                `json:"username" example:"Bob"`
+	SsoIdentifier   string                `json:"ssoIdentifier"`
+	VCardURL        string                `json:"vCardURL" validate:"omitempty"`
+	Permissions     []string              `json:"permissions" example:"admin.editor,admin.user.edit"`
+	UserPermissions []string              `json:"userPermissions" example:"admin.editor,admin.user.edit"`
+	Tags            []string              `json:"tags" example:"admin,mod,editor,student"`
+	UserTags        []string              `json:"userTags" example:"admin,mod,editor,student"`
+	LastLogin       string                `json:"lastLogin" example:"2006-01-02T15:04:05Z07:00" validate:"omitempty"`
+	CreatedAt       string                `json:"createdAt" example:"2006-01-02T15:04:05Z07:00"`
+	Groups          []*AdminGroupResponse `json:"groups"`
 }
 
 func responseAdminUserResponse(this *ent.User) *AdminUserResponse {
 	return &AdminUserResponse{
-		ID:            this.ID,
-		UUID:          this.UUID,
-		Email:         this.Email,
-		Username:      this.Username,
-		SsoIdentifier: this.SsoIdentifier,
-		VCardURL:      this.VCardURL,
-		Permissions:   this.Permissions,
-		Tags:          this.Tags,
-		LastLogin:     this.LastLogin.Format(time.RFC3339),
-		CreatedAt:     this.CreatedAt.Format(time.RFC3339),
+		ID:              this.ID,
+		UUID:            this.UUID,
+		Email:           this.Email,
+		Username:        this.Username,
+		SsoIdentifier:   this.SsoIdentifier,
+		VCardURL:        this.VCardURL,
+		Permissions:     utils.CombinePermissions(this),
+		UserPermissions: this.Permissions,
+		Tags:            utils.CombineTags(this),
+		UserTags:        this.Tags,
+		Groups:          responseAdminGroupResponses(this.Edges.Groups),
+		LastLogin:       this.LastLogin.Format(time.RFC3339),
+		CreatedAt:       this.CreatedAt.Format(time.RFC3339),
 	}
 }
 
@@ -76,7 +82,7 @@ func getAdminUser(ctx context.Context, db *ent.Client) fiber.Handler {
 		claims := jwtUser.Claims.(jwt.MapClaims)
 		userId := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
@@ -121,7 +127,7 @@ func postAdminUser(ctx context.Context, db *ent.Client) fiber.Handler {
 		claims := jwtUser.Claims.(jwt.MapClaims)
 		userId := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
@@ -174,7 +180,7 @@ func getAdminUserID(ctx context.Context, db *ent.Client) fiber.Handler {
 		claims := jwtUser.Claims.(jwt.MapClaims)
 		userId := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
@@ -188,7 +194,7 @@ func getAdminUserID(ctx context.Context, db *ent.Client) fiber.Handler {
 			return handler.HandleInvalidID(c)
 		}
 
-		foundEntry, err := db.User.Query().Where(user.ID(pathID)).First(ctx)
+		foundEntry, err := db.User.Query().WithGroups().Where(user.ID(pathID)).First(ctx)
 		if err != nil {
 			if ent.IsNotFound(err) {
 				return handler.HandleNotFound(c)
@@ -207,6 +213,7 @@ type UpdateUser struct {
 	VCardURL    string   `json:"vCardURL" validate:"omitempty,url"`
 	Permissions []string `json:"permissions" example:"admin.editor,admin.user.edit" validate:"required"`
 	Tags        []string `json:"tags" example:"admin,mod,editor,student" validate:"required"`
+	Groups      []int    `json:"groups" example:"10" validate:"required"`
 }
 
 // putAdminUserID godoc
@@ -231,7 +238,7 @@ func putAdminUserID(ctx context.Context, db *ent.Client) fiber.Handler {
 		claims := jwtUser.Claims.(jwt.MapClaims)
 		userId := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
@@ -254,7 +261,7 @@ func putAdminUserID(ctx context.Context, db *ent.Client) fiber.Handler {
 			return err
 		}
 
-		found, err := db.User.Query().Where(user.ID(pathID)).First(ctx)
+		found, err := db.User.Query().WithGroups().Where(user.ID(pathID)).First(ctx)
 		if err != nil {
 			if ent.IsNotFound(err) {
 				return handler.HandleNotFound(c)
@@ -262,7 +269,7 @@ func putAdminUserID(ctx context.Context, db *ent.Client) fiber.Handler {
 			return handler.HandleInternalError(c, err)
 		}
 
-		foundUpdate := found.Update().SetEmail(req.Email).SetUsername(req.Username).SetVCardURL(req.VCardURL).SetPermissions(req.Permissions).SetTags(req.Tags)
+		foundUpdate := found.Update().SetEmail(req.Email).SetUsername(req.Username).SetVCardURL(req.VCardURL).SetPermissions(req.Permissions).AddGroupIDs(req.Groups...).SetTags(req.Tags)
 		if req.Password != "" {
 			hashPassword, err := utils.HashPassword(req.Password)
 			if err != nil {
@@ -301,7 +308,7 @@ func deleteAdminUserID(ctx context.Context, db *ent.Client) fiber.Handler {
 		claims := jwtUser.Claims.(jwt.MapClaims)
 		userId := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}

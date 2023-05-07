@@ -7,6 +7,7 @@ import (
 
 	"github.com/bo-mathadventure/admin/ent/announcement"
 	"github.com/bo-mathadventure/admin/ent/ban"
+	"github.com/bo-mathadventure/admin/ent/group"
 	"github.com/bo-mathadventure/admin/ent/maps"
 	"github.com/bo-mathadventure/admin/ent/report"
 	"github.com/bo-mathadventure/admin/ent/schema"
@@ -34,6 +35,20 @@ func init() {
 	banDescCreatedAt := banFields[3].Descriptor()
 	// ban.DefaultCreatedAt holds the default value on creation for the createdAt field.
 	ban.DefaultCreatedAt = banDescCreatedAt.Default.(func() time.Time)
+	groupFields := schema.Group{}.Fields()
+	_ = groupFields
+	// groupDescPermissions is the schema descriptor for permissions field.
+	groupDescPermissions := groupFields[2].Descriptor()
+	// group.DefaultPermissions holds the default value on creation for the permissions field.
+	group.DefaultPermissions = groupDescPermissions.Default.([]string)
+	// groupDescTags is the schema descriptor for tags field.
+	groupDescTags := groupFields[3].Descriptor()
+	// group.DefaultTags holds the default value on creation for the tags field.
+	group.DefaultTags = groupDescTags.Default.([]string)
+	// groupDescCreatedAt is the schema descriptor for createdAt field.
+	groupDescCreatedAt := groupFields[4].Descriptor()
+	// group.DefaultCreatedAt holds the default value on creation for the createdAt field.
+	group.DefaultCreatedAt = groupDescCreatedAt.Default.(func() time.Time)
 	mapsFields := schema.Maps{}.Fields()
 	_ = mapsFields
 	// mapsDescTags is the schema descriptor for tags field.

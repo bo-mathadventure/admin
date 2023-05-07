@@ -34,5 +34,6 @@ func (User) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("reported", Report.Type),
 		edge.To("reporter", Report.Type),
+		edge.From("groups", Group.Type).Ref("users"),
 	}
 }

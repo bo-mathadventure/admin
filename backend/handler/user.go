@@ -35,8 +35,8 @@ func responseUserResponse(thisUser *ent.User) *UserResponse {
 		UUID:        thisUser.UUID,
 		Email:       thisUser.Email,
 		Username:    thisUser.Username,
-		Permissions: thisUser.Permissions,
-		Tags:        thisUser.Tags,
+		Permissions: utils.CombinePermissions(thisUser),
+		Tags:        utils.CombineTags(thisUser),
 		LastLogin:   thisUser.LastLogin,
 		CreatedAt:   thisUser.CreatedAt,
 		Config:      config.GetConfig(),
@@ -61,7 +61,7 @@ func getMe(ctx context.Context, db *ent.Client) fiber.Handler {
 		claims := jwtUser.Claims.(jwt.MapClaims)
 		userId := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
 		if err != nil {
 			return HandleInternalError(c, err)
 		}
@@ -107,7 +107,7 @@ func updateUser(ctx context.Context, db *ent.Client) fiber.Handler {
 			return err
 		}
 
-		foundUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		foundUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
 
 		if req.EMail != "" || req.ClearTextPassword != "" {
 			if err != nil || foundUser == nil || !utils.CheckPasswordHash(req.ClearTextCurrentPassword, foundUser.Password) {
@@ -173,7 +173,7 @@ func getTokenLogin(ctx context.Context, db *ent.Client) fiber.Handler {
 		claims := jwtUser.Claims.(jwt.MapClaims)
 		userId := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
 		if err != nil {
 			return HandleInternalError(c, err)
 		}
