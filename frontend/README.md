@@ -1,0 +1,63 @@
+# Frontend
+
+The following UI is required:
+- Register
+  - register is only available when ENABLE_REGISTRATION is active
+- Login
+  - local authentication (E-Mail/Password)
+  - SAML redirect to `/auth/saml/start`
+- Dashboard
+  - cet Workadventure access token (Button with redirect to `/system/user/token`)
+- Announcements
+  - list all announcements with pagination
+  - edit/create new announcement
+- Ban
+  - list all bans with pagination and filter for user
+  - create new ban
+  - add admin comment to ban
+  - delete ban (sets only expiration)
+- Reports
+  - List all reports with pagination and filter for reporter/reported user
+  - add admin comment to report
+  - delete/hide report
+  - directly ban the reported user (when not null). delete report after successfully banned and add admin comment to ban
+- Texture Edit
+  - list all textures with pagination
+  - filter by layer (woka, hair, eyes, companion, etc.)
+  - parse sprite resource and show walking animation from all sides
+  - lazy load the textures
+  - create/edit textures (name, tags and upload file)
+  - delete texture
+- Groups
+  - list all groups with pagination
+  - add new group (only name is required)
+  - edit groups and its permissions/tags
+    - show parsed permission variables
+  - delete groups (only when deletable)
+- User
+  - list all users with pagination and email/username search
+  - modal to invite a new user to local (Username, E-Mail, Password)
+  - edit User
+    - quick access to imposternate and ban user
+    - change password/email/username for user
+    - add user based permissions and tags
+    - set user groups (multiple are possible)
+  - delete user
+- Settings
+  - set E-Mail (when no sso identifier is set)
+  - change password (allows local login when is sso user)
+  - for later: notification settings?
+
+Some thoughts:
+- error messages should be caught and shown to the user as toast alert
+- generate API client using OpenID schema to always stay up to date
+- stay responsive
+- keep it simple but modern
+  - maybe use chakra ui or material ui
+- use good practices for redux or react providers
+- maybe stay lightweight with svelte or other
+- translate permission variable (i. e. admin.user.view to View Users)
+- all actions like delete or ban should require a second confirmation
+  - don't use native yes/no diaglog of browser!
+  - create component like YesNoDialog and pass actions 
+- pagination and search should be on backend side. to support this use tools like react-tables before we have to change all tables in the end
