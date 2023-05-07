@@ -2430,8 +2430,9 @@ const docTemplate = `{
                 "type": {
                     "type": "string",
                     "enum": [
+                        "message",
                         "ban",
-                        "warning"
+                        "banned"
                     ]
                 },
                 "validUntil": {
@@ -2742,8 +2743,9 @@ const docTemplate = `{
                 "type": {
                     "type": "string",
                     "enum": [
+                        "message",
                         "ban",
-                        "warning"
+                        "banned"
                     ]
                 },
                 "validUntil": {
@@ -2883,8 +2885,9 @@ const docTemplate = `{
                 "type": {
                     "type": "string",
                     "enum": [
+                        "message",
                         "ban",
-                        "warning"
+                        "banned"
                     ]
                 },
                 "validUntil": {

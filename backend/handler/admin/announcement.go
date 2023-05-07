@@ -17,7 +17,7 @@ import (
 
 func NewAdminAnnouncementHandler(app fiber.Router, ctx context.Context, db *ent.Client) {
 	err := handler.Validate.RegisterValidation("announcement_type_validation", func(fl validator.FieldLevel) bool {
-		return utils.Contains([]string{"ban", "warning"}, fl.Field().String())
+		return utils.Contains([]string{"message", "ban", "banned"}, fl.Field().String())
 	})
 	if err != nil {
 		log.WithError(err).WithField("validation", "policy_validation").Panic("failed to setup custom validation")
@@ -32,7 +32,7 @@ func NewAdminAnnouncementHandler(app fiber.Router, ctx context.Context, db *ent.
 
 type AdminAnnouncementResponse struct {
 	ID         int    `json:"id"`
-	Type       string `json:"type" enums:"ban,warning"`
+	Type       string `json:"type" enums:"message,ban,banned"`
 	Message    string `json:"message" example:"This is an example alert"`
 	CreatedAt  string `json:"createdAt" example:"2006-01-02T15:04:05Z07:00"`
 	ValidUntil string `json:"validUntil" example:"2006-01-02T15:04:05Z07:00" validate:"omitempty"`
@@ -95,7 +95,7 @@ func getAdminAnnouncement(ctx context.Context, db *ent.Client) fiber.Handler {
 }
 
 type CreateAnnouncement struct {
-	Type       string `json:"type" enums:"ban,warning" validate:"required,announcement_type_validation"`
+	Type       string `json:"type" enums:"message,ban,banned" validate:"required,announcement_type_validation"`
 	Message    string `json:"message" example:"This is an example alert" validate:"required"`
 	ValidUntil string `json:"validUntil" example:"2006-01-02T15:04:05Z07:00" validate:"omitempty,rfc3339"`
 }
@@ -204,7 +204,7 @@ func getAdminAnnouncementID(ctx context.Context, db *ent.Client) fiber.Handler {
 }
 
 type UpdateAnnouncement struct {
-	Type       string `json:"type" enums:"ban,warning" validate:"required,announcement_type_validation"`
+	Type       string `json:"type" enums:"message,ban,banned" validate:"required,announcement_type_validation"`
 	Message    string `json:"message" example:"This is an example alert" validate:"required"`
 	ValidUntil string `json:"validUntil" example:"2006-01-02T15:04:05Z07:00" validate:"omitempty,rfc3339"`
 }

@@ -2423,8 +2423,9 @@
                 "type": {
                     "type": "string",
                     "enum": [
+                        "message",
                         "ban",
-                        "warning"
+                        "banned"
                     ]
                 },
                 "validUntil": {
@@ -2735,8 +2736,9 @@
                 "type": {
                     "type": "string",
                     "enum": [
+                        "message",
                         "ban",
-                        "warning"
+                        "banned"
                     ]
                 },
                 "validUntil": {
@@ -2876,8 +2878,9 @@
                 "type": {
                     "type": "string",
                     "enum": [
+                        "message",
                         "ban",
-                        "warning"
+                        "banned"
                     ]
                 },
                 "validUntil": {

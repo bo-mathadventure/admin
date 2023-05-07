@@ -12,8 +12,9 @@ definitions:
         type: string
       type:
         enum:
+        - message
         - ban
-        - warning
+        - banned
         type: string
       validUntil:
         example: 2006-01-02T15:04:05Z07:00
@@ -230,8 +231,9 @@ definitions:
         type: string
       type:
         enum:
+        - message
         - ban
-        - warning
+        - banned
         type: string
       validUntil:
         example: 2006-01-02T15:04:05Z07:00
@@ -334,8 +336,9 @@ definitions:
         type: string
       type:
         enum:
+        - message
         - ban
-        - warning
+        - banned
         type: string
       validUntil:
         example: 2006-01-02T15:04:05Z07:00
