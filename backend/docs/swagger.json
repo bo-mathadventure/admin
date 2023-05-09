@@ -37,7 +37,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handler.LoginRequest"
+                            "$ref": "#/definitions/handler.loginRequest"
                         }
                     }
                 ],
@@ -45,7 +45,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.LoginResponse"
+                            "$ref": "#/definitions/handler.loginResponse"
                         }
                     },
                     "400": {
@@ -89,7 +89,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handler.RegisterRequest"
+                            "$ref": "#/definitions/handler.registerRequest"
                         }
                     }
                 ],
@@ -143,7 +143,7 @@
                     },
                     {
                         "type": "string",
-                        "name": "SAMLResponse",
+                        "name": "samlResponse",
                         "in": "formData"
                     }
                 ],
@@ -223,7 +223,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/admin.AdminAnnouncementResponse"
+                                "$ref": "#/definitions/admin.adminAnnouncementResponse"
                             }
                         }
                     },
@@ -277,7 +277,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/admin.CreateAnnouncement"
+                            "$ref": "#/definitions/admin.createAnnouncement"
                         }
                     }
                 ],
@@ -285,7 +285,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/admin.AdminAnnouncementResponse"
+                            "$ref": "#/definitions/admin.adminAnnouncementResponse"
                         }
                     },
                     "400": {
@@ -346,7 +346,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/admin.AdminAnnouncementResponse"
+                            "$ref": "#/definitions/admin.adminAnnouncementResponse"
                         }
                     },
                     "400": {
@@ -399,7 +399,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/admin.UpdateAnnouncement"
+                            "$ref": "#/definitions/admin.updateAnnouncement"
                         }
                     },
                     {
@@ -414,7 +414,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/admin.AdminAnnouncementResponse"
+                            "$ref": "#/definitions/admin.adminAnnouncementResponse"
                         }
                     },
                     "400": {
@@ -527,7 +527,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/admin.AdminBanResponse"
+                                "$ref": "#/definitions/admin.adminBanResponse"
                             }
                         }
                     },
@@ -581,7 +581,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/admin.CreateBan"
+                            "$ref": "#/definitions/admin.createBan"
                         }
                     }
                 ],
@@ -589,7 +589,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/admin.AdminBanResponse"
+                            "$ref": "#/definitions/admin.adminBanResponse"
                         }
                     },
                     "400": {
@@ -650,7 +650,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/admin.AdminBanResponse"
+                            "$ref": "#/definitions/admin.adminBanResponse"
                         }
                     },
                     "400": {
@@ -763,7 +763,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/admin.AdminGroupResponse"
+                                "$ref": "#/definitions/admin.adminGroupResponse"
                             }
                         }
                     },
@@ -817,7 +817,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/admin.CreateGroup"
+                            "$ref": "#/definitions/admin.createGroup"
                         }
                     }
                 ],
@@ -825,7 +825,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/admin.AdminGroupResponse"
+                            "$ref": "#/definitions/admin.adminGroupResponse"
                         }
                     },
                     "400": {
@@ -886,7 +886,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/admin.AdminGroupResponse"
+                            "$ref": "#/definitions/admin.adminGroupResponse"
                         }
                     },
                     "400": {
@@ -939,7 +939,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/admin.UpdateGroup"
+                            "$ref": "#/definitions/admin.updateGroup"
                         }
                     },
                     {
@@ -954,7 +954,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/admin.AdminGroupResponse"
+                            "$ref": "#/definitions/admin.adminGroupResponse"
                         }
                     },
                     "400": {
@@ -1067,7 +1067,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/admin.AdminMapResponse"
+                                "$ref": "#/definitions/admin.adminMapResponse"
                             }
                         }
                     },
@@ -1121,7 +1121,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/admin.CreateMap"
+                            "$ref": "#/definitions/admin.createMap"
                         }
                     }
                 ],
@@ -1129,7 +1129,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/admin.AdminMapResponse"
+                            "$ref": "#/definitions/admin.adminMapResponse"
                         }
                     },
                     "400": {
@@ -1190,7 +1190,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/admin.AdminMapResponse"
+                            "$ref": "#/definitions/admin.adminMapResponse"
                         }
                     },
                     "400": {
@@ -1243,7 +1243,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/admin.UpdateMap"
+                            "$ref": "#/definitions/admin.updateMap"
                         }
                     },
                     {
@@ -1258,7 +1258,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/admin.AdminMapResponse"
+                            "$ref": "#/definitions/admin.adminMapResponse"
                         }
                     },
                     "400": {
@@ -1371,7 +1371,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/admin.AdminReportResponse"
+                                "$ref": "#/definitions/admin.adminReportResponse"
                             }
                         }
                     },
@@ -1433,7 +1433,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/admin.AdminReportResponse"
+                            "$ref": "#/definitions/admin.adminReportResponse"
                         }
                     },
                     "400": {
@@ -1486,7 +1486,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/admin.UpdateReport"
+                            "$ref": "#/definitions/admin.updateReport"
                         }
                     },
                     {
@@ -1501,7 +1501,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/admin.AdminReportResponse"
+                            "$ref": "#/definitions/admin.adminReportResponse"
                         }
                     },
                     "400": {
@@ -1614,7 +1614,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/admin.AdminTextureResponse"
+                                "$ref": "#/definitions/admin.adminTextureResponse"
                             }
                         }
                     },
@@ -1709,7 +1709,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/admin.AdminTextureResponse"
+                            "$ref": "#/definitions/admin.adminTextureResponse"
                         }
                     },
                     "400": {
@@ -1770,7 +1770,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/admin.AdminTextureResponse"
+                            "$ref": "#/definitions/admin.adminTextureResponse"
                         }
                     },
                     "400": {
@@ -1871,7 +1871,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/admin.AdminTextureResponse"
+                            "$ref": "#/definitions/admin.adminTextureResponse"
                         }
                     },
                     "400": {
@@ -1984,7 +1984,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/admin.AdminUserResponse"
+                                "$ref": "#/definitions/admin.adminUserResponse"
                             }
                         }
                     },
@@ -2040,7 +2040,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/admin.CreateUser"
+                            "$ref": "#/definitions/admin.createUser"
                         }
                     }
                 ],
@@ -2048,7 +2048,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/admin.AdminUserResponse"
+                            "$ref": "#/definitions/admin.adminUserResponse"
                         }
                     },
                     "400": {
@@ -2109,7 +2109,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/admin.AdminUserResponse"
+                            "$ref": "#/definitions/admin.adminUserResponse"
                         }
                     },
                     "400": {
@@ -2162,7 +2162,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/admin.UpdateUser"
+                            "$ref": "#/definitions/admin.updateUser"
                         }
                     },
                     {
@@ -2177,7 +2177,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/admin.AdminUserResponse"
+                            "$ref": "#/definitions/admin.adminUserResponse"
                         }
                     },
                     "400": {
@@ -2288,7 +2288,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.UserResponse"
+                            "$ref": "#/definitions/handler.userResponse"
                         }
                     },
                     "401": {
@@ -2329,7 +2329,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handler.UpdateUserRequest"
+                            "$ref": "#/definitions/handler.updateUserRequest"
                         }
                     }
                 ],
@@ -2337,7 +2337,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.UserResponse"
+                            "$ref": "#/definitions/handler.userResponse"
                         }
                     },
                     "400": {
@@ -2406,7 +2406,7 @@
         }
     },
     "definitions": {
-        "admin.AdminAnnouncementResponse": {
+        "admin.adminAnnouncementResponse": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -2434,7 +2434,7 @@
                 }
             }
         },
-        "admin.AdminBanResponse": {
+        "admin.adminBanResponse": {
             "type": "object",
             "properties": {
                 "check": {
@@ -2458,7 +2458,7 @@
                 }
             }
         },
-        "admin.AdminGroupResponse": {
+        "admin.adminGroupResponse": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -2500,7 +2500,7 @@
                 }
             }
         },
-        "admin.AdminMapChat": {
+        "admin.adminMapChat": {
             "type": "object",
             "required": [
                 "enable",
@@ -2523,14 +2523,14 @@
                 }
             }
         },
-        "admin.AdminMapResponse": {
+        "admin.adminMapResponse": {
             "type": "object",
             "properties": {
                 "canReport": {
                     "type": "boolean"
                 },
                 "chat": {
-                    "$ref": "#/definitions/admin.AdminMapChat"
+                    "$ref": "#/definitions/admin.adminMapChat"
                 },
                 "contactPage": {
                     "type": "string",
@@ -2575,7 +2575,7 @@
                 }
             }
         },
-        "admin.AdminReportResponse": {
+        "admin.adminReportResponse": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -2596,7 +2596,7 @@
                 }
             }
         },
-        "admin.AdminTextureResponse": {
+        "admin.adminTextureResponse": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -2638,7 +2638,7 @@
                 }
             }
         },
-        "admin.AdminUserResponse": {
+        "admin.adminUserResponse": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -2652,7 +2652,7 @@
                 "groups": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/admin.AdminGroupResponse"
+                        "$ref": "#/definitions/admin.adminGroupResponse"
                     }
                 },
                 "id": {
@@ -2719,7 +2719,7 @@
                 }
             }
         },
-        "admin.CreateAnnouncement": {
+        "admin.createAnnouncement": {
             "type": "object",
             "required": [
                 "message",
@@ -2744,7 +2744,7 @@
                 }
             }
         },
-        "admin.CreateBan": {
+        "admin.createBan": {
             "type": "object",
             "required": [
                 "check",
@@ -2766,7 +2766,7 @@
                 }
             }
         },
-        "admin.CreateGroup": {
+        "admin.createGroup": {
             "type": "object",
             "required": [
                 "name"
@@ -2780,7 +2780,7 @@
                 }
             }
         },
-        "admin.CreateMap": {
+        "admin.createMap": {
             "type": "object",
             "required": [
                 "canReport",
@@ -2796,7 +2796,7 @@
                     "type": "boolean"
                 },
                 "chat": {
-                    "$ref": "#/definitions/admin.AdminMapChat"
+                    "$ref": "#/definitions/admin.adminMapChat"
                 },
                 "contactPage": {
                     "type": "string",
@@ -2836,7 +2836,7 @@
                 }
             }
         },
-        "admin.CreateUser": {
+        "admin.createUser": {
             "type": "object",
             "required": [
                 "email",
@@ -2861,7 +2861,7 @@
                 }
             }
         },
-        "admin.UpdateAnnouncement": {
+        "admin.updateAnnouncement": {
             "type": "object",
             "required": [
                 "message",
@@ -2886,7 +2886,7 @@
                 }
             }
         },
-        "admin.UpdateGroup": {
+        "admin.updateGroup": {
             "type": "object",
             "required": [
                 "name"
@@ -2923,7 +2923,7 @@
                 }
             }
         },
-        "admin.UpdateMap": {
+        "admin.updateMap": {
             "type": "object",
             "required": [
                 "canReport",
@@ -2939,7 +2939,7 @@
                     "type": "boolean"
                 },
                 "chat": {
-                    "$ref": "#/definitions/admin.AdminMapChat"
+                    "$ref": "#/definitions/admin.adminMapChat"
                 },
                 "contactPage": {
                     "type": "string",
@@ -2979,10 +2979,10 @@
                 }
             }
         },
-        "admin.UpdateReport": {
+        "admin.updateReport": {
             "type": "object"
         },
-        "admin.UpdateUser": {
+        "admin.updateUser": {
             "type": "object",
             "required": [
                 "email",
@@ -3101,7 +3101,7 @@
                 }
             }
         },
-        "handler.LoginRequest": {
+        "handler.loginRequest": {
             "type": "object",
             "required": [
                 "email",
@@ -3118,7 +3118,7 @@
                 }
             }
         },
-        "handler.LoginResponse": {
+        "handler.loginResponse": {
             "type": "object",
             "properties": {
                 "token": {
@@ -3126,7 +3126,7 @@
                 }
             }
         },
-        "handler.RegisterRequest": {
+        "handler.registerRequest": {
             "type": "object",
             "required": [
                 "confirmPassword",
@@ -3161,7 +3161,7 @@
                 }
             }
         },
-        "handler.UpdateUserRequest": {
+        "handler.updateUserRequest": {
             "type": "object",
             "required": [
                 "password"
@@ -3169,6 +3169,7 @@
             "properties": {
                 "confirmPassword": {
                     "type": "string",
+                    "minLength": 8,
                     "example": "my$ecur3P4$$word"
                 },
                 "email": {
@@ -3178,6 +3179,7 @@
                 },
                 "newPassword": {
                     "type": "string",
+                    "minLength": 8,
                     "example": "my$ecur3P4$$word"
                 },
                 "password": {
@@ -3186,7 +3188,7 @@
                 }
             }
         },
-        "handler.UserResponse": {
+        "handler.userResponse": {
             "type": "object",
             "properties": {
                 "config": {
