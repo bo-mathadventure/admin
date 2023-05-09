@@ -48,6 +48,9 @@ func NewSAMLHandler(app fiber.Router, ctx context.Context, db *ent.Client) {
 	}
 
 	certData, err := os.ReadFile(config.GetConfig().SAMLv2RootCert)
+	if err != nil {
+		panic(err)
+	}
 	idpCert, err := x509.ParseCertificate(certData)
 	if err != nil {
 		panic(err)
@@ -92,8 +95,8 @@ func getSAMLStart(ctx context.Context, db *ent.Client, sp *saml2.SAMLServiceProv
 }
 
 type SAMLResponse struct {
-	SAMLResponse string `json:"SAMLResponse" xml:"SAMLResponse" form:"SAMLResponse" json:"SAMLResponse"`
-	RelayState   string `json:"RelayState" xml:"RelayState" form:"RelayState" json:"RelayState"`
+	SAMLResponse string `json:"SAMLResponse" xml:"SAMLResponse" form:"SAMLResponse"`
+	RelayState   string `json:"RelayState" xml:"RelayState" form:"RelayState"`
 }
 
 // postSAMLacs godoc

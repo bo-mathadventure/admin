@@ -71,10 +71,10 @@ func getMe(ctx context.Context, db *ent.Client) fiber.Handler {
 }
 
 type UpdateUserRequest struct {
-	EMail                    string `json:"email" example:"bob@exameple.com" format:"email" validate:"omitempty" validate:"required,email"`
-	ClearTextPassword        string `json:"newPassword" example:"my$ecur3P4$$word" validate:"omitempty" validate:"omitempty,min=8"`
-	ClearTextPasswordConfirm string `json:"confirmPassword" example:"my$ecur3P4$$word" validate:"omitempty" validate:"omitempty,min=8,eqcsfield=ClearTextPassword"`
-	ClearTextCurrentPassword string `json:"password" example:"my$ecur3P4$$word" validate:"required" validate:"required"`
+	EMail                    string `json:"email" example:"bob@exameple.com" format:"email" validate:"omitempty,email"`
+	ClearTextPassword        string `json:"newPassword" example:"my$ecur3P4$$word" validate:"omitempty,min=8"`
+	ClearTextPasswordConfirm string `json:"confirmPassword" example:"my$ecur3P4$$word" validate:"omitempty,min=8,eqcsfield=ClearTextPassword"`
+	ClearTextCurrentPassword string `json:"password" example:"my$ecur3P4$$word" validate:"required"`
 }
 
 // updateUser godoc
