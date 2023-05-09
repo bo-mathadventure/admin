@@ -10,24 +10,25 @@ import (
 	"strings"
 )
 
-func NewTextureHandler(app fiber.Router, ctx context.Context, db *ent.Client) {
+// NewTextureHandler initialize routes for the given router
+func NewTextureHandler(ctx context.Context, app fiber.Router, db *ent.Client) {
 	app.Get("/list", getWokaList(ctx, db))
 }
 
-type TextureCollectionTexture struct {
+type textureCollectionTexture struct {
 	ID       string `json:"id"`
 	Name     string `json:"name"`
 	URL      string `json:"url"`
 	Position int    `json:"position"`
 }
-type TextureCollection struct {
+type textureCollection struct {
 	Name     string                     `json:"name"`
 	Position int                        `json:"position"`
-	Textures []TextureCollectionTexture `json:"textures"`
+	Textures []textureCollectionTexture `json:"textures"`
 }
 
-type TextureResponse struct {
-	Collections []TextureCollection `json:"collections"`
+type textureResponse struct {
+	Collections []textureCollection `json:"collections"`
 	Required    bool                `json:"required,omitempty"`
 }
 
@@ -37,22 +38,22 @@ func getWokaList(ctx context.Context, db *ent.Client) fiber.Handler {
 		if err != nil {
 			return handler.HandleInvalidLogin(c)
 		}
-		availableTexturesList := map[string]TextureResponse{}
+		availableTexturesList := map[string]textureResponse{}
 		for _, texture := range allTextures {
 			if _, ok := availableTexturesList[texture.Layer]; !ok {
-				availableTexturesList[texture.Layer] = TextureResponse{
-					Collections: []TextureCollection{
+				availableTexturesList[texture.Layer] = textureResponse{
+					Collections: []textureCollection{
 						{
 							Name:     "default",
 							Position: 0,
-							Textures: []TextureCollectionTexture{},
+							Textures: []textureCollectionTexture{},
 						},
 					},
 					Required: utils.Contains([]string{"body", "eyes", "accessory"}, texture.Layer),
 				}
 			}
 
-			availableTexturesList[texture.Layer].Collections[0].Textures = append(availableTexturesList[texture.Layer].Collections[0].Textures, TextureCollectionTexture{
+			availableTexturesList[texture.Layer].Collections[0].Textures = append(availableTexturesList[texture.Layer].Collections[0].Textures, textureCollectionTexture{
 				ID:       texture.Texture,
 				Name:     texture.Texture,
 				URL:      strings.ReplaceAll(texture.URL, "%FRONTEND_URL%", config.GetConfig().FrontendURL),

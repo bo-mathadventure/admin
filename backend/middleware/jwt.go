@@ -7,6 +7,7 @@ import (
 	jwtware "github.com/gofiber/jwt/v3"
 )
 
+// JWTProtected return the middleware for JWT token checks
 func JWTProtected() func(*fiber.Ctx) error {
 	return jwtware.New(jwtware.Config{
 		TokenLookup: "header:X-API-Key",

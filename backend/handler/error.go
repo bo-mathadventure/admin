@@ -7,6 +7,7 @@ import (
 	"reflect"
 )
 
+// APIResponse definition for API responses
 type APIResponse struct {
 	Error            bool             `json:"error"`
 	Success          bool             `json:"success"`
@@ -16,6 +17,7 @@ type APIResponse struct {
 	ValidationErrors []*ErrorResponse `json:"validation,omitempty"`
 }
 
+// HandleError handles gerneral errors with HTTP 400
 func HandleError(c *fiber.Ctx, errorCode string) error {
 	return c.Status(fiber.StatusBadRequest).JSON(APIResponse{
 		Error:      true,
@@ -25,6 +27,7 @@ func HandleError(c *fiber.Ctx, errorCode string) error {
 	})
 }
 
+// HandleErrorCode template for errors with custom statusCode
 func HandleErrorCode(c *fiber.Ctx, statusCode int, errorCode string) error {
 	return c.Status(statusCode).JSON(APIResponse{
 		Error:      true,
@@ -34,6 +37,7 @@ func HandleErrorCode(c *fiber.Ctx, statusCode int, errorCode string) error {
 	})
 }
 
+// HandleBodyParseError handles errors during body parsing with HTTP 400
 func HandleBodyParseError(c *fiber.Ctx, extra error) error {
 	log.WithError(extra).Warn("failed to parse body request")
 	return c.Status(fiber.StatusBadRequest).JSON(APIResponse{
@@ -45,6 +49,7 @@ func HandleBodyParseError(c *fiber.Ctx, extra error) error {
 	})
 }
 
+// HandleInternalError handles all kind of interal errors with HTTP 500
 func HandleInternalError(c *fiber.Ctx, err error) error {
 	log.WithError(err).Error("internal server error")
 	return c.Status(fiber.StatusInternalServerError).JSON(APIResponse{
@@ -55,6 +60,7 @@ func HandleInternalError(c *fiber.Ctx, err error) error {
 	})
 }
 
+// HandleInvalidPermissions handles invalid permissions with HTTP 403
 func HandleInvalidPermissions(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusForbidden).JSON(APIResponse{
 		Error:      true,
@@ -64,6 +70,7 @@ func HandleInvalidPermissions(c *fiber.Ctx) error {
 	})
 }
 
+// HandleInvalidLogin handles invalid credentials with HTTP 401
 func HandleInvalidLogin(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusUnauthorized).JSON(APIResponse{
 		Error:      true,
@@ -72,6 +79,8 @@ func HandleInvalidLogin(c *fiber.Ctx) error {
 		Message:    "ERR_INVALID_CREDENTIALS",
 	})
 }
+
+// HandleInsufficientData handles insufficient data from workadventure with HTTP 404
 func HandleInsufficientData(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusNotFound).JSON(APIResponse{
 		Error:      true,
@@ -80,6 +89,8 @@ func HandleInsufficientData(c *fiber.Ctx) error {
 		Message:    "ERR_INSUFFICIENT_DATA",
 	})
 }
+
+// HandleInvalidID handles invalid id errors with HTTP 400
 func HandleInvalidID(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusBadRequest).JSON(APIResponse{
 		Error:      true,
@@ -89,6 +100,7 @@ func HandleInvalidID(c *fiber.Ctx) error {
 	})
 }
 
+// HandleNotFound handles HTTP 404
 func HandleNotFound(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusNotFound).JSON(APIResponse{
 		Error:      true,
@@ -98,13 +110,16 @@ func HandleNotFound(c *fiber.Ctx) error {
 	})
 }
 
+// ErrorResponse validation error fields
 type ErrorResponse struct {
 	FailedField string `json:"field" example:"validUntil"`
 	Tag         string `json:"tag" example:"datetime"`
 }
 
+// Validate the validator instance. can be used to append custom validation on init
 var Validate = validator.New()
 
+// ValidateStruct verifies structs with validation Tags using the Validate validator
 func ValidateStruct(c *fiber.Ctx, this interface{}) (bool, error) {
 	var errors []*ErrorResponse
 	err := Validate.Struct(this)
@@ -133,6 +148,7 @@ func ValidateStruct(c *fiber.Ctx, this interface{}) (bool, error) {
 	})
 }
 
+// HandleSuccess handles all HTTP 200 with no data
 func HandleSuccess(c *fiber.Ctx) error {
 	return c.JSON(APIResponse{
 		Error:      false,

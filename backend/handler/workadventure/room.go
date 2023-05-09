@@ -15,18 +15,19 @@ import (
 	"time"
 )
 
-func NewRoomHandler(app fiber.Router, ctx context.Context, db *ent.Client) {
+// NewRoomHandler initialize routes for the given router
+func NewRoomHandler(ctx context.Context, app fiber.Router, db *ent.Client) {
 	app.Get("/sameWorld", getSameWorld(ctx, db))
 	app.Get("/access", getAccess(ctx, db))
 }
 
-type RoomSameWorld struct {
+type roomSameWorld struct {
 	RoomURL string `query:"roomUrl"`
 }
 
 func getSameWorld(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		qData := new(RoomSameWorld)
+		qData := new(roomSameWorld)
 		if err := c.QueryParser(qData); err != nil {
 			return handler.HandleBodyParseError(c, err)
 		}
@@ -49,7 +50,7 @@ func getSameWorld(ctx context.Context, db *ent.Client) fiber.Handler {
 	}
 }
 
-type RoomAccess struct {
+type roomAccess struct {
 	UserIdentifier  string   `query:"userIdentifier"`
 	PlayURI         string   `query:"playUri"`
 	IPAddress       string   `query:"ipAddress"`
@@ -58,7 +59,7 @@ type RoomAccess struct {
 
 func getAccess(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		qData := new(RoomAccess)
+		qData := new(roomAccess)
 		if err := c.QueryParser(qData); err != nil {
 			return handler.HandleBodyParseError(c, err)
 		}
@@ -77,16 +78,16 @@ func getAccess(ctx context.Context, db *ent.Client) fiber.Handler {
 			return handler.HandleInvalidLogin(c)
 		}
 
-		allAnouncements, err := db.Announcement.Query().Where(announcement.Or(announcement.ValidUntilIsNil(), announcement.ValidUntilLTE(time.Now()))).All(ctx)
+		allAnnouncement, err := db.Announcement.Query().Where(announcement.Or(announcement.ValidUntilIsNil(), announcement.ValidUntilLTE(time.Now()))).All(ctx)
 		if err != nil {
 			return handler.HandleInvalidLogin(c)
 		}
 
-		anouncementsList := []map[string]string{}
-		for _, anouncement := range allAnouncements {
-			anouncementsList = append(anouncementsList, map[string]string{
-				"type":    anouncement.Type,
-				"message": anouncement.Message,
+		announcementsList := []map[string]string{}
+		for _, announcement := range allAnnouncement {
+			announcementsList = append(announcementsList, map[string]string{
+				"type":    announcement.Type,
+				"message": announcement.Message,
 			})
 		}
 
@@ -126,10 +127,10 @@ func getAccess(ctx context.Context, db *ent.Client) fiber.Handler {
 			"email":               nil,
 			"tags":                []string{},
 			"textures":            availableTexturesList,
-			"messages":            anouncementsList,
+			"messages":            announcementsList,
 			"anonymous":           foundMap.PolicyNumber == 0,
 			"visitCardUrl":        nil,
-			"canEdit":             utils.CheckPermission(foundUser, utils.PERMISSION_MAP_EDITOR),
+			"canEdit":             utils.CheckPermission(foundUser, utils.PermissionMapEditor),
 			"activatedInviteUser": false,
 			"mucRooms": []interface{}{
 				map[string]string{

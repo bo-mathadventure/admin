@@ -13,13 +13,14 @@ import (
 	"time"
 )
 
-func NewUserHandler(app fiber.Router, ctx context.Context, db *ent.Client) {
+// NewUserHandler initialize routes for the given router
+func NewUserHandler(ctx context.Context, app fiber.Router, db *ent.Client) {
 	app.Get("/", getMe(ctx, db))
 	app.Put("/", updateUser(ctx, db))
 	app.Get("/token", getTokenLogin(ctx, db))
 }
 
-type UserResponse struct {
+type userResponse struct {
 	UUID        string        `json:"uuid"`
 	Email       string        `json:"email"`
 	Username    string        `json:"username"`
@@ -30,8 +31,8 @@ type UserResponse struct {
 	Config      config.Config `json:"config"`
 }
 
-func responseUserResponse(thisUser *ent.User) *UserResponse {
-	return &UserResponse{
+func responseUserResponse(thisUser *ent.User) *userResponse {
+	return &userResponse{
 		UUID:        thisUser.UUID,
 		Email:       thisUser.Email,
 		Username:    thisUser.Username,
@@ -51,7 +52,7 @@ func responseUserResponse(thisUser *ent.User) *UserResponse {
 //	@Tags			user
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{object}	UserResponse
+//	@Success		200	{object}	userResponse
 //	@Failure		401	{object}	APIResponse
 //	@Failure		500	{object}	APIResponse
 //	@Router			/system/user [get]
@@ -59,9 +60,9 @@ func getMe(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return HandleInternalError(c, err)
 		}
@@ -70,7 +71,7 @@ func getMe(ctx context.Context, db *ent.Client) fiber.Handler {
 	}
 }
 
-type UpdateUserRequest struct {
+type updateUserRequest struct {
 	EMail                    string `json:"email" example:"bob@exameple.com" format:"email" validate:"omitempty,email"`
 	ClearTextPassword        string `json:"newPassword" example:"my$ecur3P4$$word" validate:"omitempty,min=8"`
 	ClearTextPasswordConfirm string `json:"confirmPassword" example:"my$ecur3P4$$word" validate:"omitempty,min=8,eqcsfield=ClearTextPassword"`
@@ -85,8 +86,8 @@ type UpdateUserRequest struct {
 //	@Tags			user
 //	@Accept			json
 //	@Produce		json
-//	@Param			params	body		UpdateUserRequest	true	"-"
-//	@Success		200		{object}	UserResponse
+//	@Param			params	body		updateUserRequest	true	"-"
+//	@Success		200		{object}	userResponse
 //	@Failure		400		{object}	APIResponse
 //	@Failure		401		{object}	APIResponse
 //	@Failure		404		{object}	APIResponse
@@ -96,9 +97,9 @@ func updateUser(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		req := new(UpdateUserRequest)
+		req := new(updateUserRequest)
 		if err := c.BodyParser(req); err != nil {
 			return HandleBodyParseError(c, err)
 		}
@@ -107,7 +108,7 @@ func updateUser(ctx context.Context, db *ent.Client) fiber.Handler {
 			return err
 		}
 
-		foundUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		foundUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 
 		if req.EMail != "" || req.ClearTextPassword != "" {
 			if err != nil || foundUser == nil || !utils.CheckPasswordHash(req.ClearTextCurrentPassword, foundUser.Password) {
@@ -123,7 +124,7 @@ func updateUser(ctx context.Context, db *ent.Client) fiber.Handler {
 				return HandleError(c, "ERR_EMAIL_INVALID")
 			}
 
-			existingUser, err := db.User.Query().Where(user.Email(email.Normalize(req.EMail))).Where(user.IDNotIn(userId)).Count(ctx)
+			existingUser, err := db.User.Query().Where(user.Email(email.Normalize(req.EMail))).Where(user.IDNotIn(userID)).Count(ctx)
 			if existingUser > 0 || err != nil {
 				return HandleError(c, "ERR_USER_EXISTS")
 			}
@@ -171,9 +172,9 @@ func getTokenLogin(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return HandleInternalError(c, err)
 		}

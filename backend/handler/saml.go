@@ -19,7 +19,8 @@ import (
 	"time"
 )
 
-func NewSAMLHandler(app fiber.Router, ctx context.Context, db *ent.Client) {
+// NewSAMLHandler initialize routes for the given router
+func NewSAMLHandler(ctx context.Context, app fiber.Router, db *ent.Client) {
 	cfg := config.GetConfig()
 	t := reflect.ValueOf(&cfg).Elem()
 	var missingValues []string
@@ -84,7 +85,7 @@ func NewSAMLHandler(app fiber.Router, ctx context.Context, db *ent.Client) {
 //	@Success		302	{object}	nil
 //	@Failure		500	{object}	APIResponse
 //	@Router			/auth/saml/start [get]
-func getSAMLStart(ctx context.Context, db *ent.Client, sp *saml2.SAMLServiceProvider) fiber.Handler {
+func getSAMLStart(_ context.Context, _ *ent.Client, sp *saml2.SAMLServiceProvider) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		authURL, err := sp.BuildAuthURL("")
 		if err != nil {
@@ -94,8 +95,8 @@ func getSAMLStart(ctx context.Context, db *ent.Client, sp *saml2.SAMLServiceProv
 	}
 }
 
-type SAMLResponse struct {
-	SAMLResponse string `json:"SAMLResponse" xml:"SAMLResponse" form:"SAMLResponse"`
+type samlResponse struct {
+	SAMLResponse string `json:"samlResponse" xml:"samlResponse" form:"samlResponse"`
 	RelayState   string `json:"RelayState" xml:"RelayState" form:"RelayState"`
 }
 
@@ -106,7 +107,7 @@ type SAMLResponse struct {
 //	@Tags			auth,saml
 //	@Accept			x-www-form-urlencoded
 //	@Produce		json
-//	@Param			params	formData	SAMLResponse	true	"-"
+//	@Param			params	formData	samlResponse	true	"-"
 //	@Success		302		{object}	nil
 //	@Failure		400		{object}	APIResponse
 //	@Failure		404		{object}	APIResponse
@@ -114,7 +115,7 @@ type SAMLResponse struct {
 //	@Router			/auth/saml/acs [post]
 func postSAMLacs(ctx context.Context, db *ent.Client, sp *saml2.SAMLServiceProvider) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		rData := new(SAMLResponse)
+		rData := new(samlResponse)
 		if err := c.BodyParser(rData); err != nil {
 			return HandleBodyParseError(c, err)
 		}
@@ -149,7 +150,8 @@ func postSAMLacs(ctx context.Context, db *ent.Client, sp *saml2.SAMLServiceProvi
 
 		var loginUser *ent.User
 
-		if len(foundUsers) == 0 {
+		switch len(foundUsers) {
+		case 0:
 			// we need to register the new user
 			newUser, err := db.User.Create().SetEmail(email.Normalize(samlEMail)).SetPassword("").SetUsername(username).SetSsoIdentifier(samlUID).Save(ctx)
 			if err != nil || newUser == nil {
@@ -161,7 +163,8 @@ func postSAMLacs(ctx context.Context, db *ent.Client, sp *saml2.SAMLServiceProvi
 			log.WithFields(log.Fields{
 				"userID": loginUser.ID,
 			}).Info("saml user registered")
-		} else if len(foundUsers) == 1 {
+			break
+		case 1:
 			theUser := foundUsers[0]
 			theUserUpdate := theUser.Update()
 			if theUser.SsoIdentifier == "" {
@@ -176,7 +179,8 @@ func postSAMLacs(ctx context.Context, db *ent.Client, sp *saml2.SAMLServiceProvi
 			log.WithFields(log.Fields{
 				"userID": loginUser.ID,
 			}).Info("saml user login")
-		} else {
+			break
+		default:
 			return HandleError(c, "ERR_SAML_USERCOUNT")
 		}
 

@@ -13,12 +13,12 @@ import (
 	"time"
 )
 
-type LoginRequest struct {
+type loginRequest struct {
 	EMail             string `json:"email" example:"bob@example.com" validate:"required,email"`
 	ClearTextPassword string `json:"password" example:"my$ecur3P4$$word" validate:"required"`
 }
 
-type LoginResponse struct {
+type loginResponse struct {
 	Token string `json:"token"`
 }
 
@@ -29,15 +29,15 @@ type LoginResponse struct {
 //	@Tags			auth
 //	@Accept			json
 //	@Produce		json
-//	@Param			params	body		LoginRequest	true	"-"
-//	@Success		200		{object}	LoginResponse
+//	@Param			params	body		loginRequest	true	"-"
+//	@Success		200		{object}	loginResponse
 //	@Failure		400		{object}	APIResponse
 //	@Failure		404		{object}	APIResponse
 //	@Failure		500		{object}	APIResponse
 //	@Router			/auth/login [post]
 func Login(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		req := new(LoginRequest)
+		req := new(loginRequest)
 		if err := c.BodyParser(req); err != nil {
 			return HandleBodyParseError(c, err)
 		}
@@ -74,6 +74,6 @@ func Login(ctx context.Context, db *ent.Client) fiber.Handler {
 			"userID": foundUser.ID,
 		}).Info("user login")
 
-		return c.JSON(LoginResponse{t})
+		return c.JSON(loginResponse{t})
 	}
 }

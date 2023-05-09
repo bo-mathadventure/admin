@@ -17,7 +17,8 @@ import (
 	"time"
 )
 
-func NewAdminTextureHandler(app fiber.Router, ctx context.Context, db *ent.Client) {
+// NewAdminTextureHandler initialize routes for the given router
+func NewAdminTextureHandler(ctx context.Context, app fiber.Router, db *ent.Client) {
 	app.Get("/", getAdminTexture(ctx, db))
 	app.Post("/", postAdminTexture(ctx, db))
 	app.Get("/:id", getAdminTextureID(ctx, db))
@@ -25,7 +26,7 @@ func NewAdminTextureHandler(app fiber.Router, ctx context.Context, db *ent.Clien
 	app.Delete("/:id", deleteAdminTextureID(ctx, db))
 }
 
-type AdminTextureResponse struct {
+type adminTextureResponse struct {
 	ID        int      `json:"id"`
 	Texture   string   `json:"texture" example:"eyes1"`
 	Layer     string   `json:"layer" enums:"woka,body,hair,eyes,hat,accessory,clothes,companion"`
@@ -34,8 +35,8 @@ type AdminTextureResponse struct {
 	CreatedAt string   `json:"createdAt" example:"2006-01-02T15:04:05Z07:00"`
 }
 
-func responseAdminTextureResponse(this *ent.Textures) *AdminTextureResponse {
-	return &AdminTextureResponse{
+func responseAdminTextureResponse(this *ent.Textures) *adminTextureResponse {
+	return &adminTextureResponse{
 		ID:        this.ID,
 		Texture:   this.Texture,
 		Layer:     this.Layer,
@@ -45,8 +46,8 @@ func responseAdminTextureResponse(this *ent.Textures) *AdminTextureResponse {
 	}
 }
 
-func responseAdminTextureResponses(this []*ent.Textures) []*AdminTextureResponse {
-	data := make([]*AdminTextureResponse, len(this))
+func responseAdminTextureResponses(this []*ent.Textures) []*adminTextureResponse {
+	data := make([]*adminTextureResponse, len(this))
 	for i, e := range this {
 		data[i] = responseAdminTextureResponse(e)
 	}
@@ -61,7 +62,7 @@ func responseAdminTextureResponses(this []*ent.Textures) []*AdminTextureResponse
 //	@Tags			admin
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		AdminTextureResponse
+//	@Success		200	{array}		adminTextureResponse
 //	@Failure		400	{object}	handler.APIResponse
 //	@Failure		401	{object}	handler.APIResponse
 //	@Failure		404	{object}	handler.APIResponse
@@ -71,14 +72,14 @@ func getAdminTexture(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
 
-		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_TEXTURE_VIEW, utils.PERMISSION_TEXTURE_EDIT}) {
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PermissionTextureView, utils.PermissionTextureEdit}) {
 			return handler.HandleInvalidPermissions(c)
 		}
 
@@ -91,7 +92,7 @@ func getAdminTexture(ctx context.Context, db *ent.Client) fiber.Handler {
 	}
 }
 
-type CreateTexture struct {
+type createTexture struct {
 	Texture string   `json:"texture" form:"texture" example:"eyes1" validate:"required"`
 	Layer   string   `json:"layer" form:"layer" enums:"woka,body,hair,eyes,hat,accessory,clothes,companion" validate:"required"`
 	Tags    []string `json:"tags" form:"tags" example:"editor" validate:"omitempty"`
@@ -105,9 +106,9 @@ type CreateTexture struct {
 //	@Tags			admin
 //	@Accept			mpfd
 //	@Produce		json
-//	@Param			params		formData	CreateTexture	true	"-"
+//	@Param			params		formData	createTexture	true	"-"
 //	@Param			resource	formData	file			true	"the texture file"
-//	@Success		200			{object}	AdminTextureResponse
+//	@Success		200			{object}	adminTextureResponse
 //	@Failure		400			{object}	handler.APIResponse
 //	@Failure		401			{object}	handler.APIResponse
 //	@Failure		404			{object}	handler.APIResponse
@@ -117,18 +118,18 @@ func postAdminTexture(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
 
-		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_TEXTURE_EDIT}) {
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PermissionTextureEdit}) {
 			return handler.HandleInvalidPermissions(c)
 		}
 
-		req := new(CreateTexture)
+		req := new(createTexture)
 		if err := c.BodyParser(req); err != nil {
 			return handler.HandleBodyParseError(c, err)
 		}
@@ -181,7 +182,7 @@ func postAdminTexture(ctx context.Context, db *ent.Client) fiber.Handler {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id	path		int	true	"Texture ID"
-//	@Success		200	{object}	AdminTextureResponse
+//	@Success		200	{object}	adminTextureResponse
 //	@Failure		400	{object}	handler.APIResponse
 //	@Failure		401	{object}	handler.APIResponse
 //	@Failure		404	{object}	handler.APIResponse
@@ -191,14 +192,14 @@ func getAdminTextureID(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
 
-		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_TEXTURE_VIEW, utils.PERMISSION_TEXTURE_EDIT}) {
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PermissionTextureView, utils.PermissionTextureEdit}) {
 			return handler.HandleInvalidPermissions(c)
 		}
 
@@ -219,7 +220,7 @@ func getAdminTextureID(ctx context.Context, db *ent.Client) fiber.Handler {
 	}
 }
 
-type UpdateTexture struct {
+type updateTexture struct {
 	Texture string   `json:"texture" form:"texture" example:"eyes1" validate:"required"`
 	Layer   string   `json:"layer" form:"layer" enums:"woka,body,hair,eyes,hat,accessory,clothes,companion" validate:"required"`
 	Tags    []string `json:"tags" form:"tags" example:"editor" validate:"omitempty"`
@@ -233,10 +234,10 @@ type UpdateTexture struct {
 //	@Tags			admin
 //	@Accept			mpfd
 //	@Produce		json
-//	@Param			params		formData	UpdateTexture	true	"-"
+//	@Param			params		formData	updateTexture	true	"-"
 //	@Param			id			path		int				true	"Texture ID"
 //	@Param			resource	formData	file			true	"the texture file"
-//	@Success		200			{object}	AdminTextureResponse
+//	@Success		200			{object}	adminTextureResponse
 //	@Failure		400			{object}	handler.APIResponse
 //	@Failure		401			{object}	handler.APIResponse
 //	@Failure		404			{object}	handler.APIResponse
@@ -246,14 +247,14 @@ func putAdminTextureID(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
 
-		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_TEXTURE_EDIT}) {
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PermissionTextureEdit}) {
 			return handler.HandleInvalidPermissions(c)
 		}
 
@@ -262,7 +263,7 @@ func putAdminTextureID(ctx context.Context, db *ent.Client) fiber.Handler {
 			return handler.HandleInvalidID(c)
 		}
 
-		req := new(UpdateTexture)
+		req := new(updateTexture)
 		if err := c.BodyParser(req); err != nil {
 			return handler.HandleBodyParseError(c, err)
 		}
@@ -333,14 +334,14 @@ func deleteAdminTextureID(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
 
-		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_TEXTURE_EDIT}) {
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PermissionTextureEdit}) {
 			return handler.HandleInvalidPermissions(c)
 		}
 

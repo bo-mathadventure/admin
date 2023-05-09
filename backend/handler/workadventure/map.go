@@ -14,18 +14,19 @@ import (
 	"time"
 )
 
-func NewMapHandler(app fiber.Router, ctx context.Context, db *ent.Client) {
+// NewMapHandler initialize routes for the given router
+func NewMapHandler(ctx context.Context, app fiber.Router, db *ent.Client) {
 	app.Get("/", getMap(ctx, db))
 }
 
-type MapQuery struct {
+type mapQuery struct {
 	PlayURI string `query:"playUri"`
 	UserID  string `query:"userId"`
 }
 
 func getMap(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		qData := new(MapQuery)
+		qData := new(mapQuery)
 		if err := c.QueryParser(qData); err != nil {
 			return handler.HandleBodyParseError(c, err)
 		}
@@ -49,8 +50,8 @@ func getMap(ctx context.Context, db *ent.Client) fiber.Handler {
 		}
 
 		result := map[string]interface{}{
-			//"mapUrl":                  nil,
-			//"wamUrl":                  nil,
+			// "mapUrl":                  nil,
+			// "wamUrl":                  nil,
 			"authenticationMandatory": foundMap.PolicyNumber != 0,
 			"group":                   nil,
 			"mucRooms": []interface{}{
@@ -60,32 +61,32 @@ func getMap(ctx context.Context, db *ent.Client) fiber.Handler {
 					"type": "live",
 				},
 			},
-			//"contactPage":                nil,
-			//"iframeAuthentication":       nil,
-			//"opidLogoutRedirectUrl":      nil,
+			// "contactPage":                nil,
+			// "iframeAuthentication":       nil,
+			// "opidLogoutRedirectUrl":      nil,
 			"opidWokaNamePolicy": "force_opid",
-			//"expireOn":  nil,
+			// "expireOn":  nil,
 			"canReport": foundMap.CanReport,
 			"editable":  true,
-			//"loadingCowebsiteLogo":       nil,
-			//"miniLogo":                   nil,
-			//"loadingLogo":                nil,
-			//"loginSceneLogo":             nil,
-			//"showPoweredBy":              false,
-			//"thirdParty":                 nil,
-			//"metadata":                   nil,
+			// "loadingCowebsiteLogo":       nil,
+			// "miniLogo":                   nil,
+			// "loadingLogo":                nil,
+			// "loginSceneLogo":             nil,
+			// "showPoweredBy":              false,
+			// "thirdParty":                 nil,
+			// "metadata":                   nil,
 			"roomName": foundMap.RoomName,
-			//"pricingUrl":                 nil,
+			// "pricingUrl":                 nil,
 			"enableChat":                 foundMap.EnableChat,
 			"enableChatUpload":           foundMap.EnableChatUpload,
 			"enableChatOnlineList":       foundMap.EnableChatOnlineList,
 			"enableChatDisconnectedList": foundMap.EnableChatDisconnectedList,
-			//"metatags":                   nil,
-			//"legals":                     nil,
-			//"customizeWokaScene":         nil,
-			//"backgroundColor":            nil,
-			//"reportIssuesUrl":            nil,
-			//"entityCollectionsUrls":      nil,
+			// "metatags":                   nil,
+			// "legals":                     nil,
+			// "customizeWokaScene":         nil,
+			// "backgroundColor":            nil,
+			// "reportIssuesUrl":            nil,
+			// "entityCollectionsUrls":      nil,
 		}
 
 		mapURLRegex := regexp.MustCompile(`\/_\/[^/]+\/(.+)`)

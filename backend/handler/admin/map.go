@@ -15,9 +15,10 @@ import (
 	"time"
 )
 
-func NewAdminMapHandler(app fiber.Router, ctx context.Context, db *ent.Client) {
+// NewAdminMapHandler initialize routes for the given router
+func NewAdminMapHandler(ctx context.Context, app fiber.Router, db *ent.Client) {
 	err := handler.Validate.RegisterValidation("policy_validation", func(fl validator.FieldLevel) bool {
-		return utils.Contains(MapPolicyNames, fl.Field().String())
+		return utils.Contains(mapPolicyNames, fl.Field().String())
 	})
 	if err != nil {
 		log.WithError(err).WithField("validation", "policy_validation").Panic("failed to setup custom validation")
@@ -32,40 +33,40 @@ func NewAdminMapHandler(app fiber.Router, ctx context.Context, db *ent.Client) {
 
 var defaultMapPolicy = 0
 
-type AdminMapChat struct {
+type adminMapChat struct {
 	Enable                 bool `json:"enable" validate:"required,boolean"`
 	EnableUpload           bool `json:"enableUpload" validate:"required,boolean"`
 	EnableOnlineList       bool `json:"enableOnlineList" validate:"required,boolean"`
 	EnableDisconnectedList bool `json:"enableDisconnectedList" validate:"required,boolean"`
 }
-type AdminMapResponse struct {
+type adminMapResponse struct {
 	ID          int          `json:"id"`
 	RoomName    string       `json:"roomName" example:"Default Room"`
-	MapUrl      string       `json:"mapUrl" example:"/_/global/thecodingmachine.github.io/workadventure-map-starter-kit/map.tmj"`
+	MapURL      string       `json:"mapUrl" example:"/_/global/thecodingmachine.github.io/workadventure-map-starter-kit/map.tmj"`
 	Policy      string       `json:"policy" enums:"anonymous,login,permission"`
 	ContactPage string       `json:"contactPage" example:"https://mycompany.com/contact-us"`
 	Tags        []string     `json:"tags" example:"admin,editor"`
-	Chat        AdminMapChat `json:"chat"`
+	Chat        adminMapChat `json:"chat"`
 	CanReport   bool         `json:"canReport"`
 	ExpireOn    string       `json:"expireOn" example:"2006-01-02T15:04:05Z07:00" validate:"omitempty"`
 	CreatedAt   string       `json:"createdAt" example:"2006-01-02T15:04:05Z07:00"`
 }
 
-var MapPolicyNames = []string{
+var mapPolicyNames = []string{
 	"anonymous",
 	"login",
 	"permission",
 }
 
-func responseAdminMapResponse(this *ent.Maps) *AdminMapResponse {
-	return &AdminMapResponse{
+func responseAdminMapResponse(this *ent.Maps) *adminMapResponse {
+	return &adminMapResponse{
 		ID:          this.ID,
 		RoomName:    this.RoomName,
-		MapUrl:      this.MapUrl,
-		Policy:      MapPolicyNames[this.PolicyNumber],
+		MapURL:      this.MapUrl,
+		Policy:      mapPolicyNames[this.PolicyNumber],
 		ContactPage: this.ContactPage,
 		Tags:        this.Tags,
-		Chat: AdminMapChat{
+		Chat: adminMapChat{
 			Enable:                 this.EnableChat,
 			EnableUpload:           this.EnableChatUpload,
 			EnableOnlineList:       this.EnableChatOnlineList,
@@ -77,8 +78,8 @@ func responseAdminMapResponse(this *ent.Maps) *AdminMapResponse {
 	}
 }
 
-func responseAdminMapResponses(this []*ent.Maps) []*AdminMapResponse {
-	data := make([]*AdminMapResponse, len(this))
+func responseAdminMapResponses(this []*ent.Maps) []*adminMapResponse {
+	data := make([]*adminMapResponse, len(this))
 	for i, e := range this {
 		data[i] = responseAdminMapResponse(e)
 	}
@@ -93,7 +94,7 @@ func responseAdminMapResponses(this []*ent.Maps) []*AdminMapResponse {
 //	@Tags			admin
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		AdminMapResponse
+//	@Success		200	{array}		adminMapResponse
 //	@Failure		400	{object}	handler.APIResponse
 //	@Failure		401	{object}	handler.APIResponse
 //	@Failure		404	{object}	handler.APIResponse
@@ -103,14 +104,14 @@ func getAdminMap(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
 
-		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_MAP_VIEW, utils.PERMISSION_MAP_EDIT}) {
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PermissionMapView, utils.PermissionMapEdit}) {
 			return handler.HandleInvalidPermissions(c)
 		}
 
@@ -123,13 +124,13 @@ func getAdminMap(ctx context.Context, db *ent.Client) fiber.Handler {
 	}
 }
 
-type CreateMap struct {
+type createMap struct {
 	RoomName    string       `json:"roomName" example:"Default Room" validate:"required,min=3,max=32"`
-	MapUrl      string       `json:"mapUrl" example:"/_/global/thecodingmachine.github.io/workadventure-map-starter-kit/map.tmj" validate:"required"`
+	MapURL      string       `json:"mapUrl" example:"/_/global/thecodingmachine.github.io/workadventure-map-starter-kit/map.tmj" validate:"required"`
 	Policy      string       `json:"policy" enums:"anonymous,login,permission" validate:"required,policy_validation"`
 	ContactPage string       `json:"contactPage" example:"https://mycompany.com/contact-us" validate:"required,url"`
 	Tags        []string     `json:"tags" example:"admin,editor" validate:"required"`
-	Chat        AdminMapChat `json:"chat" validate:"dive"`
+	Chat        adminMapChat `json:"chat" validate:"dive"`
 	CanReport   bool         `json:"canReport" validate:"required,boolean"`
 	ExpireOn    string       `json:"expireOn" example:"2006-01-02T15:04:05Z07:00" validate:"required,rfc3339"`
 }
@@ -142,8 +143,8 @@ type CreateMap struct {
 //	@Tags			admin
 //	@Accept			json
 //	@Produce		json
-//	@Param			params	body		CreateMap	true	"-"
-//	@Success		200		{object}	AdminMapResponse
+//	@Param			params	body		createMap	true	"-"
+//	@Success		200		{object}	adminMapResponse
 //	@Failure		400		{object}	handler.APIResponse
 //	@Failure		401		{object}	handler.APIResponse
 //	@Failure		404		{object}	handler.APIResponse
@@ -153,18 +154,18 @@ func postAdminMap(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
 
-		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_MAP_EDIT}) {
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PermissionMapEdit}) {
 			return handler.HandleInvalidPermissions(c)
 		}
 
-		req := new(CreateMap)
+		req := new(createMap)
 		if err := c.BodyParser(req); err != nil {
 			return handler.HandleBodyParseError(c, err)
 		}
@@ -183,8 +184,8 @@ func postAdminMap(ctx context.Context, db *ent.Client) fiber.Handler {
 
 		newCreated, err := db.Maps.Create().
 			SetRoomName(req.RoomName).
-			SetMapUrl(req.MapUrl).
-			SetPolicyNumber(utils.SliceIndex(req.Policy, MapPolicyNames, &defaultMapPolicy)).
+			SetMapUrl(req.MapURL).
+			SetPolicyNumber(utils.SliceIndex(req.Policy, mapPolicyNames, &defaultMapPolicy)).
 			SetContactPage(req.ContactPage).
 			SetTags(req.Tags).
 			SetCanReport(req.CanReport).
@@ -211,7 +212,7 @@ func postAdminMap(ctx context.Context, db *ent.Client) fiber.Handler {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id	path		int	true	"Map ID"
-//	@Success		200	{object}	AdminMapResponse
+//	@Success		200	{object}	adminMapResponse
 //	@Failure		400	{object}	handler.APIResponse
 //	@Failure		401	{object}	handler.APIResponse
 //	@Failure		404	{object}	handler.APIResponse
@@ -221,14 +222,14 @@ func getAdminMapID(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
 
-		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_MAP_VIEW, utils.PERMISSION_MAP_EDIT}) {
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PermissionMapView, utils.PermissionMapEdit}) {
 			return handler.HandleInvalidPermissions(c)
 		}
 
@@ -249,13 +250,13 @@ func getAdminMapID(ctx context.Context, db *ent.Client) fiber.Handler {
 	}
 }
 
-type UpdateMap struct {
+type updateMap struct {
 	RoomName    string       `json:"roomName" example:"Default Room" validate:"required,min=3,max=32"`
-	MapUrl      string       `json:"mapUrl" example:"/_/global/thecodingmachine.github.io/workadventure-map-starter-kit/map.tmj" validate:"required"`
+	MapURL      string       `json:"mapUrl" example:"/_/global/thecodingmachine.github.io/workadventure-map-starter-kit/map.tmj" validate:"required"`
 	Policy      string       `json:"policy" enums:"anonymous,login,permission" validate:"required,policy_validation"`
 	ContactPage string       `json:"contactPage" example:"https://mycompany.com/contact-us" validate:"required,url"`
 	Tags        []string     `json:"tags" example:"admin,editor" validate:"required"`
-	Chat        AdminMapChat `json:"chat" validate:"dive"`
+	Chat        adminMapChat `json:"chat" validate:"dive"`
 	CanReport   bool         `json:"canReport" validate:"required,boolean"`
 	ExpireOn    string       `json:"expireOn" example:"2006-01-02T15:04:05Z07:00" validate:"required,rfc3339"`
 }
@@ -268,9 +269,9 @@ type UpdateMap struct {
 //	@Tags			admin
 //	@Accept			json
 //	@Produce		json
-//	@Param			params	body		UpdateMap	true	"-"
+//	@Param			params	body		updateMap	true	"-"
 //	@Param			id		path		int			true	"Map ID"
-//	@Success		200		{object}	AdminMapResponse
+//	@Success		200		{object}	adminMapResponse
 //	@Failure		400		{object}	handler.APIResponse
 //	@Failure		401		{object}	handler.APIResponse
 //	@Failure		404		{object}	handler.APIResponse
@@ -280,14 +281,14 @@ func putAdminMapID(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
 
-		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_MAP_EDIT}) {
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PermissionMapEdit}) {
 			return handler.HandleInvalidPermissions(c)
 		}
 
@@ -296,7 +297,7 @@ func putAdminMapID(ctx context.Context, db *ent.Client) fiber.Handler {
 			return handler.HandleInvalidID(c)
 		}
 
-		req := new(UpdateMap)
+		req := new(updateMap)
 		if err := c.BodyParser(req); err != nil {
 			return handler.HandleBodyParseError(c, err)
 		}
@@ -323,8 +324,8 @@ func putAdminMapID(ctx context.Context, db *ent.Client) fiber.Handler {
 
 		newFound, err := found.Update().
 			SetRoomName(req.RoomName).
-			SetMapUrl(req.MapUrl).
-			SetPolicyNumber(utils.SliceIndex(req.Policy, MapPolicyNames, &defaultMapPolicy)).
+			SetMapUrl(req.MapURL).
+			SetPolicyNumber(utils.SliceIndex(req.Policy, mapPolicyNames, &defaultMapPolicy)).
 			SetContactPage(req.ContactPage).
 			SetTags(req.Tags).
 			SetCanReport(req.CanReport).
@@ -361,14 +362,14 @@ func deleteAdminMapID(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
 
-		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_MAP_EDIT}) {
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PermissionMapEdit}) {
 			return handler.HandleInvalidPermissions(c)
 		}
 

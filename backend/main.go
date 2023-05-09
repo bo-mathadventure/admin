@@ -22,20 +22,20 @@ import (
 	"time"
 )
 
-//	@title						Workadventure Admin Back Office API
-//	@version					1.0
-//	@description				API documentation for the workdadventure back office written at the Hochschule Bochum
-//	@termsOfService				http://swagger.io/terms/
-//	@contact.name				GitHub Issues
-//	@contact.url				https://github.com/bo-mathadventure/admin
-//	@license.name				AGPL 3.0
-//	@license.url				https://github.com/teamdigitale/licenses/blob/master/AGPL-3.0-or-later
-//	@host						localhost:4664
-//	@BasePath					/
-//	@securityDefinitions.apikey	ApiKeyAuth
-//	@in							header
-//	@name						X-API-Key
-//	@description				JWT user token from login
+// @title						Workadventure Admin Back Office API
+// @version					1.0
+// @description				API documentation for the workdadventure back office written at the Hochschule Bochum
+// @termsOfService				http://swagger.io/terms/
+// @contact.name				GitHub Issues
+// @contact.url				https://github.com/bo-mathadventure/admin
+// @license.name				AGPL 3.0
+// @license.url				https://github.com/teamdigitale/licenses/blob/master/AGPL-3.0-or-later
+// @host						localhost:4664
+// @BasePath					/
+// @securityDefinitions.apikey	ApiKeyAuth
+// @in							header
+// @name						X-API-Key
+// @description				JWT user token from login
 func main() {
 	log.SetFormatter(&log.TextFormatter{
 		DisableColors: false,
@@ -88,28 +88,28 @@ func main() {
 	authRoute := app.Group("/auth")
 	authRoute.Post("/login", handler.Login(context.Background(), client))
 	authRoute.Post("/register", handler.Register(context.Background(), client))
-	handler.NewSAMLHandler(authRoute.Group("/saml"), context.Background(), client)
+	handler.NewSAMLHandler(context.Background(), authRoute.Group("/saml"), client)
 
 	apiv1 := app.Group("/system", middleware.JWTProtected())
-	handler.NewUserHandler(apiv1.Group("/user"), context.Background(), client)
+	handler.NewUserHandler(context.Background(), apiv1.Group("/user"), client)
 
-	adminApi := apiv1.Group("/admin", middleware.JWTProtected())
-	admin.NewAdminUserHandler(adminApi.Group("/user"), context.Background(), client)
-	admin.NewAdminBanHandler(adminApi.Group("/ban"), context.Background(), client)
-	admin.NewAdminReportHandler(adminApi.Group("/report"), context.Background(), client)
-	admin.NewAdminMapHandler(adminApi.Group("/map"), context.Background(), client)
-	admin.NewAdminTextureHandler(adminApi.Group("/texture"), context.Background(), client)
-	admin.NewAdminAnnouncementHandler(adminApi.Group("/announcement"), context.Background(), client)
-	admin.NewAdminGroupHandler(adminApi.Group("/group"), context.Background(), client)
+	adminAPI := apiv1.Group("/admin", middleware.JWTProtected())
+	admin.NewAdminUserHandler(context.Background(), adminAPI.Group("/user"), client)
+	admin.NewAdminBanHandler(context.Background(), adminAPI.Group("/ban"), client)
+	admin.NewAdminReportHandler(context.Background(), adminAPI.Group("/report"), client)
+	admin.NewAdminMapHandler(context.Background(), adminAPI.Group("/map"), client)
+	admin.NewAdminTextureHandler(context.Background(), adminAPI.Group("/texture"), client)
+	admin.NewAdminAnnouncementHandler(context.Background(), adminAPI.Group("/announcement"), client)
+	admin.NewAdminGroupHandler(context.Background(), adminAPI.Group("/group"), client)
 
-	waApi := app.Group("/api")
-	workadventure.NewRoomHandler(waApi.Group("/room", middleware.AdminAPIProtected()), context.Background(), client)
-	workadventure.NewTextureHandler(waApi.Group("/woka"), context.Background(), client)
-	workadventure.NewTextureHandler(waApi.Group("/companion"), context.Background(), client)
-	workadventure.NewMapHandler(waApi.Group("/map", middleware.AdminAPIProtected()), context.Background(), client)
-	workadventure.NewCapabilitiesHandler(waApi.Group("/capabilities"), context.Background(), client)
-	workadventure.NewBanHandler(waApi.Group("/ban", middleware.AdminAPIProtected()), context.Background(), client)
-	workadventure.NewReportHandler(waApi.Group("/report", middleware.AdminAPIProtected()), context.Background(), client)
+	waAPI := app.Group("/api")
+	workadventure.NewRoomHandler(context.Background(), waAPI.Group("/room", middleware.AdminAPIProtected()), client)
+	workadventure.NewTextureHandler(context.Background(), waAPI.Group("/woka"), client)
+	workadventure.NewTextureHandler(context.Background(), waAPI.Group("/companion"), client)
+	workadventure.NewMapHandler(context.Background(), waAPI.Group("/map", middleware.AdminAPIProtected()), client)
+	workadventure.NewCapabilitiesHandler(context.Background(), waAPI.Group("/capabilities"), client)
+	workadventure.NewBanHandler(context.Background(), waAPI.Group("/ban", middleware.AdminAPIProtected()), client)
+	workadventure.NewReportHandler(context.Background(), waAPI.Group("/report", middleware.AdminAPIProtected()), client)
 
 	app.Use(func(c *fiber.Ctx) error {
 		return c.Status(404).SendString("404 Not Found")

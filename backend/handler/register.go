@@ -11,7 +11,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type RegisterRequest struct {
+type registerRequest struct {
 	EMail                    string `json:"email" example:"bob@example.com" validate:"required,email"`
 	Username                 string `json:"username" example:"Bob" validate:"required,alphaunicode,min=3,max=16"`
 	Language                 string `json:"language" example:"de" validate:"omitempty"`
@@ -26,7 +26,7 @@ type RegisterRequest struct {
 //	@Tags			auth
 //	@Accept			json
 //	@Produce		json
-//	@Param			params	body		RegisterRequest	true	"-"
+//	@Param			params	body		registerRequest	true	"-"
 //	@Success		200		{object}	APIResponse
 //	@Failure		400		{object}	APIResponse
 //	@Failure		404		{object}	APIResponse
@@ -38,7 +38,7 @@ func Register(ctx context.Context, db *ent.Client) fiber.Handler {
 			return HandleError(c, "ERR_REGISTRATION_DISABLED")
 		}
 
-		req := new(RegisterRequest)
+		req := new(registerRequest)
 		if err := c.BodyParser(req); err != nil {
 			return HandleBodyParseError(c, err)
 		}

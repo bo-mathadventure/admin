@@ -10,6 +10,7 @@ import (
 	"time"
 )
 
+// UserCanAccessMap checks the policy number and returns if the given user can access the given map
 func UserCanAccessMap(userUUID string, foundUser *ent.User, foundMap *ent.Maps) bool {
 	// null is acceptable here, because this is not meant for security, but for UX
 	// WA uses call to /map Endpoint also without userId -> need to support that
@@ -17,11 +18,12 @@ func UserCanAccessMap(userUUID string, foundUser *ent.User, foundMap *ent.Maps) 
 		return true
 	}
 
-	if foundMap.PolicyNumber == 0 {
+	switch foundMap.PolicyNumber {
+	case 0:
 		return true
-	} else if foundMap.PolicyNumber == 1 {
+	case 1:
 		return foundUser != nil
-	} else if foundMap.PolicyNumber == 2 {
+	case 2:
 		if len(foundMap.Tags) == 0 {
 			return true
 		}
@@ -30,9 +32,11 @@ func UserCanAccessMap(userUUID string, foundUser *ent.User, foundMap *ent.Maps) 
 		}
 		return len(ArrayIntersect(foundMap.Tags, foundUser.Tags)) >= 1
 	}
+
 	return true
 }
 
+// GetMapFromPlayURL extracts the map part of the full play URL
 func GetMapFromPlayURL(ctx context.Context, db *ent.Client, playURL string) (*ent.Maps, string, error) {
 	playingMap := "/" + strings.Join(strings.Split(playURL, "/")[3:], "/")
 	mapURL := fmt.Sprintf("%s://%s%s", config.GetConfig().WorkadventureURLProtocol, config.GetConfig().WorkadventureURL, playingMap)

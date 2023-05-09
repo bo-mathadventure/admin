@@ -10,11 +10,12 @@ import (
 	"time"
 )
 
-func NewBanHandler(app fiber.Router, ctx context.Context, db *ent.Client) {
+// NewBanHandler initialize routes for the given router
+func NewBanHandler(ctx context.Context, app fiber.Router, db *ent.Client) {
 	app.Get("/", getBan(ctx, db))
 }
 
-type BanQuery struct {
+type banQuery struct {
 	RoomURL   string `query:"roomUrl"`
 	Token     string `query:"token"`
 	IPAddress string `query:"ipAddress"`
@@ -22,7 +23,7 @@ type BanQuery struct {
 
 func getBan(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		qData := new(BanQuery)
+		qData := new(banQuery)
 		if err := c.QueryParser(qData); err != nil {
 			return handler.HandleBodyParseError(c, err)
 		}

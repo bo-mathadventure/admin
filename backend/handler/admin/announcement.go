@@ -15,7 +15,8 @@ import (
 	"time"
 )
 
-func NewAdminAnnouncementHandler(app fiber.Router, ctx context.Context, db *ent.Client) {
+// NewAdminAnnouncementHandler initialize routes for the given router
+func NewAdminAnnouncementHandler(ctx context.Context, app fiber.Router, db *ent.Client) {
 	err := handler.Validate.RegisterValidation("announcement_type_validation", func(fl validator.FieldLevel) bool {
 		return utils.Contains([]string{"message", "ban", "banned"}, fl.Field().String())
 	})
@@ -30,7 +31,7 @@ func NewAdminAnnouncementHandler(app fiber.Router, ctx context.Context, db *ent.
 	app.Delete("/:id", deleteAdminAnnouncementID(ctx, db))
 }
 
-type AdminAnnouncementResponse struct {
+type adminAnnouncementResponse struct {
 	ID         int    `json:"id"`
 	Type       string `json:"type" enums:"message,ban,banned"`
 	Message    string `json:"message" example:"This is an example alert"`
@@ -38,8 +39,8 @@ type AdminAnnouncementResponse struct {
 	ValidUntil string `json:"validUntil" example:"2006-01-02T15:04:05Z07:00" validate:"omitempty"`
 }
 
-func responseAdminAnnouncementResponse(this *ent.Announcement) *AdminAnnouncementResponse {
-	return &AdminAnnouncementResponse{
+func responseAdminAnnouncementResponse(this *ent.Announcement) *adminAnnouncementResponse {
+	return &adminAnnouncementResponse{
 		ID:         this.ID,
 		Type:       this.Type,
 		Message:    this.Message,
@@ -48,8 +49,8 @@ func responseAdminAnnouncementResponse(this *ent.Announcement) *AdminAnnouncemen
 	}
 }
 
-func responseAdminAnnouncementResponses(this []*ent.Announcement) []*AdminAnnouncementResponse {
-	data := make([]*AdminAnnouncementResponse, len(this))
+func responseAdminAnnouncementResponses(this []*ent.Announcement) []*adminAnnouncementResponse {
+	data := make([]*adminAnnouncementResponse, len(this))
 	for i, e := range this {
 		data[i] = responseAdminAnnouncementResponse(e)
 	}
@@ -64,7 +65,7 @@ func responseAdminAnnouncementResponses(this []*ent.Announcement) []*AdminAnnoun
 //	@Tags			admin
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		AdminAnnouncementResponse
+//	@Success		200	{array}		adminAnnouncementResponse
 //	@Failure		400	{object}	handler.APIResponse
 //	@Failure		401	{object}	handler.APIResponse
 //	@Failure		404	{object}	handler.APIResponse
@@ -74,14 +75,14 @@ func getAdminAnnouncement(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
 
-		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_ANNOUNCEMENT_VIEW, utils.PERMISSION_ANNOUNCEMENT_EDIT}) {
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PermissionAnnouncementView, utils.PermissionAnnouncementEdit}) {
 			return handler.HandleInvalidPermissions(c)
 		}
 
@@ -94,7 +95,7 @@ func getAdminAnnouncement(ctx context.Context, db *ent.Client) fiber.Handler {
 	}
 }
 
-type CreateAnnouncement struct {
+type createAnnouncement struct {
 	Type       string `json:"type" enums:"message,ban,banned" validate:"required,announcement_type_validation"`
 	Message    string `json:"message" example:"This is an example alert" validate:"required"`
 	ValidUntil string `json:"validUntil" example:"2006-01-02T15:04:05Z07:00" validate:"omitempty,rfc3339"`
@@ -108,8 +109,8 @@ type CreateAnnouncement struct {
 //	@Tags			admin
 //	@Accept			json
 //	@Produce		json
-//	@Param			params	body		CreateAnnouncement	true	"-"
-//	@Success		200		{object}	AdminAnnouncementResponse
+//	@Param			params	body		createAnnouncement	true	"-"
+//	@Success		200		{object}	adminAnnouncementResponse
 //	@Failure		400		{object}	handler.APIResponse
 //	@Failure		401		{object}	handler.APIResponse
 //	@Failure		404		{object}	handler.APIResponse
@@ -119,18 +120,18 @@ func postAdminAnnouncement(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
 
-		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_ANNOUNCEMENT_EDIT}) {
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PermissionAnnouncementEdit}) {
 			return handler.HandleInvalidPermissions(c)
 		}
 
-		req := new(CreateAnnouncement)
+		req := new(createAnnouncement)
 		if err := c.BodyParser(req); err != nil {
 			return handler.HandleBodyParseError(c, err)
 		}
@@ -165,7 +166,7 @@ func postAdminAnnouncement(ctx context.Context, db *ent.Client) fiber.Handler {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id	path		int	true	"Announcement ID"
-//	@Success		200	{object}	AdminAnnouncementResponse
+//	@Success		200	{object}	adminAnnouncementResponse
 //	@Failure		400	{object}	handler.APIResponse
 //	@Failure		401	{object}	handler.APIResponse
 //	@Failure		404	{object}	handler.APIResponse
@@ -175,14 +176,14 @@ func getAdminAnnouncementID(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
 
-		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_ANNOUNCEMENT_VIEW, utils.PERMISSION_ANNOUNCEMENT_EDIT}) {
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PermissionAnnouncementView, utils.PermissionAnnouncementEdit}) {
 			return handler.HandleInvalidPermissions(c)
 		}
 
@@ -203,7 +204,7 @@ func getAdminAnnouncementID(ctx context.Context, db *ent.Client) fiber.Handler {
 	}
 }
 
-type UpdateAnnouncement struct {
+type updateAnnouncement struct {
 	Type       string `json:"type" enums:"message,ban,banned" validate:"required,announcement_type_validation"`
 	Message    string `json:"message" example:"This is an example alert" validate:"required"`
 	ValidUntil string `json:"validUntil" example:"2006-01-02T15:04:05Z07:00" validate:"omitempty,rfc3339"`
@@ -217,9 +218,9 @@ type UpdateAnnouncement struct {
 //	@Tags			admin
 //	@Accept			json
 //	@Produce		json
-//	@Param			params	body		UpdateAnnouncement	true	"-"
+//	@Param			params	body		updateAnnouncement	true	"-"
 //	@Param			id		path		int					true	"Announcement ID"
-//	@Success		200		{object}	AdminAnnouncementResponse
+//	@Success		200		{object}	adminAnnouncementResponse
 //	@Failure		400		{object}	handler.APIResponse
 //	@Failure		401		{object}	handler.APIResponse
 //	@Failure		404		{object}	handler.APIResponse
@@ -229,14 +230,14 @@ func putAdminAnnouncementID(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
 
-		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_ANNOUNCEMENT_EDIT}) {
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PermissionAnnouncementEdit}) {
 			return handler.HandleInvalidPermissions(c)
 		}
 
@@ -245,7 +246,7 @@ func putAdminAnnouncementID(ctx context.Context, db *ent.Client) fiber.Handler {
 			return handler.HandleInvalidID(c)
 		}
 
-		req := new(UpdateAnnouncement)
+		req := new(updateAnnouncement)
 		if err := c.BodyParser(req); err != nil {
 			return handler.HandleBodyParseError(c, err)
 		}
@@ -298,14 +299,14 @@ func deleteAdminAnnouncementID(ctx context.Context, db *ent.Client) fiber.Handle
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
 
-		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_ANNOUNCEMENT_EDIT}) {
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PermissionAnnouncementEdit}) {
 			return handler.HandleInvalidPermissions(c)
 		}
 

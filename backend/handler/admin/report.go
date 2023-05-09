@@ -13,33 +13,34 @@ import (
 	"time"
 )
 
-func NewAdminReportHandler(app fiber.Router, ctx context.Context, db *ent.Client) {
+// NewAdminReportHandler initialize routes for the given router
+func NewAdminReportHandler(ctx context.Context, app fiber.Router, db *ent.Client) {
 	app.Get("/", getAdminReport(ctx, db))
 	app.Get("/:id", getAdminReportID(ctx, db))
 	app.Put("/:id", putAdminReportID(ctx, db))
 	app.Delete("/:id", deleteAdminReportID(ctx, db))
 }
 
-type AdminReportResponse struct {
+type adminReportResponse struct {
 	ID                  int    `json:"id"`
 	ReportedUserComment string `json:"reportedUserComment"`
-	RoomUrl             string `json:"roomUrl"`
+	RoomURL             string `json:"roomUrl"`
 	Hide                bool   `json:"hide"`
 	CreatedAt           string `json:"createdAt" example:"2006-01-02T15:04:05Z07:00"`
 }
 
-func responseAdminReportResponse(this *ent.Report) *AdminReportResponse {
-	return &AdminReportResponse{
+func responseAdminReportResponse(this *ent.Report) *adminReportResponse {
+	return &adminReportResponse{
 		ID:                  this.ID,
 		ReportedUserComment: this.ReportedUserComment,
-		RoomUrl:             this.RoomUrl,
+		RoomURL:             this.RoomUrl,
 		Hide:                this.Hide,
 		CreatedAt:           this.CreatedAt.Format(time.RFC3339),
 	}
 }
 
-func responseAdminReportResponses(this []*ent.Report) []*AdminReportResponse {
-	data := make([]*AdminReportResponse, len(this))
+func responseAdminReportResponses(this []*ent.Report) []*adminReportResponse {
+	data := make([]*adminReportResponse, len(this))
 	for i, e := range this {
 		data[i] = responseAdminReportResponse(e)
 	}
@@ -54,7 +55,7 @@ func responseAdminReportResponses(this []*ent.Report) []*AdminReportResponse {
 //	@Tags			admin
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		AdminReportResponse
+//	@Success		200	{array}		adminReportResponse
 //	@Failure		400	{object}	handler.APIResponse
 //	@Failure		401	{object}	handler.APIResponse
 //	@Failure		404	{object}	handler.APIResponse
@@ -64,14 +65,14 @@ func getAdminReport(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
 
-		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_REPORT_VIEW, utils.PERMISSION_REPORT_EDIT}) {
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PermissionReportView, utils.PermissionReportEdit}) {
 			return handler.HandleInvalidPermissions(c)
 		}
 
@@ -93,7 +94,7 @@ func getAdminReport(ctx context.Context, db *ent.Client) fiber.Handler {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id	path		int	true	"Report ID"
-//	@Success		200	{object}	AdminReportResponse
+//	@Success		200	{object}	adminReportResponse
 //	@Failure		400	{object}	handler.APIResponse
 //	@Failure		401	{object}	handler.APIResponse
 //	@Failure		404	{object}	handler.APIResponse
@@ -103,14 +104,14 @@ func getAdminReportID(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
 
-		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_REPORT_VIEW, utils.PERMISSION_REPORT_EDIT}) {
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PermissionReportView, utils.PermissionReportEdit}) {
 			return handler.HandleInvalidPermissions(c)
 		}
 
@@ -131,7 +132,7 @@ func getAdminReportID(ctx context.Context, db *ent.Client) fiber.Handler {
 	}
 }
 
-type UpdateReport struct {
+type updateReport struct {
 	// fixme add at least staff comments
 }
 
@@ -143,9 +144,9 @@ type UpdateReport struct {
 //	@Tags			admin
 //	@Accept			json
 //	@Produce		json
-//	@Param			params	body		UpdateReport	true	"-"
+//	@Param			params	body		updateReport	true	"-"
 //	@Param			id		path		int				true	"Report ID"
-//	@Success		200		{object}	AdminReportResponse
+//	@Success		200		{object}	adminReportResponse
 //	@Failure		400		{object}	handler.APIResponse
 //	@Failure		401		{object}	handler.APIResponse
 //	@Failure		404		{object}	handler.APIResponse
@@ -155,14 +156,14 @@ func putAdminReportID(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
 
-		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_REPORT_EDIT}) {
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PermissionReportEdit}) {
 			return handler.HandleInvalidPermissions(c)
 		}
 
@@ -171,7 +172,7 @@ func putAdminReportID(ctx context.Context, db *ent.Client) fiber.Handler {
 			return handler.HandleInvalidID(c)
 		}
 
-		req := new(UpdateReport)
+		req := new(updateReport)
 		if err := c.BodyParser(req); err != nil {
 			return handler.HandleBodyParseError(c, err)
 		}
@@ -216,14 +217,14 @@ func deleteAdminReportID(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
 
-		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_REPORT_EDIT}) {
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PermissionReportEdit}) {
 			return handler.HandleInvalidPermissions(c)
 		}
 

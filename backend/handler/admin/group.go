@@ -13,7 +13,8 @@ import (
 	"time"
 )
 
-func NewAdminGroupHandler(app fiber.Router, ctx context.Context, db *ent.Client) {
+// NewAdminGroupHandler initialize routes for the given router
+func NewAdminGroupHandler(ctx context.Context, app fiber.Router, db *ent.Client) {
 	app.Get("/", getAdminGroup(ctx, db))
 	app.Post("/", postAdminGroup(ctx, db))
 	app.Get("/:id", getAdminGroupID(ctx, db))
@@ -21,7 +22,7 @@ func NewAdminGroupHandler(app fiber.Router, ctx context.Context, db *ent.Client)
 	app.Delete("/:id", deleteAdminGroupID(ctx, db))
 }
 
-type AdminGroupResponse struct {
+type adminGroupResponse struct {
 	ID          int      `json:"id,omitempty"`
 	Name        string   `json:"name,omitempty" example:"administration"`
 	Description string   `json:"description,omitempty" example:""`
@@ -31,8 +32,8 @@ type AdminGroupResponse struct {
 	CreatedAt   string   `json:"createdAt" example:"2006-01-02T15:04:05Z07:00"`
 }
 
-func responseAdminGroupResponse(this *ent.Group) *AdminGroupResponse {
-	return &AdminGroupResponse{
+func responseAdminGroupResponse(this *ent.Group) *adminGroupResponse {
+	return &adminGroupResponse{
 		ID:          this.ID,
 		Name:        this.Name,
 		Description: this.Description,
@@ -43,8 +44,8 @@ func responseAdminGroupResponse(this *ent.Group) *AdminGroupResponse {
 	}
 }
 
-func responseAdminGroupResponses(this []*ent.Group) []*AdminGroupResponse {
-	data := make([]*AdminGroupResponse, len(this))
+func responseAdminGroupResponses(this []*ent.Group) []*adminGroupResponse {
+	data := make([]*adminGroupResponse, len(this))
 	for i, e := range this {
 		data[i] = responseAdminGroupResponse(e)
 	}
@@ -59,7 +60,7 @@ func responseAdminGroupResponses(this []*ent.Group) []*AdminGroupResponse {
 //	@Tags			admin
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		AdminGroupResponse
+//	@Success		200	{array}		adminGroupResponse
 //	@Failure		400	{object}	handler.APIResponse
 //	@Failure		401	{object}	handler.APIResponse
 //	@Failure		404	{object}	handler.APIResponse
@@ -69,14 +70,14 @@ func getAdminGroup(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
 
-		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_GROUP_EDIT}) {
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PermissionGroupEdit}) {
 			return handler.HandleInvalidPermissions(c)
 		}
 
@@ -89,7 +90,7 @@ func getAdminGroup(ctx context.Context, db *ent.Client) fiber.Handler {
 	}
 }
 
-type CreateGroup struct {
+type createGroup struct {
 	Name string `json:"name,omitempty" example:"administration" validate:"required,min=3,max=32"`
 }
 
@@ -101,8 +102,8 @@ type CreateGroup struct {
 //	@Tags			admin
 //	@Accept			json
 //	@Produce		json
-//	@Param			params	body		CreateGroup	true	"-"
-//	@Success		200		{object}	AdminGroupResponse
+//	@Param			params	body		createGroup	true	"-"
+//	@Success		200		{object}	adminGroupResponse
 //	@Failure		400		{object}	handler.APIResponse
 //	@Failure		401		{object}	handler.APIResponse
 //	@Failure		404		{object}	handler.APIResponse
@@ -112,18 +113,18 @@ func postAdminGroup(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
 
-		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_GROUP_EDIT}) {
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PermissionGroupEdit}) {
 			return handler.HandleInvalidPermissions(c)
 		}
 
-		req := new(CreateGroup)
+		req := new(createGroup)
 		if err := c.BodyParser(req); err != nil {
 			return handler.HandleBodyParseError(c, err)
 		}
@@ -150,7 +151,7 @@ func postAdminGroup(ctx context.Context, db *ent.Client) fiber.Handler {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id	path		int	true	"Group ID"
-//	@Success		200	{object}	AdminGroupResponse
+//	@Success		200	{object}	adminGroupResponse
 //	@Failure		400	{object}	handler.APIResponse
 //	@Failure		401	{object}	handler.APIResponse
 //	@Failure		404	{object}	handler.APIResponse
@@ -160,14 +161,14 @@ func getAdminGroupID(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
 
-		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_GROUP_EDIT}) {
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PermissionGroupEdit}) {
 			return handler.HandleInvalidPermissions(c)
 		}
 
@@ -188,7 +189,7 @@ func getAdminGroupID(ctx context.Context, db *ent.Client) fiber.Handler {
 	}
 }
 
-type UpdateGroup struct {
+type updateGroup struct {
 	Name        string   `json:"name,omitempty" example:"administration" validate:"required,min=3,max=32"`
 	Description string   `json:"description,omitempty" example:""`
 	Permissions []string `json:"permissions,omitempty" example:"admin.user.view,admin.user.view"`
@@ -203,9 +204,9 @@ type UpdateGroup struct {
 //	@Tags			admin
 //	@Accept			json
 //	@Produce		json
-//	@Param			params	body		UpdateGroup	true	"-"
+//	@Param			params	body		updateGroup	true	"-"
 //	@Param			id		path		int			true	"Group ID"
-//	@Success		200		{object}	AdminGroupResponse
+//	@Success		200		{object}	adminGroupResponse
 //	@Failure		400		{object}	handler.APIResponse
 //	@Failure		401		{object}	handler.APIResponse
 //	@Failure		404		{object}	handler.APIResponse
@@ -215,14 +216,14 @@ func putAdminGroupID(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
 
-		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_USER_EDIT}) {
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PermissionUserEdit}) {
 			return handler.HandleInvalidPermissions(c)
 		}
 
@@ -231,7 +232,7 @@ func putAdminGroupID(ctx context.Context, db *ent.Client) fiber.Handler {
 			return handler.HandleInvalidID(c)
 		}
 
-		req := new(UpdateGroup)
+		req := new(updateGroup)
 		if err := c.BodyParser(req); err != nil {
 			return handler.HandleBodyParseError(c, err)
 		}
@@ -276,14 +277,14 @@ func deleteAdminGroupID(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
 
-		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_GROUP_EDIT}) {
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PermissionGroupEdit}) {
 			return handler.HandleInvalidPermissions(c)
 		}
 

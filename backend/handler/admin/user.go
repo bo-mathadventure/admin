@@ -12,7 +12,8 @@ import (
 	"time"
 )
 
-func NewAdminUserHandler(app fiber.Router, ctx context.Context, db *ent.Client) {
+// NewAdminUserHandler initialize routes for the given router
+func NewAdminUserHandler(ctx context.Context, app fiber.Router, db *ent.Client) {
 	app.Get("/", getAdminUser(ctx, db))
 	app.Post("/invite", postAdminUser(ctx, db))
 	app.Get("/:id", getAdminUserID(ctx, db))
@@ -20,7 +21,7 @@ func NewAdminUserHandler(app fiber.Router, ctx context.Context, db *ent.Client) 
 	app.Delete("/:id", deleteAdminUserID(ctx, db))
 }
 
-type AdminUserResponse struct {
+type adminUserResponse struct {
 	ID              int                   `json:"id"`
 	UUID            string                `json:"uuid" example:"60948703-fca9-4491-b3bc-588188d93eb3"`
 	Email           string                `json:"email" example:"bob@example.com"`
@@ -32,11 +33,11 @@ type AdminUserResponse struct {
 	UserTags        []string              `json:"userTags" example:"admin,mod,editor,student"`
 	LastLogin       string                `json:"lastLogin" example:"2006-01-02T15:04:05Z07:00" validate:"omitempty"`
 	CreatedAt       string                `json:"createdAt" example:"2006-01-02T15:04:05Z07:00"`
-	Groups          []*AdminGroupResponse `json:"groups"`
+	Groups          []*adminGroupResponse `json:"groups"`
 }
 
-func responseAdminUserResponse(this *ent.User) *AdminUserResponse {
-	return &AdminUserResponse{
+func responseAdminUserResponse(this *ent.User) *adminUserResponse {
+	return &adminUserResponse{
 		ID:              this.ID,
 		UUID:            this.UUID,
 		Email:           this.Email,
@@ -52,8 +53,8 @@ func responseAdminUserResponse(this *ent.User) *AdminUserResponse {
 	}
 }
 
-func responseAdminUserResponses(this []*ent.User) []*AdminUserResponse {
-	data := make([]*AdminUserResponse, len(this))
+func responseAdminUserResponses(this []*ent.User) []*adminUserResponse {
+	data := make([]*adminUserResponse, len(this))
 	for i, e := range this {
 		data[i] = responseAdminUserResponse(e)
 	}
@@ -68,7 +69,7 @@ func responseAdminUserResponses(this []*ent.User) []*AdminUserResponse {
 //	@Tags			admin
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		AdminUserResponse
+//	@Success		200	{array}		adminUserResponse
 //	@Failure		400	{object}	handler.APIResponse
 //	@Failure		401	{object}	handler.APIResponse
 //	@Failure		404	{object}	handler.APIResponse
@@ -78,14 +79,14 @@ func getAdminUser(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
 
-		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_USER_VIEW, utils.PERMISSION_USER_EDIT}) {
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PermissionUserView, utils.PermissionUserEdit}) {
 			return handler.HandleInvalidPermissions(c)
 		}
 
@@ -98,7 +99,7 @@ func getAdminUser(ctx context.Context, db *ent.Client) fiber.Handler {
 	}
 }
 
-type CreateUser struct {
+type createUser struct {
 	Email    string `json:"email" example:"bob@example.com" validate:"required,email"`
 	Username string `json:"username" example:"Bob" validate:"required,alphaunicode,min=3,max=16"`
 	Password string `json:"password" example:"my$ecur3P4$$word" validate:"required,min=8"`
@@ -112,8 +113,8 @@ type CreateUser struct {
 //	@Tags			admin
 //	@Accept			json
 //	@Produce		json
-//	@Param			params	body		CreateUser	true	"-"
-//	@Success		200		{object}	AdminUserResponse
+//	@Param			params	body		createUser	true	"-"
+//	@Success		200		{object}	adminUserResponse
 //	@Failure		400		{object}	handler.APIResponse
 //	@Failure		401		{object}	handler.APIResponse
 //	@Failure		404		{object}	handler.APIResponse
@@ -123,18 +124,18 @@ func postAdminUser(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
 
-		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_USER_INVITE}) {
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PermissionUserInvite}) {
 			return handler.HandleInvalidPermissions(c)
 		}
 
-		req := new(CreateUser)
+		req := new(createUser)
 		if err := c.BodyParser(req); err != nil {
 			return handler.HandleBodyParseError(c, err)
 		}
@@ -166,7 +167,7 @@ func postAdminUser(ctx context.Context, db *ent.Client) fiber.Handler {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id	path		int	true	"User ID"
-//	@Success		200	{object}	AdminUserResponse
+//	@Success		200	{object}	adminUserResponse
 //	@Failure		400	{object}	handler.APIResponse
 //	@Failure		401	{object}	handler.APIResponse
 //	@Failure		404	{object}	handler.APIResponse
@@ -176,14 +177,14 @@ func getAdminUserID(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
 
-		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_USER_VIEW, utils.PERMISSION_USER_EDIT}) {
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PermissionUserView, utils.PermissionUserEdit}) {
 			return handler.HandleInvalidPermissions(c)
 		}
 
@@ -204,7 +205,7 @@ func getAdminUserID(ctx context.Context, db *ent.Client) fiber.Handler {
 	}
 }
 
-type UpdateUser struct {
+type updateUser struct {
 	Email       string   `json:"email" example:"bob@example.com" validate:"required,email"`
 	Username    string   `json:"username" example:"Bob" validate:"required,min=3,max=16"`
 	Password    string   `json:"password" validate:"omitempty,min=8"`
@@ -221,9 +222,9 @@ type UpdateUser struct {
 //	@Tags			admin
 //	@Accept			json
 //	@Produce		json
-//	@Param			params	body		UpdateUser	true	"-"
+//	@Param			params	body		updateUser	true	"-"
 //	@Param			id		path		int			true	"User ID"
-//	@Success		200		{object}	AdminUserResponse
+//	@Success		200		{object}	adminUserResponse
 //	@Failure		400		{object}	handler.APIResponse
 //	@Failure		401		{object}	handler.APIResponse
 //	@Failure		404		{object}	handler.APIResponse
@@ -233,14 +234,14 @@ func putAdminUserID(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
 
-		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_USER_EDIT}) {
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PermissionUserEdit}) {
 			return handler.HandleInvalidPermissions(c)
 		}
 
@@ -249,7 +250,7 @@ func putAdminUserID(ctx context.Context, db *ent.Client) fiber.Handler {
 			return handler.HandleInvalidID(c)
 		}
 
-		req := new(UpdateUser)
+		req := new(updateUser)
 		if err := c.BodyParser(req); err != nil {
 			return handler.HandleBodyParseError(c, err)
 		}
@@ -303,14 +304,14 @@ func deleteAdminUserID(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
 
-		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_USER_EDIT}) {
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PermissionUserEdit}) {
 			return handler.HandleInvalidPermissions(c)
 		}
 

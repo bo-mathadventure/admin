@@ -9,6 +9,7 @@ import (
 	"time"
 )
 
+// Logger returns a logger middleware which run after all requests to get the response data
 func Logger() fiber.Handler {
 	var (
 		once       sync.Once

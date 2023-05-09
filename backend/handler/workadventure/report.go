@@ -9,11 +9,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func NewReportHandler(app fiber.Router, ctx context.Context, db *ent.Client) {
+// NewReportHandler initialize routes for the given router
+func NewReportHandler(ctx context.Context, app fiber.Router, db *ent.Client) {
 	app.Post("/", getReport(ctx, db))
 }
 
-type ReportQuery struct {
+type reportQuery struct {
 	ReportedUserUUID    string `json:"reportedUserUuid"`
 	ReportedUserComment string `json:"reportedUserComment"`
 	ReporterUserUIID    string `json:"reporterUserUuid"`
@@ -22,7 +23,7 @@ type ReportQuery struct {
 
 func getReport(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		qData := new(ReportQuery)
+		qData := new(reportQuery)
 		if err := c.BodyParser(qData); err != nil {
 			return handler.HandleBodyParseError(c, err)
 		}

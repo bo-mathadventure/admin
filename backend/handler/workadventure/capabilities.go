@@ -6,11 +6,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func NewCapabilitiesHandler(app fiber.Router, ctx context.Context, db *ent.Client) {
+// NewCapabilitiesHandler initialize routes for the given router
+func NewCapabilitiesHandler(ctx context.Context, app fiber.Router, db *ent.Client) {
 	app.Get("/", getCaps(ctx, db))
 }
 
-func getCaps(ctx context.Context, db *ent.Client) fiber.Handler {
+func getCaps(_ context.Context, _ *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		return c.JSON(map[string]string{
 			"api/woka/list":      "v1",

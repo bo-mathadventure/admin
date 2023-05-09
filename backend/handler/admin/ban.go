@@ -13,14 +13,15 @@ import (
 	"time"
 )
 
-func NewAdminBanHandler(app fiber.Router, ctx context.Context, db *ent.Client) {
+// NewAdminBanHandler initialize routes for the given router
+func NewAdminBanHandler(ctx context.Context, app fiber.Router, db *ent.Client) {
 	app.Get("/", getAdminBan(ctx, db))
 	app.Post("/", postAdminBan(ctx, db))
 	app.Get("/:id", getAdminBanID(ctx, db))
 	app.Delete("/:id", deleteAdminBanID(ctx, db))
 }
 
-type AdminBanResponse struct {
+type adminBanResponse struct {
 	ID         int    `json:"id"`
 	Check      string `json:"check" example:"60948703-fca9-4491-b3bc-588188d93eb3"`
 	Message    string `json:"message" example:"banned for verbal abuse"`
@@ -28,8 +29,8 @@ type AdminBanResponse struct {
 	CreatedAt  string `json:"createdAt" example:"2006-01-02T15:04:05Z07:00"`
 }
 
-func responseAdminBanResponse(this *ent.Ban) *AdminBanResponse {
-	return &AdminBanResponse{
+func responseAdminBanResponse(this *ent.Ban) *adminBanResponse {
+	return &adminBanResponse{
 		ID:         this.ID,
 		Check:      this.Check,
 		Message:    this.Message,
@@ -38,8 +39,8 @@ func responseAdminBanResponse(this *ent.Ban) *AdminBanResponse {
 	}
 }
 
-func responseAdminBanResponses(this []*ent.Ban) []*AdminBanResponse {
-	data := make([]*AdminBanResponse, len(this))
+func responseAdminBanResponses(this []*ent.Ban) []*adminBanResponse {
+	data := make([]*adminBanResponse, len(this))
 	for i, e := range this {
 		data[i] = responseAdminBanResponse(e)
 	}
@@ -54,7 +55,7 @@ func responseAdminBanResponses(this []*ent.Ban) []*AdminBanResponse {
 //	@Tags			admin
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		AdminBanResponse
+//	@Success		200	{array}		adminBanResponse
 //	@Failure		400	{object}	handler.APIResponse
 //	@Failure		401	{object}	handler.APIResponse
 //	@Failure		404	{object}	handler.APIResponse
@@ -64,14 +65,14 @@ func getAdminBan(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
 
-		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_BAN_VIEW, utils.PERMISSION_BAN_CREATE, utils.PERMISSION_BAN_DELETE}) {
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PermissionBanView, utils.PermissionBanCreate, utils.PermissionBanDelete}) {
 			return handler.HandleInvalidPermissions(c)
 		}
 
@@ -84,7 +85,7 @@ func getAdminBan(ctx context.Context, db *ent.Client) fiber.Handler {
 	}
 }
 
-type CreateBan struct {
+type createBan struct {
 	Check      string `json:"check" example:"60948703-fca9-4491-b3bc-588188d93eb3" validate:"required"`
 	Message    string `json:"message" example:"banned for verbal abuse" validate:"required"`
 	ValidUntil string `json:"validUntil" example:"2006-01-02T15:04:05Z07:00" validate:"required,rfc3339"`
@@ -98,8 +99,8 @@ type CreateBan struct {
 //	@Tags			admin
 //	@Accept			json
 //	@Produce		json
-//	@Param			params	body		CreateBan	true	"-"
-//	@Success		200		{object}	AdminBanResponse
+//	@Param			params	body		createBan	true	"-"
+//	@Success		200		{object}	adminBanResponse
 //	@Failure		400		{object}	handler.APIResponse
 //	@Failure		401		{object}	handler.APIResponse
 //	@Failure		404		{object}	handler.APIResponse
@@ -109,18 +110,18 @@ func postAdminBan(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
 
-		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_BAN_CREATE}) {
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PermissionBanCreate}) {
 			return handler.HandleInvalidPermissions(c)
 		}
 
-		req := new(CreateBan)
+		req := new(createBan)
 		if err := c.BodyParser(req); err != nil {
 			return handler.HandleBodyParseError(c, err)
 		}
@@ -151,7 +152,7 @@ func postAdminBan(ctx context.Context, db *ent.Client) fiber.Handler {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id	path		int	true	"Ban ID"
-//	@Success		200	{object}	AdminBanResponse
+//	@Success		200	{object}	adminBanResponse
 //	@Failure		400	{object}	handler.APIResponse
 //	@Failure		401	{object}	handler.APIResponse
 //	@Failure		404	{object}	handler.APIResponse
@@ -161,14 +162,14 @@ func getAdminBanID(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
 
-		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_BAN_VIEW, utils.PERMISSION_BAN_CREATE, utils.PERMISSION_BAN_DELETE}) {
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PermissionBanView, utils.PermissionBanCreate, utils.PermissionBanDelete}) {
 			return handler.HandleInvalidPermissions(c)
 		}
 
@@ -208,14 +209,14 @@ func deleteAdminBanID(ctx context.Context, db *ent.Client) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		jwtUser := c.Locals("user").(*jwt.Token)
 		claims := jwtUser.Claims.(jwt.MapClaims)
-		userId := int(claims["id"].(float64))
+		userID := int(claims["id"].(float64))
 
-		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userId)).First(ctx)
+		thisUser, err := db.User.Query().WithGroups().Where(user.ID(userID)).First(ctx)
 		if err != nil {
 			return handler.HandleInternalError(c, err)
 		}
 
-		if !utils.CheckPermissionAny(thisUser, []string{utils.PERMISSION_BAN_DELETE}) {
+		if !utils.CheckPermissionAny(thisUser, []string{utils.PermissionBanDelete}) {
 			return handler.HandleInvalidPermissions(c)
 		}
 

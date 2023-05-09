@@ -6,6 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// AdminAPIProtected returns the middleware to check for the workadventure api token
 func AdminAPIProtected() func(*fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
 		if c.Get(fiber.HeaderAuthorization) != config.GetConfig().WorkadventureAdminAPISecret {

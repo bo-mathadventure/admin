@@ -9,6 +9,7 @@ import (
 
 var cfg Config
 
+// Config the configuration
 type Config struct {
 	Port        int    `env:"PORT" envDefault:"4664" json:"-"`
 	AppName     string `env:"APP_NAME" envDefault:"WorkAdventure Back Office" json:"appName"`
@@ -42,6 +43,7 @@ type Config struct {
 	SAMLv2SignAuthnRequests bool   `env:"SAMLV2_SIGN_AUTH_REQUESTS" envDefault:"true" json:"-"`
 }
 
+// Init initialize loading Config. tries to load .env
 func Init() error {
 	err := godotenv.Load()
 	if err != nil {
@@ -49,17 +51,15 @@ func Init() error {
 	}
 
 	cfg = Config{}
-	if err := env.Parse(&cfg); err != nil {
-		return err
-	}
-
-	return nil
+	return env.Parse(&cfg)
 }
 
+// GetConfig returns singleton Config
 func GetConfig() Config {
 	return cfg
 }
 
+// GetDBUri generate Database URI from config
 func GetDBUri(tcp bool) string {
 	template := "%s:%s@%s:%d/%s?parseTime=True"
 	if tcp {

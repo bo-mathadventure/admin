@@ -1,5 +1,6 @@
 package utils
 
+// SliceIndex get index where element is in array
 func SliceIndex[T comparable](element T, data []T, defaultValue *int) int {
 	for k, v := range data {
 		if element == v {
@@ -12,6 +13,7 @@ func SliceIndex[T comparable](element T, data []T, defaultValue *int) int {
 	return *defaultValue
 }
 
+// Contains test if value x is in array arr
 func Contains[T comparable](arr []T, x T) bool {
 	for _, v := range arr {
 		if v == x {
@@ -21,6 +23,7 @@ func Contains[T comparable](arr []T, x T) bool {
 	return false
 }
 
+// ArrayIntersect Computes the intersection of arrays
 func ArrayIntersect[T comparable](array1 []T, arrayOthers ...[]T) []T {
 	c := make(map[T]bool)
 	for i := 0; i < len(array1); i++ {
