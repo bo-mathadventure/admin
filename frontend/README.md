@@ -7,7 +7,8 @@ The following UI is required:
   - local authentication (E-Mail/Password)
   - SAML redirect to `/auth/saml/start`
 - Dashboard
-  - cet Workadventure access token (Button with redirect to `/system/user/token`)
+  - allow user to view their username and allow to change before joining workadventure
+  - get Workadventure access token (Button with redirect to `/system/user/token`)
 - Announcements
   - list all announcements with pagination
   - edit/create new announcement

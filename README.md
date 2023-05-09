@@ -31,6 +31,7 @@ It also serves the login page for local authentication or redirects to the SSO p
 - 👤 Local and *SAML* authentication
 - 🔑 Token Login
 - 🔥 Support latest version of Workadventure
+- ✒️ GDPR compliant
 
 ## Testing
 A plug-and-play docker configuration is available in [`wadev/`](wadev/).
