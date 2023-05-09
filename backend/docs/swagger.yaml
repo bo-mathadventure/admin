@@ -560,6 +560,11 @@ definitions:
       password:
         example: my$ecur3P4$$word
         type: string
+      username:
+        example: Bob
+        maxLength: 16
+        minLength: 3
+        type: string
     required:
     - password
     type: object

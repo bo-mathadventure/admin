@@ -3192,6 +3192,12 @@ const docTemplate = `{
                 "password": {
                     "type": "string",
                     "example": "my$ecur3P4$$word"
+                },
+                "username": {
+                    "type": "string",
+                    "maxLength": 16,
+                    "minLength": 3,
+                    "example": "Bob"
                 }
             }
         },

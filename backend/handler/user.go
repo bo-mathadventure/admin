@@ -73,6 +73,7 @@ func getMe(ctx context.Context, db *ent.Client) fiber.Handler {
 
 type updateUserRequest struct {
 	EMail                    string `json:"email" example:"bob@exameple.com" format:"email" validate:"omitempty,email"`
+	Username                 string `json:"username" example:"Bob" validate:"omitempty,alphaunicode,min=3,max=16"`
 	ClearTextPassword        string `json:"newPassword" example:"my$ecur3P4$$word" validate:"omitempty,min=8"`
 	ClearTextPasswordConfirm string `json:"confirmPassword" example:"my$ecur3P4$$word" validate:"omitempty,min=8,eqcsfield=ClearTextPassword"`
 	ClearTextCurrentPassword string `json:"password" example:"my$ecur3P4$$word" validate:"required"`
@@ -130,6 +131,10 @@ func updateUser(ctx context.Context, db *ent.Client) fiber.Handler {
 			}
 
 			update = update.SetEmail(email.Normalize(req.EMail))
+		}
+
+		if req.Username != "" {
+			update = update.SetUsername(req.Username)
 		}
 
 		if req.ClearTextPassword != "" && req.ClearTextPasswordConfirm == "" || req.ClearTextPassword == "" && req.ClearTextPasswordConfirm != "" {
