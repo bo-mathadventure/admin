@@ -18,6 +18,7 @@ import (
 	"github.com/bo-mathadventure/admin/ent/maps"
 	"github.com/bo-mathadventure/admin/ent/report"
 	"github.com/bo-mathadventure/admin/ent/textures"
+	"github.com/bo-mathadventure/admin/ent/token"
 	"github.com/bo-mathadventure/admin/ent/user"
 )
 
@@ -85,6 +86,7 @@ func checkColumn(table, column string) error {
 			maps.Table:         maps.ValidColumn,
 			report.Table:       report.ValidColumn,
 			textures.Table:     textures.ValidColumn,
+			token.Table:        token.ValidColumn,
 			user.Table:         user.ValidColumn,
 		})
 	})

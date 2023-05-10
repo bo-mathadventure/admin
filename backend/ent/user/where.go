@@ -80,6 +80,11 @@ func SsoIdentifier(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldSsoIdentifier, v))
 }
 
+// EmailConfirmed applies equality check predicate on the "emailConfirmed" field. It's identical to EmailConfirmedEQ.
+func EmailConfirmed(v bool) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldEmailConfirmed, v))
+}
+
 // LastLogin applies equality check predicate on the "lastLogin" field. It's identical to LastLoginEQ.
 func LastLogin(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldLastLogin, v))
@@ -425,6 +430,16 @@ func SsoIdentifierContainsFold(v string) predicate.User {
 	return predicate.User(sql.FieldContainsFold(FieldSsoIdentifier, v))
 }
 
+// EmailConfirmedEQ applies the EQ predicate on the "emailConfirmed" field.
+func EmailConfirmedEQ(v bool) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldEmailConfirmed, v))
+}
+
+// EmailConfirmedNEQ applies the NEQ predicate on the "emailConfirmed" field.
+func EmailConfirmedNEQ(v bool) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldEmailConfirmed, v))
+}
+
 // LastLoginEQ applies the EQ predicate on the "lastLogin" field.
 func LastLoginEQ(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldLastLogin, v))
@@ -576,6 +591,29 @@ func HasGroups() predicate.User {
 func HasGroupsWith(preds ...predicate.Group) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := newGroupsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasTokens applies the HasEdge predicate on the "tokens" edge.
+func HasTokens() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, TokensTable, TokensColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasTokensWith applies the HasEdge predicate on the "tokens" edge with a given conditions (other predicates).
+func HasTokensWith(preds ...predicate.Token) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newTokensStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

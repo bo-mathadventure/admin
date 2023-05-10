@@ -2,6 +2,7 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
@@ -21,6 +22,7 @@ func (User) Fields() []ent.Field {
 		field.String("username"),
 		field.String("password"),
 		field.String("ssoIdentifier").Optional(),
+		field.Bool("emailConfirmed").Default(true),
 		field.JSON("permissions", []string{}).Default([]string{}),
 		field.JSON("tags", []string{}).Default([]string{}),
 		field.Time("lastLogin").Optional(),
@@ -31,8 +33,15 @@ func (User) Fields() []ent.Field {
 // Edges of the User.
 func (User) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("reported", Report.Type),
-		edge.To("reporter", Report.Type),
+		edge.To("reported", Report.Type).Annotations(entsql.Annotation{
+			OnDelete: entsql.SetNull,
+		}),
+		edge.To("reporter", Report.Type).Annotations(entsql.Annotation{
+			OnDelete: entsql.SetNull,
+		}),
 		edge.From("groups", Group.Type).Ref("users"),
+		edge.To("tokens", Token.Type).Annotations(entsql.Annotation{
+			OnDelete: entsql.Cascade,
+		}),
 	}
 }

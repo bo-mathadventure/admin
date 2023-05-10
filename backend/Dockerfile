@@ -26,6 +26,7 @@ COPY --from=builder /app/server /app/server
 COPY ent/migrate/migrations /app/migrations
 # should be mounted via volume
 COPY public /app/public
+COPY template /app/template
 
 COPY migrate.sh /app/migrate.sh
 RUN chmod +x /app/migrate.sh

@@ -24,6 +24,8 @@ const (
 	FieldPassword = "password"
 	// FieldSsoIdentifier holds the string denoting the ssoidentifier field in the database.
 	FieldSsoIdentifier = "sso_identifier"
+	// FieldEmailConfirmed holds the string denoting the emailconfirmed field in the database.
+	FieldEmailConfirmed = "email_confirmed"
 	// FieldPermissions holds the string denoting the permissions field in the database.
 	FieldPermissions = "permissions"
 	// FieldTags holds the string denoting the tags field in the database.
@@ -38,6 +40,8 @@ const (
 	EdgeReporter = "reporter"
 	// EdgeGroups holds the string denoting the groups edge name in mutations.
 	EdgeGroups = "groups"
+	// EdgeTokens holds the string denoting the tokens edge name in mutations.
+	EdgeTokens = "tokens"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// ReportedTable is the table that holds the reported relation/edge.
@@ -59,6 +63,13 @@ const (
 	// GroupsInverseTable is the table name for the Group entity.
 	// It exists in this package in order to avoid circular dependency with the "group" package.
 	GroupsInverseTable = "groups"
+	// TokensTable is the table that holds the tokens relation/edge.
+	TokensTable = "tokens"
+	// TokensInverseTable is the table name for the Token entity.
+	// It exists in this package in order to avoid circular dependency with the "token" package.
+	TokensInverseTable = "tokens"
+	// TokensColumn is the table column denoting the tokens relation/edge.
+	TokensColumn = "user_tokens"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -69,6 +80,7 @@ var Columns = []string{
 	FieldUsername,
 	FieldPassword,
 	FieldSsoIdentifier,
+	FieldEmailConfirmed,
 	FieldPermissions,
 	FieldTags,
 	FieldLastLogin,
@@ -94,6 +106,8 @@ func ValidColumn(column string) bool {
 var (
 	// DefaultUUID holds the default value on creation for the "uuid" field.
 	DefaultUUID func() string
+	// DefaultEmailConfirmed holds the default value on creation for the "emailConfirmed" field.
+	DefaultEmailConfirmed bool
 	// DefaultPermissions holds the default value on creation for the "permissions" field.
 	DefaultPermissions []string
 	// DefaultTags holds the default value on creation for the "tags" field.
@@ -133,6 +147,11 @@ func ByPassword(opts ...sql.OrderTermOption) OrderOption {
 // BySsoIdentifier orders the results by the ssoIdentifier field.
 func BySsoIdentifier(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSsoIdentifier, opts...).ToFunc()
+}
+
+// ByEmailConfirmed orders the results by the emailConfirmed field.
+func ByEmailConfirmed(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEmailConfirmed, opts...).ToFunc()
 }
 
 // ByLastLogin orders the results by the lastLogin field.
@@ -186,6 +205,20 @@ func ByGroups(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newGroupsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByTokensCount orders the results by tokens count.
+func ByTokensCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newTokensStep(), opts...)
+	}
+}
+
+// ByTokens orders the results by tokens terms.
+func ByTokens(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTokensStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newReportedStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -205,5 +238,12 @@ func newGroupsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(GroupsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, true, GroupsTable, GroupsPrimaryKey...),
+	)
+}
+func newTokensStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(TokensInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, TokensTable, TokensColumn),
 	)
 }

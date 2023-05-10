@@ -5,6 +5,7 @@ import (
 	"github.com/bo-mathadventure/admin/config"
 	"github.com/bo-mathadventure/admin/ent"
 	"github.com/bo-mathadventure/admin/ent/user"
+	"github.com/bo-mathadventure/admin/mailer"
 	"github.com/bo-mathadventure/admin/utils"
 	email "github.com/cameronnewman/go-emailvalidation/v3"
 	"github.com/gofiber/fiber/v2"
@@ -79,13 +80,17 @@ func Register(ctx context.Context, db *ent.Client) fiber.Handler {
 			return HandleError(c, "ERR_USER_EXISTS")
 		}
 
-		newUser, err := db.User.Create().SetEmail(email.Normalize(req.EMail)).SetPassword(hashedPassword).SetUsername(req.Username).Save(ctx)
+		newUser, err := db.User.Create().SetEmail(email.Normalize(req.EMail)).SetPassword(hashedPassword).SetUsername(req.Username).SetEmailConfirmed(!config.GetConfig().RegistrationEMailConfirmation).Save(ctx)
 		if err != nil || newUser == nil {
 			return HandleInternalError(c, err)
 		}
 		log.WithFields(log.Fields{
 			"userID": newUser.ID,
 		}).Info("user registered")
+
+		if config.GetConfig().RegistrationEMailConfirmation {
+			_, _ = db.Token.Create().SetUser(newUser).SetAction(mailer.ActionConfirmEmail).Save(ctx)
+		}
 
 		return HandleSuccess(c)
 	}

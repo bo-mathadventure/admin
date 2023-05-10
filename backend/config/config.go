@@ -23,8 +23,9 @@ type Config struct {
 	DatabaseUsername string `env:"DB_USER" json:"-"`
 	DatabasePassword string `env:"DB_PASSWORD" json:"-"`
 
-	EnableRegistration bool   `env:"ENABLE_REGISTRATION" envDefault:"true" json:"enableRegistration"`
-	RegistrationEMail  string `env:"REGISTRATION_EMAIL" json:"-"`
+	EnableRegistration            bool   `env:"ENABLE_REGISTRATION" envDefault:"true" json:"enableRegistration"`
+	RegistrationEMail             string `env:"REGISTRATION_EMAIL" json:"-"`
+	RegistrationEMailConfirmation bool   `env:"REGISTRATION_EMAIL_CONFIRMATION" envDefault:"false" json:"-"`
 
 	WorkadventureURL            string `env:"WORKADVENTURE_URL" json:"workadventureURL"`
 	WorkadventureURLProtocol    string `env:"WORKADVENTURE_URL_PROTOCOL" envDefault:"https" json:"workadventureURLProtocol"`
@@ -42,6 +43,12 @@ type Config struct {
 	SAMLv2Issuer            string `env:"SAMLV2_ISSUER_URL" json:"-"`
 	SAMLv2AudienceURL       string `env:"SAMLV2_AUDIENCE_URL" json:"-"`
 	SAMLv2SignAuthnRequests bool   `env:"SAMLV2_SIGN_AUTH_REQUESTS" envDefault:"true" json:"-"`
+
+	MailFrom     string `env:"MAIL_FROM"`
+	MailHost     string `env:"MAIL_HOST"`
+	MailPort     int    `env:"MAIL_PORT"`
+	MailUser     string `env:"MAIL_USER"`
+	MailPassword string `env:"MAIL_PASSWORD"`
 }
 
 // Init initialize loading Config. tries to load .env

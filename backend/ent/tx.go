@@ -24,6 +24,8 @@ type Tx struct {
 	Report *ReportClient
 	// Textures is the client for interacting with the Textures builders.
 	Textures *TexturesClient
+	// Token is the client for interacting with the Token builders.
+	Token *TokenClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 
@@ -163,6 +165,7 @@ func (tx *Tx) init() {
 	tx.Maps = NewMapsClient(tx.config)
 	tx.Report = NewReportClient(tx.config)
 	tx.Textures = NewTexturesClient(tx.config)
+	tx.Token = NewTokenClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 }
 

@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/bo-mathadventure/admin/ent/group"
 	"github.com/bo-mathadventure/admin/ent/report"
+	"github.com/bo-mathadventure/admin/ent/token"
 	"github.com/bo-mathadventure/admin/ent/user"
 )
 
@@ -64,6 +65,20 @@ func (uc *UserCreate) SetSsoIdentifier(s string) *UserCreate {
 func (uc *UserCreate) SetNillableSsoIdentifier(s *string) *UserCreate {
 	if s != nil {
 		uc.SetSsoIdentifier(*s)
+	}
+	return uc
+}
+
+// SetEmailConfirmed sets the "emailConfirmed" field.
+func (uc *UserCreate) SetEmailConfirmed(b bool) *UserCreate {
+	uc.mutation.SetEmailConfirmed(b)
+	return uc
+}
+
+// SetNillableEmailConfirmed sets the "emailConfirmed" field if the given value is not nil.
+func (uc *UserCreate) SetNillableEmailConfirmed(b *bool) *UserCreate {
+	if b != nil {
+		uc.SetEmailConfirmed(*b)
 	}
 	return uc
 }
@@ -153,6 +168,21 @@ func (uc *UserCreate) AddGroups(g ...*Group) *UserCreate {
 	return uc.AddGroupIDs(ids...)
 }
 
+// AddTokenIDs adds the "tokens" edge to the Token entity by IDs.
+func (uc *UserCreate) AddTokenIDs(ids ...int) *UserCreate {
+	uc.mutation.AddTokenIDs(ids...)
+	return uc
+}
+
+// AddTokens adds the "tokens" edges to the Token entity.
+func (uc *UserCreate) AddTokens(t ...*Token) *UserCreate {
+	ids := make([]int, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return uc.AddTokenIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uc *UserCreate) Mutation() *UserMutation {
 	return uc.mutation
@@ -192,6 +222,10 @@ func (uc *UserCreate) defaults() {
 		v := user.DefaultUUID()
 		uc.mutation.SetUUID(v)
 	}
+	if _, ok := uc.mutation.EmailConfirmed(); !ok {
+		v := user.DefaultEmailConfirmed
+		uc.mutation.SetEmailConfirmed(v)
+	}
 	if _, ok := uc.mutation.Permissions(); !ok {
 		v := user.DefaultPermissions
 		uc.mutation.SetPermissions(v)
@@ -219,6 +253,9 @@ func (uc *UserCreate) check() error {
 	}
 	if _, ok := uc.mutation.Password(); !ok {
 		return &ValidationError{Name: "password", err: errors.New(`ent: missing required field "User.password"`)}
+	}
+	if _, ok := uc.mutation.EmailConfirmed(); !ok {
+		return &ValidationError{Name: "emailConfirmed", err: errors.New(`ent: missing required field "User.emailConfirmed"`)}
 	}
 	if _, ok := uc.mutation.Permissions(); !ok {
 		return &ValidationError{Name: "permissions", err: errors.New(`ent: missing required field "User.permissions"`)}
@@ -274,6 +311,10 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.SsoIdentifier(); ok {
 		_spec.SetField(user.FieldSsoIdentifier, field.TypeString, value)
 		_node.SsoIdentifier = value
+	}
+	if value, ok := uc.mutation.EmailConfirmed(); ok {
+		_spec.SetField(user.FieldEmailConfirmed, field.TypeBool, value)
+		_node.EmailConfirmed = value
 	}
 	if value, ok := uc.mutation.Permissions(); ok {
 		_spec.SetField(user.FieldPermissions, field.TypeJSON, value)
@@ -332,6 +373,22 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(group.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.TokensIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TokensTable,
+			Columns: []string{user.TokensColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(token.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

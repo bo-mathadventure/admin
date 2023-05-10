@@ -118,6 +118,31 @@ var (
 		Columns:    TexturesColumns,
 		PrimaryKey: []*schema.Column{TexturesColumns[0]},
 	}
+	// TokensColumns holds the columns for the "tokens" table.
+	TokensColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "token", Type: field.TypeString},
+		{Name: "action", Type: field.TypeString},
+		{Name: "valid_until", Type: field.TypeTime},
+		{Name: "send", Type: field.TypeBool, Default: false},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "data", Type: field.TypeJSON},
+		{Name: "user_tokens", Type: field.TypeInt, Nullable: true},
+	}
+	// TokensTable holds the schema information for the "tokens" table.
+	TokensTable = &schema.Table{
+		Name:       "tokens",
+		Columns:    TokensColumns,
+		PrimaryKey: []*schema.Column{TokensColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "tokens_users_tokens",
+				Columns:    []*schema.Column{TokensColumns[7]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -126,6 +151,7 @@ var (
 		{Name: "username", Type: field.TypeString},
 		{Name: "password", Type: field.TypeString},
 		{Name: "sso_identifier", Type: field.TypeString, Nullable: true},
+		{Name: "email_confirmed", Type: field.TypeBool, Default: true},
 		{Name: "permissions", Type: field.TypeJSON},
 		{Name: "tags", Type: field.TypeJSON},
 		{Name: "last_login", Type: field.TypeTime, Nullable: true},
@@ -170,6 +196,7 @@ var (
 		MapsTable,
 		ReportsTable,
 		TexturesTable,
+		TokensTable,
 		UsersTable,
 		GroupUsersTable,
 	}
@@ -178,6 +205,7 @@ var (
 func init() {
 	ReportsTable.ForeignKeys[0].RefTable = UsersTable
 	ReportsTable.ForeignKeys[1].RefTable = UsersTable
+	TokensTable.ForeignKeys[0].RefTable = UsersTable
 	GroupUsersTable.ForeignKeys[0].RefTable = GroupsTable
 	GroupUsersTable.ForeignKeys[1].RefTable = UsersTable
 }

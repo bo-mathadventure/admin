@@ -51,6 +51,12 @@ func Login(ctx context.Context, db *ent.Client) fiber.Handler {
 			return HandleInvalidLogin(c)
 		}
 
+		if config.GetConfig().RegistrationEMailConfirmation {
+			if !foundUser.EmailConfirmed {
+				return HandleError(c, "ERR_EMAIL_NOT_CONFIRMED")
+			}
+		}
+
 		// Create token
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 			"id":            foundUser.ID,

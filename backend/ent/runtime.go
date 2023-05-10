@@ -12,6 +12,7 @@ import (
 	"github.com/bo-mathadventure/admin/ent/report"
 	"github.com/bo-mathadventure/admin/ent/schema"
 	"github.com/bo-mathadventure/admin/ent/textures"
+	"github.com/bo-mathadventure/admin/ent/token"
 	"github.com/bo-mathadventure/admin/ent/user"
 )
 
@@ -79,22 +80,48 @@ func init() {
 	texturesDescCreatedAt := texturesFields[4].Descriptor()
 	// textures.DefaultCreatedAt holds the default value on creation for the createdAt field.
 	textures.DefaultCreatedAt = texturesDescCreatedAt.Default.(func() time.Time)
+	tokenFields := schema.Token{}.Fields()
+	_ = tokenFields
+	// tokenDescToken is the schema descriptor for token field.
+	tokenDescToken := tokenFields[0].Descriptor()
+	// token.DefaultToken holds the default value on creation for the token field.
+	token.DefaultToken = tokenDescToken.Default.(func() string)
+	// tokenDescValidUntil is the schema descriptor for validUntil field.
+	tokenDescValidUntil := tokenFields[2].Descriptor()
+	// token.DefaultValidUntil holds the default value on creation for the validUntil field.
+	token.DefaultValidUntil = tokenDescValidUntil.Default.(func() time.Time)
+	// tokenDescSend is the schema descriptor for send field.
+	tokenDescSend := tokenFields[3].Descriptor()
+	// token.DefaultSend holds the default value on creation for the send field.
+	token.DefaultSend = tokenDescSend.Default.(bool)
+	// tokenDescCreatedAt is the schema descriptor for createdAt field.
+	tokenDescCreatedAt := tokenFields[4].Descriptor()
+	// token.DefaultCreatedAt holds the default value on creation for the createdAt field.
+	token.DefaultCreatedAt = tokenDescCreatedAt.Default.(func() time.Time)
+	// tokenDescData is the schema descriptor for data field.
+	tokenDescData := tokenFields[5].Descriptor()
+	// token.DefaultData holds the default value on creation for the data field.
+	token.DefaultData = tokenDescData.Default.(func() map[string]interface{})
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescUUID is the schema descriptor for uuid field.
 	userDescUUID := userFields[0].Descriptor()
 	// user.DefaultUUID holds the default value on creation for the uuid field.
 	user.DefaultUUID = userDescUUID.Default.(func() string)
+	// userDescEmailConfirmed is the schema descriptor for emailConfirmed field.
+	userDescEmailConfirmed := userFields[5].Descriptor()
+	// user.DefaultEmailConfirmed holds the default value on creation for the emailConfirmed field.
+	user.DefaultEmailConfirmed = userDescEmailConfirmed.Default.(bool)
 	// userDescPermissions is the schema descriptor for permissions field.
-	userDescPermissions := userFields[5].Descriptor()
+	userDescPermissions := userFields[6].Descriptor()
 	// user.DefaultPermissions holds the default value on creation for the permissions field.
 	user.DefaultPermissions = userDescPermissions.Default.([]string)
 	// userDescTags is the schema descriptor for tags field.
-	userDescTags := userFields[6].Descriptor()
+	userDescTags := userFields[7].Descriptor()
 	// user.DefaultTags holds the default value on creation for the tags field.
 	user.DefaultTags = userDescTags.Default.([]string)
 	// userDescCreatedAt is the schema descriptor for createdAt field.
-	userDescCreatedAt := userFields[8].Descriptor()
+	userDescCreatedAt := userFields[9].Descriptor()
 	// user.DefaultCreatedAt holds the default value on creation for the createdAt field.
 	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
 }

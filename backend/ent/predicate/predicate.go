@@ -24,5 +24,8 @@ type Report func(*sql.Selector)
 // Textures is the predicate function for textures builders.
 type Textures func(*sql.Selector)
 
+// Token is the predicate function for token builders.
+type Token func(*sql.Selector)
+
 // User is the predicate function for user builders.
 type User func(*sql.Selector)

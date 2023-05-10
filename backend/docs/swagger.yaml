@@ -463,6 +463,16 @@ definitions:
         type: string
       enableRegistration:
         type: boolean
+      mailFrom:
+        type: string
+      mailHost:
+        type: string
+      mailPassword:
+        type: string
+      mailPort:
+        type: integer
+      mailUser:
+        type: string
       mapStorageURL:
         type: string
       workadventureURL:
@@ -565,8 +575,6 @@ definitions:
         maxLength: 16
         minLength: 3
         type: string
-    required:
-    - password
     type: object
   handler.userResponse:
     properties:
@@ -675,6 +683,40 @@ paths:
       summary: Register new user
       tags:
       - auth
+  /auth/resendConfirmation:
+    post:
+      consumes:
+      - application/json
+      description: Resend mail confirmation if user not confirmed
+      parameters:
+      - description: '-'
+        in: body
+        name: params
+        required: true
+        schema:
+          $ref: '#/definitions/handler.updateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      summary: Resend mail confirmation
+      tags:
+      - auth
   /auth/saml/acs:
     post:
       consumes:
@@ -728,6 +770,49 @@ paths:
       tags:
       - auth
       - saml
+  /auth/token:
+    post:
+      consumes:
+      - application/json
+      description: execute token actions
+      parameters:
+      - description: '-'
+        in: query
+        name: token
+        required: true
+        type: string
+      - description: '-'
+        in: body
+        name: params
+        required: true
+        schema:
+          $ref: '#/definitions/handler.updateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.userResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.APIResponse'
+      summary: Token
+      tags:
+      - user
   /system/admin/announcement:
     get:
       consumes:

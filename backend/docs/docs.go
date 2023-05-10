@@ -128,6 +128,58 @@ const docTemplate = `{
                 }
             }
         },
+        "/auth/resendConfirmation": {
+            "post": {
+                "description": "Resend mail confirmation if user not confirmed",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Resend mail confirmation",
+                "parameters": [
+                    {
+                        "description": "-",
+                        "name": "params",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.updateUserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handler.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handler.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/saml/acs": {
             "post": {
                 "description": "Get SAML response of the IDP. This route is only available when SAML is correctly configured.",
@@ -196,6 +248,71 @@ const docTemplate = `{
                 "responses": {
                     "302": {
                         "description": "Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handler.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/token": {
+            "post": {
+                "description": "execute token actions",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Token",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "-",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "-",
+                        "name": "params",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.updateUserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.userResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.APIResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handler.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handler.APIResponse"
+                        }
                     },
                     "500": {
                         "description": "Internal Server Error",
@@ -3055,6 +3172,21 @@ const docTemplate = `{
                 "enableRegistration": {
                     "type": "boolean"
                 },
+                "mailFrom": {
+                    "type": "string"
+                },
+                "mailHost": {
+                    "type": "string"
+                },
+                "mailPassword": {
+                    "type": "string"
+                },
+                "mailPort": {
+                    "type": "integer"
+                },
+                "mailUser": {
+                    "type": "string"
+                },
                 "mapStorageURL": {
                     "type": "string"
                 },
@@ -3170,9 +3302,6 @@ const docTemplate = `{
         },
         "handler.updateUserRequest": {
             "type": "object",
-            "required": [
-                "password"
-            ],
             "properties": {
                 "confirmPassword": {
                     "type": "string",

@@ -3,6 +3,7 @@ run:
     - ent/
   skip-files:
     - utils/permissionsConstants.go
+    - mailer/constants.go
 
 linters-settings:
   gofumpt:

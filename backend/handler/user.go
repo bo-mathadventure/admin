@@ -76,7 +76,7 @@ type updateUserRequest struct {
 	Username                 string `json:"username" example:"Bob" validate:"omitempty,alphaunicode,min=3,max=16"`
 	ClearTextPassword        string `json:"newPassword" example:"my$ecur3P4$$word" validate:"omitempty,min=8"`
 	ClearTextPasswordConfirm string `json:"confirmPassword" example:"my$ecur3P4$$word" validate:"omitempty,min=8,eqcsfield=ClearTextPassword"`
-	ClearTextCurrentPassword string `json:"password" example:"my$ecur3P4$$word" validate:"required"`
+	ClearTextCurrentPassword string `json:"password" example:"my$ecur3P4$$word" validate:"omitempty"`
 }
 
 // updateUser godoc

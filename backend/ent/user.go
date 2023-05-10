@@ -28,6 +28,8 @@ type User struct {
 	Password string `json:"password,omitempty"`
 	// SsoIdentifier holds the value of the "ssoIdentifier" field.
 	SsoIdentifier string `json:"ssoIdentifier,omitempty"`
+	// EmailConfirmed holds the value of the "emailConfirmed" field.
+	EmailConfirmed bool `json:"emailConfirmed,omitempty"`
 	// Permissions holds the value of the "permissions" field.
 	Permissions []string `json:"permissions,omitempty"`
 	// Tags holds the value of the "tags" field.
@@ -50,9 +52,11 @@ type UserEdges struct {
 	Reporter []*Report `json:"reporter,omitempty"`
 	// Groups holds the value of the groups edge.
 	Groups []*Group `json:"groups,omitempty"`
+	// Tokens holds the value of the tokens edge.
+	Tokens []*Token `json:"tokens,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // ReportedOrErr returns the Reported value or an error if the edge
@@ -82,6 +86,15 @@ func (e UserEdges) GroupsOrErr() ([]*Group, error) {
 	return nil, &NotLoadedError{edge: "groups"}
 }
 
+// TokensOrErr returns the Tokens value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) TokensOrErr() ([]*Token, error) {
+	if e.loadedTypes[3] {
+		return e.Tokens, nil
+	}
+	return nil, &NotLoadedError{edge: "tokens"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -89,6 +102,8 @@ func (*User) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case user.FieldPermissions, user.FieldTags:
 			values[i] = new([]byte)
+		case user.FieldEmailConfirmed:
+			values[i] = new(sql.NullBool)
 		case user.FieldID:
 			values[i] = new(sql.NullInt64)
 		case user.FieldUUID, user.FieldEmail, user.FieldUsername, user.FieldPassword, user.FieldSsoIdentifier:
@@ -146,6 +161,12 @@ func (u *User) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				u.SsoIdentifier = value.String
 			}
+		case user.FieldEmailConfirmed:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field emailConfirmed", values[i])
+			} else if value.Valid {
+				u.EmailConfirmed = value.Bool
+			}
 		case user.FieldPermissions:
 			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field permissions", values[i])
@@ -202,6 +223,11 @@ func (u *User) QueryGroups() *GroupQuery {
 	return NewUserClient(u.config).QueryGroups(u)
 }
 
+// QueryTokens queries the "tokens" edge of the User entity.
+func (u *User) QueryTokens() *TokenQuery {
+	return NewUserClient(u.config).QueryTokens(u)
+}
+
 // Update returns a builder for updating this User.
 // Note that you need to call User.Unwrap() before calling this method if this User
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -239,6 +265,9 @@ func (u *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("ssoIdentifier=")
 	builder.WriteString(u.SsoIdentifier)
+	builder.WriteString(", ")
+	builder.WriteString("emailConfirmed=")
+	builder.WriteString(fmt.Sprintf("%v", u.EmailConfirmed))
 	builder.WriteString(", ")
 	builder.WriteString("permissions=")
 	builder.WriteString(fmt.Sprintf("%v", u.Permissions))
