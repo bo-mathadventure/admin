@@ -9,6 +9,7 @@ import (
 	email "github.com/cameronnewman/go-emailvalidation/v3"
 	"github.com/gofiber/fiber/v2"
 	log "github.com/sirupsen/logrus"
+	"strings"
 )
 
 type registerRequest struct {
@@ -33,6 +34,11 @@ type registerRequest struct {
 //	@Failure		500		{object}	APIResponse
 //	@Router			/auth/register [post]
 func Register(ctx context.Context, db *ent.Client) fiber.Handler {
+	var normalizeConfig = config.GetConfig().RegistrationEMail
+	normalizeConfig = strings.TrimSpace(normalizeConfig)
+	normalizeConfig = strings.ReplaceAll(normalizeConfig, " ", "")
+	validDomains := strings.Split(normalizeConfig, ",")
+
 	return func(c *fiber.Ctx) error {
 		if !config.GetConfig().EnableRegistration {
 			return HandleError(c, "ERR_REGISTRATION_DISABLED")
@@ -50,6 +56,13 @@ func Register(ctx context.Context, db *ent.Client) fiber.Handler {
 		err := email.Validate(req.EMail)
 		if err != nil {
 			return HandleError(c, "ERR_EMAIL_INVALID")
+		}
+
+		if len(validDomains) > 0 {
+			_, domain := email.Split(email.Normalize(req.EMail))
+			if !utils.Contains(validDomains, domain) {
+				return HandleError(c, "ERR_REGISTRATION_DOMAIN")
+			}
 		}
 
 		if req.ClearTextPassword != req.ClearTextPasswordConfirm {

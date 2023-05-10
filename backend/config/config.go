@@ -23,7 +23,8 @@ type Config struct {
 	DatabaseUsername string `env:"DB_USER" json:"-"`
 	DatabasePassword string `env:"DB_PASSWORD" json:"-"`
 
-	EnableRegistration bool `env:"ENABLE_REGISTRATION" envDefault:"true" json:"enableRegistration"`
+	EnableRegistration bool   `env:"ENABLE_REGISTRATION" envDefault:"true" json:"enableRegistration"`
+	RegistrationEMail  string `env:"REGISTRATION_EMAIL" json:"-"`
 
 	WorkadventureURL            string `env:"WORKADVENTURE_URL" json:"workadventureURL"`
 	WorkadventureURLProtocol    string `env:"WORKADVENTURE_URL_PROTOCOL" envDefault:"https" json:"workadventureURLProtocol"`
