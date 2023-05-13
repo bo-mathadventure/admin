@@ -54,3 +54,12 @@ backend/public/*.sql
 wadev/redis/
 wadev/map-storage/
 wadev/db/
+
+tsconfig.tsbuildinfo
+.build-info.json
+
+/coverage
+
+/.next/
+/out/
+next-env.d.ts
