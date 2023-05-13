@@ -60,6 +60,6 @@ tsconfig.tsbuildinfo
 
 /coverage
 
-/.next/
+.next/
 /out/
 next-env.d.ts
