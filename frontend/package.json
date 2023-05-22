@@ -10,6 +10,7 @@
   },
   "scripts": {
     "postinstall": "yarn build:info && yarn theme:generate-typing",
+    "generate:api": "npx rimraf ./src/generated/api/ && npx openapi -i http://127.0.0.1:4664/swagger/doc.json -o ./src/generated/api/ -c axios --name BackOfficeAPI --useUnionTypes",
     "dev": "next dev",
     "build": "yarn build:info && next build",
     "build:info": "node .build-info.generate.js",
@@ -47,6 +48,7 @@
     "isomorphic-form-data": "2.0.0",
     "lodash": "4.17.21",
     "next": "13.3.4",
+    "openapi-fetch": "^0.1.4",
     "react": "18.2.0",
     "react-currency-input-field": "3.6.10",
     "react-day-picker": "7.4.10",
@@ -81,8 +83,10 @@
     "eslint-plugin-sonarjs": "0.19.0",
     "lint-staged": "13.2.2",
     "miragejs": "0.1.47",
+    "openapi-typescript-codegen": "^0.24.0",
     "prettier": "2.8.8",
     "react-is": "18.2.0",
+    "rimraf": "^5.0.1",
     "typescript": "5.0.4"
   },
   "repository": {
