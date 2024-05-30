@@ -2,6 +2,8 @@ package handler
 
 import (
 	"context"
+	"strings"
+
 	"github.com/bo-mathadventure/admin/config"
 	"github.com/bo-mathadventure/admin/ent"
 	"github.com/bo-mathadventure/admin/ent/user"
@@ -10,7 +12,6 @@ import (
 	email "github.com/cameronnewman/go-emailvalidation/v3"
 	"github.com/gofiber/fiber/v2"
 	log "github.com/sirupsen/logrus"
-	"strings"
 )
 
 type registerRequest struct {
@@ -38,7 +39,7 @@ func Register(ctx context.Context, db *ent.Client) fiber.Handler {
 	var normalizeConfig = config.GetConfig().RegistrationEMail
 	normalizeConfig = strings.TrimSpace(normalizeConfig)
 	normalizeConfig = strings.ReplaceAll(normalizeConfig, " ", "")
-	validDomains := strings.Split(normalizeConfig, ",")
+	//validDomains := strings.Split(normalizeConfig, ",")
 
 	return func(c *fiber.Ctx) error {
 		if !config.GetConfig().EnableRegistration {
@@ -60,12 +61,12 @@ func Register(ctx context.Context, db *ent.Client) fiber.Handler {
 		}
 
 		/*
-		if len(validDomains) > 0 {
-			_, domain := email.Split(email.Normalize(req.EMail))
-			if !utils.Contains(validDomains, domain) {
-				return HandleError(c, "ERR_REGISTRATION_DOMAIN")
-			}
-		}*/
+			if len(validDomains) > 0 {
+				_, domain := email.Split(email.Normalize(req.EMail))
+				if !utils.Contains(validDomains, domain) {
+					return HandleError(c, "ERR_REGISTRATION_DOMAIN")
+				}
+			}*/
 
 		if req.ClearTextPassword != req.ClearTextPasswordConfirm {
 			return HandleError(c, "ERR_PASSWORD_EQUAL")
