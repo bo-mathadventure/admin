@@ -59,12 +59,13 @@ func Register(ctx context.Context, db *ent.Client) fiber.Handler {
 			return HandleError(c, "ERR_EMAIL_INVALID")
 		}
 
+		/*
 		if len(validDomains) > 0 {
 			_, domain := email.Split(email.Normalize(req.EMail))
 			if !utils.Contains(validDomains, domain) {
 				return HandleError(c, "ERR_REGISTRATION_DOMAIN")
 			}
-		}
+		}*/
 
 		if req.ClearTextPassword != req.ClearTextPasswordConfirm {
 			return HandleError(c, "ERR_PASSWORD_EQUAL")
