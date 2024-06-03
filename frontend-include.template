@@ -1,0 +1,29 @@
+  frontend:
+    build: ./frontend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.rule=Host(`localhost`)"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+    environment:
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      SECRET_KEY: ${SECRET_KEY}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_EMAIL: ${SMTP_EMAIL}
+      NODE_ENV: production
+    env_file:
+      - .env
+    volumes: 
+      - ./frontend/src:/app/src
+    restart: unless-stopped
+    networks:
+      - traefik
+      - backend
+    ports:
+      - "3000:3000" # Expose the frontend port
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"

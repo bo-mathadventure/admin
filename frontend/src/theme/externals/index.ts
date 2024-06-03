@@ -1,1 +1,0 @@
-export { reactDayPicker } from './reactDayPicker';

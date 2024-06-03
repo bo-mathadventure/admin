@@ -1,0 +1,68 @@
+version: '3.7'
+
+services:
+
+  traefik:
+    image: traefik:v2.5
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080" # Traefik dashboard
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - traefik
+
+  backend:
+    build: ./backend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.http.routers.backend.rule=Host(`localhost`) && PathPrefix(`/api/`, `/auth/`)"
+      - "traefik.http.services.backend.loadbalancer.server.port=4664"
+    environment:
+      DB_TYPE: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: ${DB_DATABASE}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - traefik
+      - backend
+    ports:
+      - "4664:4664" # Expose the backend port
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+
+
+  db:
+    image: mariadb:10.2
+    restart: unless-stopped
+    networks:
+      - backend
+    volumes: 
+      - ./docker-data/db:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+
+networks:
+  backend:
+  traefik:
+    external: true

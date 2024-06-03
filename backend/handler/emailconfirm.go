@@ -2,6 +2,8 @@ package handler
 
 import (
 	"context"
+	"fmt"
+
 	"github.com/bo-mathadventure/admin/config"
 	"github.com/bo-mathadventure/admin/ent"
 	"github.com/bo-mathadventure/admin/ent/user"
@@ -35,19 +37,23 @@ func ResendConfirmEmail(ctx context.Context, db *ent.Client) fiber.Handler {
 		}
 
 		if req.EMail == "" {
+			fmt.Println("Email is empty")
 			return HandleSuccess(c)
 		}
 
 		foundUser, err := db.User.Query().Where(user.Email(email.Normalize(req.EMail))).First(ctx)
 		if err != nil || foundUser.EmailConfirmed {
+			fmt.Println("User not found or email already confirmed")
 			return HandleSuccess(c)
 		}
 
 		_, err = db.Token.Create().SetUser(foundUser).SetAction(mailer.ActionConfirmEmail).Save(ctx)
 		if err != nil {
+			fmt.Println("Error creating token")
 			return HandleInternalError(c, err)
 		}
 
+		fmt.Println("Token created")
 		return HandleSuccess(c)
 	}
 }
