@@ -3,7 +3,7 @@
 import nodemailer from 'nodemailer';
 
 
-export const sendEmail = async (email: string) => {
+export const sendEmail = async (email: string, token : string ) => {
    
     const { SMTP_EMAIL, SMTP_PASSWORD } = process.env;
 
@@ -28,7 +28,7 @@ export const sendEmail = async (email: string) => {
             from: SMTP_EMAIL,
             to: email,
             subject: "Bestätigungsmail",
-            text: "Bitte bestätigen Sie Ihre E-Mail-Adresse  Klicken Sie auf den folgenden Link, um Ihre E-Mail-Adresse zu bestätigen: " +"http://localhost:5656/verifyaccount/"+email,
+            text: email+ " has a token: " + token,
         });
         console.log('Email sent', info);
     }

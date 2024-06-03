@@ -3,6 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
+	"path/filepath"
+	"sync"
+	"time"
+
 	"github.com/bo-mathadventure/admin/config"
 	_ "github.com/bo-mathadventure/admin/docs"
 	"github.com/bo-mathadventure/admin/ent"
@@ -22,9 +26,6 @@ import (
 	"github.com/gofiber/swagger"
 	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
-	"path/filepath"
-	"sync"
-	"time"
 )
 
 // @title						Workadventure Admin Back Office API
@@ -123,7 +124,13 @@ func main() {
 		ServerHeader: config.GetConfig().AppName,
 		AppName:      config.GetConfig().AppName,
 	})
-	app.Use(cors.New())
+	app.Use(cors.New(cors.Config{
+		AllowOrigins:     "http://localhost:3000",
+		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS",
+		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
+		AllowCredentials: true,
+	}))
+
 	app.Use(etag.New())
 	app.Use(favicon.New())
 	app.Use(requestid.New())

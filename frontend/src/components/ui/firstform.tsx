@@ -15,18 +15,20 @@ import { Input } from "@/components/ui/input"
 import Link from 'next/link'
 import NextCrypto from 'next-crypto';
 import { sendEmail } from './verification'
+import { env, send } from 'process'
+import {BACKEND_URL} from '@/loadEnv';
+
+
+require('dotenv').config({ path: '../../.env' });
 
 const secretKey = process.env.SECRET_KEY || ""; // Provide a default value for SECRET_KEY if it is undefined
 const crypto = new NextCrypto(secretKey);
 
-
 const SignUpLayout = z.object({
-    firstname : z.string()
-        .min(3, "Der Vorname sollte mindestens 3 Zeichen haben.")
-        .max(30, "Der Vorname sollte höchstens 30 Zeich en haben."),
-    lastname : z.string()
+    username : z.string()
         .min(3, "Der Nachname sollte mindestens 3 Zeichen haben.")
-        .max(30, "Der Nachname sollte höchstens 30 Zeichen haben."),
+        .max(30, "Der Nachname sollte höchstens 30 Zeichen haben.")
+        .regex(/^[a-zA-Z]+$/, "Der Name darf keine Zahlen enthalten."),
     email: z.string()
         .email("Ungültige E-Mail-Adresse")
         .regex(/^[a-zA-Z0-9._%+-]+@(stud\.)?hs-bochum\.de$/, "Die E-Mail-Adresse muss eine gültige hs-bochum.de-Adresse sein"),
@@ -38,14 +40,11 @@ const SignUpLayout = z.object({
     { message: "Die Passwörter stimmen nicht überein", path: ["confirmPassword"]})
 
 
-localStorage.clear();
-
 const FirstForm = () => {
     const form = useForm<z.infer<typeof SignUpLayout>>({
         resolver: zodResolver(SignUpLayout),
         defaultValues: {
-            firstname: "",
-            lastname: "",
+            username: "",
             email: "",
             password: "",
             confirmPassword: ""
@@ -53,38 +52,61 @@ const FirstForm = () => {
     });
    
     async function onSubmit(data: z.infer<typeof SignUpLayout>) {
-        const encrypted = await crypto.encrypt(data.password);
         try {
-            await fetch("http://localhost:5656/account", {
-              method: "POST",
-              mode: 'no-cors',
-              headers: {
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify({
-                FirstName: data.firstname,
-                LastName: data.lastname,
-                Email: data.email,
-                EncryptedPassword: encrypted
-              })
-            }).then(() => {
-            fetch("http://localhost:5656/verification", {
-              method: "POST",
-              mode: 'no-cors',
-              headers: {
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify({ email: localStorage.getItem('email') })
+            const response = await fetch(BACKEND_URL + "/auth/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: data.email,
+                    username: data.username,
+                    language: "de",
+                    password: data.password,
+                    confirmPassword: data.password,
+                }),
             });
-          });
-          sendEmail(data.email);                     
-    } catch (error) {
-      console.error('Failed to submit data', error);
+            if (response.ok) {
+                const responseData = await response.json();
+                alert(responseData);
+                document.getElementById("form1")?.classList.add("hidden");
+                document.getElementById('form3')?.classList.remove('hidden');
+
+                alert("verification email skipped for now");
+
+                const loginResponse = await fetch(BACKEND_URL + "/auth/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        email: data.email,
+                        password: data.password,
+                    }),
+                });
+                if (loginResponse.ok) {
+                    const loginData = await loginResponse.json();
+                    alert("login token : " + loginData.token);
+                    localStorage.setItem("authToken", loginData.token);
+                    sendEmail(data.email, loginData.token);
+                    
+                } else {
+                    console.error("Failed to login", loginResponse.status);
+                }
+            } else {
+                const errorData = await response.json();
+                if (errorData.message === "ERR_USER_EXISTS") {
+                    alert("User already exists");
+                } else {
+                    console.error("Failed to submit data", response.status);
+                }
+            }
+        } catch (error) {
+            console.error('Failed to submit data', error);
+        }
+
     }
-    document.getElementById("form1")?.classList.add("hidden");
-    document.getElementById('form3')?.classList.remove('hidden');
-    
-} 
+
 return (
 
             
@@ -102,25 +124,12 @@ return (
                         <form onSubmit={form.handleSubmit(onSubmit)}>
                             <FormField
                                 control={form.control}
-                                name="firstname"
+                                name="username"
                                 render={({ field }) => (
                                     <FormItem className='space-y-0 mb-2'>
-                                        <FormLabel>Vorname</FormLabel>
+                                        <FormLabel>Username</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Vorname" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                             <FormField
-                                control={form.control}
-                                name="lastname"
-                                render={({ field }) => (
-                                    <FormItem className='space-y-0 mb-2'>
-                                        <FormLabel>Nachname</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="Nachname" {...field} />
+                                            <Input placeholder="Username" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
